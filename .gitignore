@@ -49,3 +49,9 @@ Thumbs.db
 
 ## Optional: local node binary
 /node/
+
+# gemini-cli settings
+.gemini/
+
+# GitHub App credentials
+gha-creds-*.json
