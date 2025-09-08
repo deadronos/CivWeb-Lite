@@ -322,7 +322,7 @@ Open items and next steps (prioritized)
 
 - TASK-059/TASK-060: Add structured logging module and the `docs/state-architecture.md` file to document invariants and how deterministic RNG + immutable state are enforced.
 
-Suggested owners and ETA (optional estimates)
+## Suggested owners and ETA (optional estimates)
 
 - AI perf & replay: owner - core-engineer; ETA: 2–3 days to implement benchmarks and basic optimizations.
 - HUD metrics & event log: owner - frontend; ETA: 1–2 days.
@@ -341,7 +341,9 @@ Notes and caveats
 - The plan intentionally defers WebWorker offload (ALT-004). If AI or turn processing fails to meet budgets even after heuristics, schedule Worker migration as an accelerated mitigation.
 - The plan assumes tests and small harnesses run in CI on a machine comparable to dev environments; report CPU/time differences when benchmarking.
 
-## Edits applied
+<!-- Serena activation note -->
 
-- Added this "Review summary" and "Open items and next steps" to provide a developer-facing checklist for finishing Phase 5–9.
+A small dev note: Serena onboarding has already been performed for this repository. Activation metadata is stored in `.serena/activation.md` (created by the agent) and lists available Serena memories for quick lookup (key-symbols, open-tasks, dev-setup, etc.).
+
+<!-- end Serena activation note -->
 
