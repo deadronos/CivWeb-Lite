@@ -2,10 +2,12 @@ import React, { createContext, useReducer, useMemo, useEffect, useCallback } fro
 import type { ReactNode } from 'react';
 import { RNGState } from '../game/rng';
 import { globalGameBus } from '../game/events';
-import { GameState, Tile, PlayerState, TechNode } from '../game/types';
+import { GameState, Tile, PlayerState } from '../game/types';
 import { GameAction } from '../game/actions';
 import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
+import { techCatalog } from '../game/tech/techCatalog';
+import { evaluateAI } from '../game/ai/ai';
 
 export type Dispatch = (action: GameAction) => void;
 
@@ -18,7 +20,7 @@ const initialState = (): GameState => ({
   turn: 0,
   map: { width: DEFAULT_MAP_SIZE.width, height: DEFAULT_MAP_SIZE.height, tiles: [] as Tile[] },
   players: [] as PlayerState[],
-  techCatalog: [] as TechNode[],
+  techCatalog: techCatalog,
   rngState: undefined as RNGState | undefined,
   log: [],
   mode: 'standard',
@@ -31,10 +33,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const advanceTurn = useCallback(() => {
     const start = performance.now();
     globalGameBus.emit('turn:start', { turn: state.turn });
-    // TODO: collect AI actions here in future phases
+    const aiPlayers = state.players.filter(p => !p.isHuman);
+    const aiStart = performance.now();
+    aiPlayers.forEach(p => {
+      const acts = evaluateAI(p, state);
+      acts.forEach(dispatch);
+    });
+    const aiDuration = aiPlayers.length ? (performance.now() - aiStart) / aiPlayers.length : 0;
     dispatch({ type: 'END_TURN' });
     const duration = performance.now() - start;
-    console.debug(`turn ${state.turn + 1} took ${duration.toFixed(2)}ms`);
+    console.debug(`turn ${state.turn + 1} took ${duration.toFixed(2)}ms (AI avg ${aiDuration.toFixed(2)}ms)`);
   }, [state.turn, dispatch]);
 
   useEffect(() => {

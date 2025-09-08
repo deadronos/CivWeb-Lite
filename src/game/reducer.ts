@@ -23,6 +23,20 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         break;
       }
       case 'END_TURN': {
+        for (const player of draft.players) {
+          if (player.researching) {
+            const tech = draft.techCatalog.find(t => t.id === player.researching!.techId);
+            if (tech) {
+              const points = tech.tree === 'science' ? player.sciencePoints : player.culturePoints;
+              player.researching.progress += points;
+              if (player.researching.progress >= tech.cost) {
+                player.researchedTechIds.push(tech.id);
+                player.researching = null;
+                globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+              }
+            }
+          }
+        }
         draft.turn += 1;
         globalGameBus.emit('turn:end', { turn: draft.turn });
         break;
@@ -30,7 +44,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       case 'SET_RESEARCH': {
         const player = findPlayer(draft.players, action.playerId);
         if (player) {
-          player.researching = { techId: action.payload.techId, progress: 0 };
+          const tech = draft.techCatalog.find(t => t.id === action.payload.techId);
+          if (tech && tech.prerequisites.every(p => player.researchedTechIds.includes(p))) {
+            player.researching = { techId: tech.id, progress: 0 };
+          }
         }
         break;
       }
@@ -39,6 +56,12 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         if (player && player.researching) {
           const points = action.payload?.points ?? 1;
           player.researching.progress += points;
+          const tech = draft.techCatalog.find(t => t.id === player.researching.techId);
+          if (tech && player.researching.progress >= tech.cost) {
+            player.researchedTechIds.push(tech.id);
+            player.researching = null;
+            globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+          }
         }
         break;
       }
