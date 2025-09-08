@@ -80,7 +80,7 @@ Security & Integrity:
 
 Performance & Scalability:
 - **PER-001**: Logic tick (turn resolution) target ≤ 16 ms for baseline; hard cap 50 ms.
-- **PER-002**: Rendering SHALL avoid re-rendering entire map each React commit—use memoization / instancing.
+- **PER-002**: Rendering SHALL avoid re-rendering entire map each React commit—use memorization / instancing.
 - **PER-003**: Map size up to 100x100 tiles SHOULD remain interactive (camera pan/zoom) at ≥ 30 FPS.
 
 Constraints:
