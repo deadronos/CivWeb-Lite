@@ -63,16 +63,10 @@ export interface GameState {
   rngState?: unknown;
   log: GameLogEntry[];
   mode: 'standard' | 'ai-sim';
+  autoSim: boolean;
 }
 
 export interface LoadResult {
   ok: boolean;
   error?: string;
-}
-
-export interface GameAction {
-  type: string;
-  playerId?: string;
-  payload?: any;
-  clientTimestamp?: number;
 }

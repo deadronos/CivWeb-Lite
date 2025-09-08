@@ -1,10 +1,10 @@
-import React, { createContext, useReducer, useMemo, useEffect } from 'react';
+import React, { createContext, useReducer, useMemo, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { RNGState } from '../game/rng';
 import { globalGameBus } from '../game/events';
-import { GameState, GameAction, Tile, PlayerState, TechNode } from '../game/types';
-import { produceNextState } from '../game/state';
-import { generateWorld } from '../game/world/generate';
+import { GameState, Tile, PlayerState, TechNode } from '../game/types';
+import { GameAction } from '../game/actions';
+import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
 
 export type Dispatch = (action: GameAction) => void;
@@ -22,40 +22,36 @@ const initialState = (): GameState => ({
   rngState: undefined as RNGState | undefined,
   log: [],
   mode: 'standard',
+  autoSim: false,
 });
 
-function reducer(state: GameState, action: GameAction): GameState {
-  return produceNextState(state, draft => {
-    switch (action.type) {
-      case 'INIT': {
-        const seed = action.payload?.seed ?? draft.seed;
-        const width = action.payload?.width ?? draft.map.width;
-        const height = action.payload?.height ?? draft.map.height;
-        draft.seed = seed;
-        const world = generateWorld(seed, width, height);
-        draft.map = { width, height, tiles: world.tiles };
-        draft.rngState = world.state;
-        globalGameBus.emit('action:applied', { action });
-        globalGameBus.emit('turn:start', { turn: draft.turn });
-        break;
-      }
-      case 'END_TURN': {
-        draft.turn += 1;
-        globalGameBus.emit('action:applied', { action });
-        globalGameBus.emit('turn:end', { turn: draft.turn });
-        break;
-      }
-      default:
-        break;
-    }
-  });
-}
-
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, undefined, initialState);
+  const [state, dispatch] = useReducer(applyAction, undefined, initialState);
+
+  const advanceTurn = useCallback(() => {
+    const start = performance.now();
+    globalGameBus.emit('turn:start', { turn: state.turn });
+    // TODO: collect AI actions here in future phases
+    dispatch({ type: 'END_TURN' });
+    const duration = performance.now() - start;
+    console.debug(`turn ${state.turn + 1} took ${duration.toFixed(2)}ms`);
+  }, [state.turn, dispatch]);
+
   useEffect(() => {
     dispatch({ type: 'INIT' });
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!state.autoSim) return;
+    let id: number;
+    const loop = () => {
+      advanceTurn();
+      id = requestAnimationFrame(loop);
+    };
+    id = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(id);
+  }, [state.autoSim, advanceTurn]);
+
   const frozen = useMemo(() => Object.freeze(state), [state]);
   return (
     <GameStateContext.Provider value={frozen}>

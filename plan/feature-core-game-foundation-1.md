@@ -118,13 +118,13 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-016 | Define `GameAction` types in `actions.ts` (END_TURN, SET_RESEARCH, ADVANCE_RESEARCH, AUTO_SIM_TOGGLE) |  |  |
-| TASK-017 | Implement reducer `applyAction(state, action, rng)` pure function |  |  |
-| TASK-018 | Implement turn advancement pipeline (collect AI actions placeholder, then increment turn) |  |  |
-| TASK-019 | Auto-sim loop (interval / requestAnimationFrame) gated by state.mode + pause flag |  |  |
-| TASK-020 | Emit events turn:start, turn:end with payload |  |  |
-| TASK-021 | Hook perf instrumentation measuring per-turn ms (console/log buffer) |  |  |
-| TASK-022 | Add tests: turn increments & immutability verification |  |  |
+| TASK-016 | Define `GameAction` types in `actions.ts` (END_TURN, SET_RESEARCH, ADVANCE_RESEARCH, AUTO_SIM_TOGGLE) | ✅ | 2025-09-09 |
+| TASK-017 | Implement reducer `applyAction(state, action, rng)` pure function | ✅ | 2025-09-09 |
+| TASK-018 | Implement turn advancement pipeline (collect AI actions placeholder, then increment turn) | ✅ | 2025-09-09 |
+| TASK-019 | Auto-sim loop (interval / requestAnimationFrame) gated by state.mode + pause flag | ✅ | 2025-09-09 |
+| TASK-020 | Emit events turn:start, turn:end with payload | ✅ | 2025-09-09 |
+| TASK-021 | Hook perf instrumentation measuring per-turn ms (console/log buffer) | ✅ | 2025-09-09 |
+| TASK-022 | Add tests: turn increments & immutability verification | ✅ | 2025-09-09 |
 
 ### Implementation Phase 4
 - GOAL-004: Tech trees & progression (REQ-006, PAT-001, data-driven config).
