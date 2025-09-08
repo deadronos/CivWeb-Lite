@@ -1,4 +1,4 @@
-import { GameAction } from './types';
+import { GameAction } from './actions';
 
 type Listener<T> = (payload: T) => void;
 
