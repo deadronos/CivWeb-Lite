@@ -40,15 +40,35 @@ export default function GameHUD() {
     }
   };
 
+  const human = state.players.find(p => p.isHuman);
+  const techSummary = React.useMemo(() => {
+    if (!human?.researching) return null;
+    const tech = state.techCatalog.find(t => t.id === human.researching!.techId);
+    if (!tech) return null;
+    const pct = Math.floor((human.researching.progress / tech.cost) * 100);
+    return `${tech.name} ${pct}%`;
+  }, [human, state.techCatalog]);
+
+  const aiAvg = state.aiPerf && state.aiPerf.count > 0 ? (state.aiPerf.total / state.aiPerf.count).toFixed(2) : null;
+
   return (
-    <div className="game-hud" onDrop={onDrop} onDragOver={onDragOver}>
+    <div role="region" aria-label="game heads up display" className="game-hud" onDrop={onDrop} onDragOver={onDragOver}>
       <div>Turn: {state.turn}</div>
       <div>Seed: {state.seed}</div>
       <div>Mode: {state.mode}</div>
-      <button onClick={toggleAuto}>{state.autoSim ? 'Pause' : 'Start'}</button>
-      <button onClick={regenerate}>Regenerate Seed</button>
-      <button onClick={handleSave}>Save</button>
-      <input type="file" accept="application/json" aria-label="load-file" onChange={onFileChange} />
+      {techSummary && <div>Research: {techSummary}</div>}
+      {aiAvg && <div>AI Avg: {aiAvg}ms</div>}
+      <button onClick={toggleAuto} aria-label="toggle simulation">{state.autoSim ? 'Pause' : 'Start'}</button>
+      <button onClick={regenerate} aria-label="regenerate seed">Regenerate Seed</button>
+      <button onClick={handleSave} aria-label="save game">Save</button>
+      <input type="file" accept="application/json" aria-label="load file" onChange={onFileChange} />
+      <div role="log" aria-label="event log" aria-live="polite">
+        <ul>
+          {state.log.slice(-10).map((e, i) => (
+            <li key={i}>{e.type}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

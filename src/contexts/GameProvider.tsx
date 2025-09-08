@@ -23,6 +23,7 @@ export const initialState = (): GameState => ({
   techCatalog: techCatalog,
   rngState: undefined as RNGState | undefined,
   log: [],
+  aiPerf: { total: 0, count: 0 },
   mode: 'standard',
   autoSim: false,
 });
@@ -35,6 +36,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     dispatch({ type: 'INIT' });
   }, [dispatch]);
+
+  useEffect(() => {
+    const subs = [
+      globalGameBus.on('turn:start', p =>
+        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:start' } } })
+      ),
+      globalGameBus.on('turn:end', p =>
+        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:end' } } })
+      ),
+      globalGameBus.on('tech:unlocked', p =>
+        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: state.turn, type: 'tech:unlocked', payload: p } } })
+      ),
+      globalGameBus.on('action:applied', ({ action }) => {
+        if (action.type === 'LOG_EVENT' || action.type === 'RECORD_AI_PERF') return;
+        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: state.turn, type: action.type } } });
+      }),
+    ];
+    return () => subs.forEach(u => u());
+  }, [dispatch, state.turn]);
 
   useEffect(() => {
     if (!state.autoSim) return;
@@ -68,6 +88,7 @@ export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
     acts.forEach(dispatch);
   });
   const aiDuration = aiPlayers.length ? (performance.now() - aiStart) / aiPlayers.length : 0;
+  dispatch({ type: 'RECORD_AI_PERF', payload: { duration: aiDuration } });
   dispatch({ type: 'END_TURN' });
   const duration = performance.now() - start;
   console.debug(`turn ${s.turn + 1} took ${duration.toFixed(2)}ms (AI avg ${aiDuration.toFixed(2)}ms)`);

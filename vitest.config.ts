@@ -11,6 +11,14 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       all: true,
       include: ['src/**'],
+      thresholds: {
+        'src/game/**/*': {
+          lines: 80,
+          branches: 80,
+          functions: 80,
+          statements: 80,
+        },
+      },
     },
   },
 });

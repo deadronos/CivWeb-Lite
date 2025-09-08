@@ -62,6 +62,7 @@ export interface GameState {
   techCatalog: TechNode[];
   rngState?: unknown;
   log: GameLogEntry[];
+  aiPerf?: { total: number; count: number };
   mode: 'standard' | 'ai-sim';
   autoSim: boolean;
 }

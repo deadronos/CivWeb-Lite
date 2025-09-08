@@ -73,6 +73,17 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         draft.autoSim = action.payload?.enabled ?? !draft.autoSim;
         break;
       }
+      case 'LOG_EVENT': {
+        draft.log.push(action.payload.entry);
+        if (draft.log.length > 50) draft.log.shift();
+        break;
+      }
+      case 'RECORD_AI_PERF': {
+        if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };
+        draft.aiPerf.total += action.payload.duration;
+        draft.aiPerf.count += 1;
+        break;
+      }
       default:
         break;
     }
