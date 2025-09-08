@@ -9,6 +9,10 @@ function findPlayer(players: PlayerState[], id: string) {
 }
 
 export function applyAction(state: GameState, action: GameAction): GameState {
+  if (action.type === 'LOAD_STATE') {
+    globalGameBus.emit('action:applied', { action });
+    return Object.freeze(action.payload);
+  }
   return produceNextState(state, draft => {
     switch (action.type) {
       case 'INIT': {

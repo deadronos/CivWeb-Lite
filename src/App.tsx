@@ -13,6 +13,7 @@ import { OrbitControls, Stats } from '@react-three/drei';
 import { GameProvider } from './contexts/GameProvider';
 import { useGame } from './hooks/useGame';
 import Scene from './scene/Scene';
+import GameHUD from './components/GameHUD';
 
 export function UIComponent({ state, dispatch }: { state: any; dispatch: any }) {
   const seedRef = React.useRef<HTMLInputElement | null>(null);
@@ -94,6 +95,7 @@ export default function App() {
         <Stats />
       </Canvas>
       <UI />
+      <GameHUD />
     </GameProvider>
   );
 }
