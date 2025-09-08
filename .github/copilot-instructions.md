@@ -74,40 +74,49 @@ Edge-cases and constraints to consider
 - Don't break the public context API from `GameProvider` — consumers like `App.tsx` rely on `useGame()`.
 - UI components must remain DOM-only (no direct WebGL calls). Pass data via props or context.
 - Keep bundle size reasonable: avoid adding large packages without justification.
+## Copilot instructions (concise & repo-specific)
 
-Commit messages and PR advice
------------------------------
-- Small focused PRs are preferred. Keep changes tied to a single goal.
-- Use conventional commits briefly: feat:, fix:, refactor:, style:, docs:, test:.
+Purpose: short, actionable guidance to make AI agents immediately productive in CivWeb‑Lite.
 
-Files to read first when contributing
-------------------------------------
-- `src-file-structure.md` — the recommended project structure.
-- `src/App.tsx` — how the app wires Canvas and UI
-- `src/game/GameProvider.tsx` — game rules and context
-- `src/scene/Scene.tsx` — 3D scene composition and objects
+Quick facts
+- Stack: React 18 + TypeScript, Vite, three, @react-three/fiber, @react-three/drei
+- Entry: `index.html` -> `src/main.tsx` -> `src/App.tsx`
 
-Useful prompts for Copilot when editing code here
---------------------------------------------------
-- "Generate a TypeScript type for the game state used in GameProvider and use it in the provider and hook definitions. Keep fields minimal: turn: number, players: string[], selected: {x:number,y:number}|null." 
-- "Add inline JSDoc comments to exported functions in src/game/* describing inputs, outputs, and side effects." 
-- "Create a small smoke test that mounts `App` with `@testing-library/react` and asserts that the Turn label renders." 
+Developer commands (use exact npm scripts)
+- Install: `npm install`
+- Dev server: `npm run dev` (vite)
+- Build: `npm run build`
+- Preview build: `npm run preview`
+- Tests: `npm test` (runs Vitest), watch: `npm run test:watch`
+- Lint: `npm run lint`
+- Benchmarks: `npm run bench:world` and `npm run bench:ai` (uses `tsx` to run scripts/)
 
-Follow-up improvements (low-risk)
----------------------------------
-- Add a lightweight test runner (Vitest) and one smoke test.
-- Add linting (ESLint + TypeScript plugin) and a basic config.
-- Add CONTRIBUTING.md to document how to run and make PRs.
+High-level architecture (what to read first)
+- `src/game/GameProvider.tsx` — central game state + hooks (public API: `useGame()`)
+- `src/scene/Scene.tsx` — Three.js / @react-three/fiber scene composition
+- `src/App.tsx` — how Canvas, HUD and provider are wired together
+- `scripts/` and `schema/save.schema.json` — small tooling/bench scripts and AJV schema usage
 
-Where to ask for help
-----------------------
-- Open an issue on this repo with reproduction steps and what you expected vs observed.
+Project-specific patterns and rules
+- Keep WebGL/Three-specific code inside `src/scene` and related components. DOM UI lives under `src/components`/`src/*`.
+- The `GameProvider` exposes a stable public API — avoid breaking `useGame()` consumers.
+- Tests are present and use Vitest + jsdom. There are many targeted tests under `tests/` — run the suite locally before PRs.
+- Dependencies in package.json use loose versions (`*`) in many places — be conservative when adding or upgrading deps and update `package.json` accordingly.
 
-Maintenance rules for Copilot-style edits
----------------------------------------
-- When Copilot suggests code, prefer suggestions that add types and tests.
-- Keep diffs focused; avoid large unrelated refactors in the same PR.
+Integration & tooling notes
+- Bench scripts use `tsx` to run TypeScript scripts (see `scripts/benchWorld.ts`).
+- Playwright and @vitest/browser are available in devDependencies for browser/visual tests.
 
-Thank you
---------
-Thanks for helping make this project better — keep changes small and tested, and prefer clarity over cleverness.
+How Copilot should prioritize edits
+- Prefer small, focused changes: add types, small tests (Vitest), and keep visual-only edits inside `src/scene`.
+- When adding features that affect game rules, add unit tests under `tests/` or `src/game/__tests__` and update types.
+
+Example prompts (good starting points)
+- "Refactor Scene.tsx: extract a Tile component (position, terrain) and keep Three.js details inside it." 
+- "Add a Vitest unit test for GameProvider.endTurn to assert turn increments and side effects." 
+
+Files to inspect for context: `src-file-structure.md`, `src/game/GameProvider.tsx`, `src/scene/Scene.tsx`, `vitest.config.ts`, `package.json`.
+
+Before opening a PR: run `npm test` and `npm run lint` locally and keep PRs small and focused.
+
+If anything here is unclear or you'd like more examples (tests, component refactors, or CI hints), tell me which area to expand.
