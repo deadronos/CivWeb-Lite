@@ -4,7 +4,7 @@ version: 1.0
 date_created: 2025-09-08
 last_updated: 2025-09-08
 owner: deadronos
-status: Planned
+status: In Progress
 tags: [feature, game, foundation, architecture, implementation-plan]
 ---
 
@@ -46,7 +46,7 @@ src/
 ```
 
 
-![Status: Planned](https://img.shields.io/badge/status-Planned-blue)
+![Status: In Progress](https://img.shields.io/badge/status-In%20Progress-yellow)
 
 This implementation plan operationalizes the requirements (REQ-001..REQ-020, SEC-001..SEC-003, PER-001..PER-003, CON/GUD/PAT) defined in `spec/spec-architecture-civweb-lite-core.md` into deterministic, atomic tasks with explicit dependencies, validation criteria, and deliverables. Execution order enforces foundational purity (state & RNG) before higher-level features (AI, persistence, UI). All tasks are designed for autonomous execution by an agent or human without further interpretation.
 
@@ -87,27 +87,31 @@ This implementation plan operationalizes the requirements (REQ-001..REQ-020, SEC
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-001 | Create `src/game/types.ts` defining GameState, Tile, PlayerState, TechNode, enums (no logic) |  |  |
-| TASK-002 | Implement `src/game/rng.ts` deterministic RNG wrapper (seed in, next() pure) |  |  |
-| TASK-003 | Implement `src/game/events.ts` minimal typed event emitter (turn:start, turn:end, action:applied) |  |  |
-| TASK-004 | Implement immutable state helper `produceNextState(current, mutator)` (shallow structural sharing) |  |  |
-| TASK-005 | Scaffold `GameProvider` context returning `{ state, dispatch }` with initial empty state + seed placeholder |  |  |
-| TASK-006 | Add `useGame()` hook exposing read-only state (Object.freeze) + dispatch wrapper |  |  |
-| TASK-007 | Add unit tests for RNG determinism & event bus (Vitest) |  |  |
-| TASK-008 | Add ESLint rule/config (if absent) to prevent direct Math.random() in `src/game` |  |  |
+| TASK-001 | Create `src/game/types.ts` defining GameState, Tile, PlayerState, TechNode, enums (no logic) | ✅ | 2025-09-08 |
+| TASK-002 | Implement `src/game/rng.ts` deterministic RNG wrapper (seed in, next() pure) | ✅ | 2025-09-08 |
+| TASK-003 | Implement `src/game/events.ts` minimal typed event emitter (turn:start, turn:end, action:applied) | ✅ | 2025-09-08 |
+| TASK-004 | Implement immutable state helper `produceNextState(current, mutator)` (shallow structural sharing) | ✅ | 2025-09-08 |
+| TASK-005 | Scaffold `GameProvider` context returning `{ state, dispatch }` with initial empty state + seed placeholder | ✅ | 2025-09-08 |
+| TASK-006 | Add `useGame()` hook exposing read-only state (Object.freeze) + dispatch wrapper | ✅ | 2025-09-08 |
+| TASK-007 | Add unit tests for RNG determinism & event bus (Vitest) | ✅ | 2025-09-08 |
+| TASK-008 | Add ESLint rule/config (if absent) to prevent direct Math.random() in `src/game` | ✅ | 2025-09-08 |
+
+All tasks in Phase 1 are complete. No remaining items.
 
 ### Implementation Phase 2
 - GOAL-002: World generation system (map + biome assignment) meeting REQ-001, REQ-002, PAT-005.
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-009 | Create `src/game/world/config.ts` with biome definitions & thresholds |  |  |
-| TASK-010 | Implement axial coordinate utilities `hex.ts` (distance, neighbors) |  |  |
-| TASK-011 | Implement `generateWorld(seed, width, height)` producing tiles with biome/elevation/moisture |  |  |
-| TASK-012 | Integrate world generation into initial GameState (GameProvider init) |  |  |
-| TASK-013 | Add statistical test verifying ≥5 biome presence for 30x30 default |  |  |
-| TASK-014 | Add performance benchmark capturing generation time (baseline log) |  |  |
-| TASK-015 | Expose seed & map dimensions via UI stub (no styling) |  |  |
+| TASK-009 | Create `src/game/world/config.ts` with biome definitions & thresholds | ✅ | 2025-09-08 |
+| TASK-010 | Implement axial coordinate utilities `hex.ts` (distance, neighbors) | ✅ | 2025-09-08 |
+| TASK-011 | Implement `generateWorld(seed, width, height)` producing tiles with biome/elevation/moisture | ✅ | 2025-09-08 |
+| TASK-012 | Integrate world generation into initial GameState (GameProvider init) | ✅ | 2025-09-08 |
+| TASK-013 | Add statistical test verifying ≥5 biome presence for 30x30 default | ✅ | 2025-09-08 |
+| TASK-014 | Add performance benchmark capturing generation time (baseline log) | ✅ | 2025-09-08 |
+| TASK-015 | Expose seed & map dimensions via UI stub (no styling) | ✅ | 2025-09-08 |
+
+All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 
 ### Implementation Phase 3
 - GOAL-003: Turn engine & action dispatch orchestration (REQ-003, REQ-012, REQ-019, PAT-002).
