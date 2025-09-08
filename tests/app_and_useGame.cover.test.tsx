@@ -52,7 +52,10 @@ describe('useGame and App DOM handlers', () => {
     // change inputs and click regenerate
     const inputs = screen.getAllByRole('spinbutton');
     // width and height inputs exist
+    const seedInput = screen.getByRole('textbox');
     await act(async () => {
+      await userEvent.clear(seedInput);
+      await userEvent.type(seedInput, 'seed-typed');
       await userEvent.clear(inputs[0]);
       await userEvent.type(inputs[0], '10');
       await userEvent.clear(inputs[1]);
