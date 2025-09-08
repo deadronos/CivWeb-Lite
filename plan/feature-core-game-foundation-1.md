@@ -131,24 +131,24 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-023 | Create `src/game/tech/techCatalog.ts` static array for science + culture nodes |  |  |
-| TASK-024 | Implement dependency validation (cycle detection) at init (throw/log error) |  |  |
-| TASK-025 | Add research progress logic in reducer (ADVANCE_RESEARCH) |  |  |
-| TASK-026 | Add auto progress accumulation per turn (e.g., points → tech progress) |  |  |
-| TASK-027 | Event emission `tech:unlocked` |  |  |
-| TASK-028 | Unit tests: unlock order, prerequisite enforcement, cycle detection |  |  |
+| TASK-023 | Create `src/game/tech/techCatalog.ts` static array for science + culture nodes | ✅ | 2025-09-08 |
+| TASK-024 | Implement dependency validation (cycle detection) at init (throw/log error) | ✅ | 2025-09-08 |
+| TASK-025 | Add research progress logic in reducer (ADVANCE_RESEARCH) | ✅ | 2025-09-08 |
+| TASK-026 | Add auto progress accumulation per turn (e.g., points → tech progress) | ✅ | 2025-09-08 |
+| TASK-027 | Event emission `tech:unlocked` | ✅ | 2025-09-08 |
+| TASK-028 | Unit tests: unlock order, prerequisite enforcement, cycle detection | ✅ | 2025-09-08 |
 
 ### Implementation Phase 5
 - GOAL-005: AI players & leader personalities (REQ-004, REQ-005, REQ-011, PAT-004, PER-001 baseline).
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-029 | Define `LeaderPersonality` configs (default set: Scientist, Culturalist, Expansionist, Balanced) |  |  |
-| TASK-030 | Implement AI decision evaluation function returning array of GameActions |  |  |
-| TASK-031 | Integrate AI decision execution into turn pipeline (Phase 3 hook) |  |  |
+| TASK-029 | Define `LeaderPersonality` configs (default set: Scientist, Culturalist, Expansionist, Balanced) | ✅ | 2025-09-08 |
+| TASK-030 | Implement AI decision evaluation function returning array of GameActions | ✅ | 2025-09-08 |
+| TASK-031 | Integrate AI decision execution into turn pipeline (Phase 3 hook) | ✅ | 2025-09-09 |
 | TASK-032 | Add micro-benchmark measuring average AI decision ms across 5 players |  |  |
 | TASK-033 | Adjust heuristics to meet ≤50 ms requirement (optimize) |  |  |
-| TASK-034 | Unit tests: AI selects valid actions; no mutation side-effects |  |  |
+| TASK-034 | Unit tests: AI selects valid actions; no mutation side-effects | ✅ | 2025-09-08 |
 
 ### Implementation Phase 6
 - GOAL-006: Save/load JSON system + schema & validation (REQ-007, REQ-010, REQ-015, REQ-016, REQ-017, SEC-001..SEC-003).
