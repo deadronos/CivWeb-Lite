@@ -1,5 +1,9 @@
 # CivWeb-Lite
 
+[![build](https://img.shields.io/github/actions/workflow/status/deadronos/CivWeb-Lite/ci.yml?branch=main&label=ci&style=flat-square)](https://github.com/deadronos/CivWeb-Lite/actions)
+[![tests](https://img.shields.io/badge/tests-vitest-blue?style=flat-square)](https://github.com/deadronos/CivWeb-Lite/actions)
+[![license](https://img.shields.io/github/license/deadronos/CivWeb-Lite?style=flat-square)](LICENSE)
+
 CivWeb-Lite is a lightweight, extensible implementation of a Civ-like, turn-based simulation built with React, TypeScript, Vite, and Three.js (via @react-three/fiber).
 
 This repository is for an evolving deterministic simulation: procedural hex-world generation, a turn engine, tech progression, and AI players. The work here is intended to be modular, testable, and easy to extend.
