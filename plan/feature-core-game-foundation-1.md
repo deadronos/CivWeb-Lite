@@ -10,6 +10,42 @@ tags: [feature, game, foundation, architecture, implementation-plan]
 
 # Introduction
 
+## Source File Structure (Authoritative)
+
+The repository follows a canonical `src/` layout. All new source files should be placed according to this structure. If you need to diverge, open a short proposal and update this plan and the spec with the rationale.
+
+```text
+src/
+├── assets/
+│   └── # Images, sounds, and other media
+├── components/
+│   ├── ui/
+│   │   └── # Reusable UI elements like Button.tsx, Modal.tsx, etc.
+│   └── game/
+│       └── # Game-specific components like CityInfo.tsx, UnitSprite.tsx
+├── constants/
+│   └── # Game constants, like technology costs or unit stats
+├── contexts/
+│   └── GameProvider.tsx  # Central state management
+├── hooks/
+│   └── # Custom hooks, e.g., useGame.ts to access game state
+├── scenes/
+│   ├── GameScene.tsx     # The main game view
+│   └── MainMenu.tsx    # A main menu, for example
+├── styles/
+│   └── # Global and shared styles
+├── types/
+│   └── index.ts          # TypeScript interfaces for game objects (e.g., City, Unit)
+├── game-logic/
+│   ├── systems/
+│   │   └── # Core game systems, e.g., technology.ts, combat.ts
+│   └── utils/
+│       └── # Helper functions
+├── App.tsx
+└── main.tsx
+```
+
+
 ![Status: Planned](https://img.shields.io/badge/status-Planned-blue)
 
 This implementation plan operationalizes the requirements (REQ-001..REQ-020, SEC-001..SEC-003, PER-001..PER-003, CON/GUD/PAT) defined in `spec/spec-architecture-civweb-lite-core.md` into deterministic, atomic tasks with explicit dependencies, validation criteria, and deliverables. Execution order enforces foundational purity (state & RNG) before higher-level features (AI, persistence, UI). All tasks are designed for autonomous execution by an agent or human without further interpretation.
