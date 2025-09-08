@@ -82,6 +82,7 @@ Commit messages and PR advice
 
 Files to read first when contributing
 ------------------------------------
+- `src-file-structure.md` — the recommended project structure.
 - `src/App.tsx` — how the app wires Canvas and UI
 - `src/game/GameProvider.tsx` — game rules and context
 - `src/scene/Scene.tsx` — 3D scene composition and objects

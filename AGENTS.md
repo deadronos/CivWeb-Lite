@@ -3,6 +3,7 @@
 This guide helps contributors work effectively in CivWeb‑Lite.
 
 ## Project Structure & Module Organization
+- See `src-file-structure.md` for the recommended project structure.
 - `src/` – application source (components, pages, utilities).
 - `public/` – static assets served as‑is (icons, manifest, index.html).
 - `tests/` – unit/integration tests mirroring `src/` paths.
