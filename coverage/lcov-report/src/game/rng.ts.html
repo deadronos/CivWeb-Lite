@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.18% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/27</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/6</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.18% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/27</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
@@ -99,48 +99,48 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
-<span class="cline-any cline-yes">1870x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
+<span class="cline-any cline-yes">1872x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Simple seedable RNG (xorshift64*) wrapper for deterministic behavior
 export type RNGState = { s: bigint };
 &nbsp;
 export function seedFrom(input: string | number): RNGState {
   let n = 0n;
-  if (typeof input === 'number') <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
-<span class="cstat-no" title="statement not covered" >    n = BigInt(Math.floor(input));</span>
+  if (typeof input === 'number') {
+    n = BigInt(Math.floor(input));
   } else {
     for (let i = 0; i &lt; input.length; i++) {
       n = (n * 31n + BigInt(input.charCodeAt(i))) &amp; ((1n &lt;&lt; 64n) - 1n);
     }
-    if (n === 0n) <span class="branch-0 cbranch-no" title="branch not covered" >n = 88172645463325252n;</span>
+    if (n === 0n) n = 88172645463325252n;
   }
-  if (n === 0n) <span class="branch-0 cbranch-no" title="branch not covered" >n = 88172645463325252n;</span>
+  if (n === 0n) n = 88172645463325252n;
   return { s: n };
 }
 &nbsp;
@@ -155,10 +155,10 @@ export function next(state: RNGState): { state: RNGState; value: number } {
   return { state, value };
 }
 &nbsp;
-export <span class="fstat-no" title="function not covered" >function nextInt(state: RNGState, max: number): { state: RNGState; value: number } {</span>
-<span class="cstat-no" title="statement not covered" >  const out = next(state);</span>
-<span class="cstat-no" title="statement not covered" >  return { state: out.state, value: Math.floor(out.value * max) };</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+export function nextInt(state: RNGState, max: number): { state: RNGState; value: number } {
+  const out = next(state);
+  return { state: out.state, value: Math.floor(out.value * max) };
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -166,7 +166,7 @@ export <span class="fstat-no" title="function not covered" >function nextInt(sta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-08T16:17:25.101Z
+                at 2025-09-08T16:25:52.558Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

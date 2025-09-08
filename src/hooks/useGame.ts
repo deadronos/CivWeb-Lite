@@ -3,12 +3,18 @@ import { GameStateContext, GameDispatchContext, Dispatch } from '../contexts/Gam
 import { GameState } from '../game/types';
 
 export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
-  const state = useContext(GameStateContext);
-  const dispatch = useContext(GameDispatchContext);
+  const state = useContext(GameStateContext) as GameState | null;
+  const dispatch = useContext(GameDispatchContext) as Dispatch | null;
+  ensureGameContext(state, dispatch);
+  return { state: state as Readonly<GameState>, dispatch: dispatch as Dispatch };
+}
+
+// extracted check into a helper so tests can exercise the exact thrown branch
+export function ensureGameContext(state: GameState | null | undefined, dispatch: Dispatch | null | undefined) {
   if (!state || !dispatch) {
     throw new Error('useGame must be used within GameProvider');
   }
-  return { state, dispatch };
+  return true;
 }
 
 // Coverage helper for useGame to ensure the thrown branch is easily tested
