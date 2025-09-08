@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/game/world/config.ts</title>
+    <title>Code coverage report for src/game/tech/techCatalog.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/game/world</a> config.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/game/tech</a> techCatalog.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>24/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">92.3% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>12/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>24/24</span>
             </div>
         
             
@@ -81,42 +81,72 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { BiomeType } from '../types';
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">57x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">38x</span>
+<span class="cline-any cline-yes">57x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">57x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { TechNode } from '../types';
 &nbsp;
-export interface BiomeRule {
-  type: BiomeType;
-  elevation: [number, number];
-  moisture?: [number, number];
-}
-&nbsp;
-export const BIOME_RULES: BiomeRule[] = [
-  { type: BiomeType.Ocean, elevation: [0, 0.3] },
-  { type: BiomeType.Desert, elevation: [0.3, 0.6], moisture: [0, 0.4] },
-  { type: BiomeType.Grassland, elevation: [0.3, 0.6], moisture: [0.4, 1] },
-  { type: BiomeType.Tundra, elevation: [0.6, 0.8], moisture: [0, 0.4] },
-  { type: BiomeType.Forest, elevation: [0.6, 0.8], moisture: [0.4, 1] },
-  { type: BiomeType.Mountain, elevation: [0.8, 1] },
+export const techCatalog: TechNode[] = [
+  { id: 'pottery', tree: 'science', name: 'Pottery', cost: 20, prerequisites: [], effects: [] },
+  { id: 'writing', tree: 'science', name: 'Writing', cost: 40, prerequisites: ['pottery'], effects: [] },
+  { id: 'folklore', tree: 'culture', name: 'Folklore', cost: 20, prerequisites: [], effects: [] },
+  { id: 'mysticism', tree: 'culture', name: 'Mysticism', cost: 40, prerequisites: ['folklore'], effects: [] },
 ];
 &nbsp;
-export const DEFAULT_MAP_SIZE = { width: 30, height: 30 };
+export function validateTechCatalog(catalog: TechNode[]): void {
+  const graph: Record&lt;string, string[]&gt; = {};
+  for (const node of catalog) {
+    graph[node.id] = node.prerequisites;
+  }
+  const visited = new Set&lt;string&gt;();
+  const stack = new Set&lt;string&gt;();
+  function dfs(id: string) {
+    if (stack.has(id)) throw new Error(`Tech cycle detected at ${id}`);
+    if (visited.has(id)) return;
+    visited.add(id);
+    stack.add(id);
+    for (const dep of graph[id<span class="branch-0 cbranch-no" title="branch not covered" >] || []) d</span>fs(dep);
+    stack.delete(id);
+  }
+  for (const id of Object.keys(graph)) dfs(id);
+}
+&nbsp;
+validateTechCatalog(techCatalog);
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

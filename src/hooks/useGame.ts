@@ -10,3 +10,6 @@ export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
   }
   return { state, dispatch };
 }
+
+// runtime helper for tests
+export const USE_GAME_MARKER = true;

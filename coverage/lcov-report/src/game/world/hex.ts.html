@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -91,56 +91,56 @@
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { HexCoord } from '../types';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const HEX_DIRECTIONS: HexCoord[] = [</span>
-<span class="cstat-no" title="statement not covered" >  { q: 1, r: 0 },</span>
-<span class="cstat-no" title="statement not covered" >  { q: 1, r: -1 },</span>
-<span class="cstat-no" title="statement not covered" >  { q: 0, r: -1 },</span>
-<span class="cstat-no" title="statement not covered" >  { q: -1, r: 0 },</span>
-<span class="cstat-no" title="statement not covered" >  { q: -1, r: 1 },</span>
-<span class="cstat-no" title="statement not covered" >  { q: 0, r: 1 },</span>
-<span class="cstat-no" title="statement not covered" >];</span>
+export const HEX_DIRECTIONS: HexCoord[] = [
+  { q: 1, r: 0 },
+  { q: 1, r: -1 },
+  { q: 0, r: -1 },
+  { q: -1, r: 0 },
+  { q: -1, r: 1 },
+  { q: 0, r: 1 },
+];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function add(a: HexCoord, b: HexCoord): HexCoord {</span>
-<span class="cstat-no" title="statement not covered" >  return { q: a.q + b.q, r: a.r + b.r };</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+export function add(a: HexCoord, b: HexCoord): HexCoord {
+  return { q: a.q + b.q, r: a.r + b.r };
+}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function neighbors(c: HexCoord): HexCoord[] {</span>
-<span class="cstat-no" title="statement not covered" >  return HEX_DIRECTIONS.map((d) =&gt; add(c, d));</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+export function neighbors(c: HexCoord): HexCoord[] {
+  return HEX_DIRECTIONS.map((d) =&gt; add(c, d));
+}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function distance(a: HexCoord, b: HexCoord): number {</span>
-<span class="cstat-no" title="statement not covered" >  return (</span>
-<span class="cstat-no" title="statement not covered" >    Math.abs(a.q - b.q) +</span>
-<span class="cstat-no" title="statement not covered" >    Math.abs(a.q + a.r - b.q - b.r) +</span>
-<span class="cstat-no" title="statement not covered" >    Math.abs(a.r - b.r)</span>
-<span class="cstat-no" title="statement not covered" >  ) / 2;</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+export function distance(a: HexCoord, b: HexCoord): number {
+  return (
+    Math.abs(a.q - b.q) +
+    Math.abs(a.q + a.r - b.q - b.r) +
+    Math.abs(a.r - b.r)
+  ) / 2;
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -148,7 +148,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-08T10:54:30.163Z
+                at 2025-09-08T14:47:10.299Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/game/world/config.ts</title>
+    <title>Code coverage report for src/game/ai/ai.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/game/world</a> config.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/game/ai</a> ai.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
@@ -81,42 +81,60 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">4816x</span>
+<span class="cline-any cline-yes">2408x</span>
+<span class="cline-any cline-yes">2408x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { BiomeType } from '../types';
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-yes">1204x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { GameAction } from '../actions';
+import { GameState, PlayerState, TechNode } from '../types';
 &nbsp;
-export interface BiomeRule {
-  type: BiomeType;
-  elevation: [number, number];
-  moisture?: [number, number];
+function chooseNextTech(player: PlayerState, state: GameState): TechNode | undefined {
+  const prefTree =
+    player.leader.scienceFocus &gt;= player.leader.cultureFocus ? 'science' : 'culture';
+  const candidates = state.techCatalog.filter(t =&gt;
+    t.tree === prefTree &amp;&amp;
+    !player.researchedTechIds.includes(t.id) &amp;&amp;
+    t.prerequisites.every(p =&gt; player.researchedTechIds.includes(p))
+  );
+  return candidates[0];
 }
 &nbsp;
-export const BIOME_RULES: BiomeRule[] = [
-  { type: BiomeType.Ocean, elevation: [0, 0.3] },
-  { type: BiomeType.Desert, elevation: [0.3, 0.6], moisture: [0, 0.4] },
-  { type: BiomeType.Grassland, elevation: [0.3, 0.6], moisture: [0.4, 1] },
-  { type: BiomeType.Tundra, elevation: [0.6, 0.8], moisture: [0, 0.4] },
-  { type: BiomeType.Forest, elevation: [0.6, 0.8], moisture: [0.4, 1] },
-  { type: BiomeType.Mountain, elevation: [0.8, 1] },
-];
-&nbsp;
-export const DEFAULT_MAP_SIZE = { width: 30, height: 30 };
+export function evaluateAI(player: PlayerState, state: GameState): GameAction[] {
+  const actions: GameAction[] = [];
+  if (!player.researching) {
+    const tech = chooseNextTech(player, state);
+    if (tech) {
+      actions.push({ type: 'SET_RESEARCH', playerId: player.id, payload: { techId: tech.id } });
+    }
+  }
+  return actions;
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
