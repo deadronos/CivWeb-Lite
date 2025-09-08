@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Stats } from '@react-three/drei'
-import GameProvider, { useGame } from './game/GameProvider'
-import Scene from './scene/Scene'
+import React from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Stats } from '@react-three/drei';
+import { GameProvider } from './contexts/GameProvider';
+import { useGame } from './hooks/useGame';
+import Scene from './scene/Scene';
 
 function UI() {
-  const { endTurn, turn } = useGame()
+  const { state, dispatch } = useGame();
   return (
     <div className="ui">
-      <div>Turn: {turn}</div>
-      <button onClick={endTurn}>End Turn</button>
+      <div>Turn: {state.turn}</div>
+      <button onClick={() => dispatch({ type: 'END_TURN' })}>End Turn</button>
     </div>
-  )
+  );
 }
 
 export default function App() {
@@ -26,5 +27,5 @@ export default function App() {
       </Canvas>
       <UI />
     </GameProvider>
-  )
+  );
 }

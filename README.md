@@ -77,9 +77,9 @@ src/
 
 ## Development practices
 
-- Use the `useGame()` hook from `src/contexts/GameProvider.tsx` to read the canonical, read-only game state in UI components.
+- Use the `useGame()` hook from `src/hooks/useGame.ts` to read the canonical, read-only game state in UI components.
 - Prefer pure functions for simulation logic so state transitions are deterministic and testable.
-- Use the provided seedable RNG utilities in `src/game-logic/utils/rng.ts` rather than `Math.random()` to ensure reproducibility.
+- Use the provided seedable RNG utilities in `src/game/rng.ts` rather than `Math.random()` to ensure reproducibility.
 
 ## Documentation & planning
 
