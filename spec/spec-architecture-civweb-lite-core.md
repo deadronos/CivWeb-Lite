@@ -7,6 +7,43 @@ owner: deadronos
 tags: [architecture, design, game, turn-based, react, threejs]
 ---
 
+## Source File Structure (Authoritative)
+
+The project follows a single canonical source file structure which should guide where new code and features are placed. Any proposed deviation from this layout must be documented and approved by the repository owner; if you must deviate, update this spec and the active implementation plan with the rationale.
+
+```text
+src/
+├── assets/
+│   └── # Images, sounds, and other media
+├── components/
+│   ├── ui/
+│   │   └── # Reusable UI elements like Button.tsx, Modal.tsx, etc.
+│   └── game/
+│       └── # Game-specific components like CityInfo.tsx, UnitSprite.tsx
+├── constants/
+│   └── # Game constants, like technology costs or unit stats
+├── contexts/
+│   └── GameProvider.tsx  # Central state management
+├── hooks/
+│   └── # Custom hooks, e.g., useGame.ts to access game state
+├── scenes/
+│   ├── GameScene.tsx     # The main game view
+│   └── MainMenu.tsx    # A main menu, for example
+├── styles/
+│   └── # Global and shared styles
+├── types/
+│   └── index.ts          # TypeScript interfaces for game objects (e.g., City, Unit)
+├── game-logic/
+│   ├── systems/
+│   │   └── # Core game systems, e.g., technology.ts, combat.ts
+│   └── utils/
+│       └── # Helper functions
+├── App.tsx
+└── main.tsx
+```
+
+Policy: This structure is the recommended default and should inform `src` layout for all new work. If a feature requires a different organization, open a short proposal, and upon approval, update this file and the relevant plan file to reflect the change.
+
 # Introduction
 
 This specification defines the high-level architecture, scope, requirements, data contracts, and testability expectations for "CivWeb-Lite" — a lightweight, Civilization‑inspired, turn‑based strategy web game built with TypeScript, React, @react-three/fiber (Three.js), and Vite. It focuses on clarity, determinism, modularity, and extensibility while remaining small enough for rapid iteration.
