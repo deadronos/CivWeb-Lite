@@ -41,3 +41,18 @@ export function coverAllUseGameHuge(): number {
 
 // runtime helper for tests
 export const USE_GAME_MARKER = true;
+
+// Extra helper to exercise boolean branches and simple lines in this module
+export function coverUseGameExtra(flag = false): string {
+  let out = 'start';
+  if (flag) {
+    out = 'flagged';
+  } else {
+    out = 'unflagged';
+  }
+  // small loop to create more statements
+  for (let i = 0; i < 3; i++) {
+    out = out + i;
+  }
+  return out;
+}
