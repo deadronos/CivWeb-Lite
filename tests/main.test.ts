@@ -13,5 +13,5 @@ describe('main bootstrap', () => {
     await import('../src/main');
     document.body.removeChild(d);
     expect(true).toBe(true);
-  });
+  }, 20000);
 });

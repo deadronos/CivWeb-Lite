@@ -1,8 +1,19 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+import { render, fireEvent } from '@testing-library/react';
 
-import { UIComponent, UIPlain, exerciseUIRuntime, coverRemainingAppPaths, coverAppInlineExtras, coverAppRemainingHugeAlt, coverUIComponentHuge, coverForTestsApp, coverAllAppHuge, coverAppExtra } from '../src/App';
+import {
+  UIComponent,
+  UIPlain,
+  exerciseUIRuntime,
+  coverRemainingAppPaths,
+  coverAppInlineExtras,
+  coverAppRemainingHugeAlt,
+  coverUIComponentHuge,
+  coverForTestsApp,
+  coverAllAppHuge,
+  coverAppExtra,
+} from '../src/App';
 
 describe('App extra coverage helpers', () => {
   it('UIPlain and exerciseUIRuntime return expected shapes and call dispatch', () => {

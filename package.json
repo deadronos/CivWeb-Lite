@@ -13,26 +13,29 @@
     "bench:world": "tsx scripts/benchWorld.ts"
   },
   "dependencies": {
+    "@react-three/drei": "*",
+    "@react-three/fiber": "*",
     "react": "*",
     "react-dom": "*",
-    "three": "*",
-    "@react-three/fiber": "*",
-    "@react-three/drei": "*"
+    "three": "*"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "*",
+    "@testing-library/react": "*",
+    "@testing-library/user-event": "*",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-  "@vitejs/plugin-react": "*",
-  "eslint": "*",
-  "glob": "*",
+    "@vitejs/plugin-react": "*",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-v8": "*",
+    "eslint": "*",
+    "glob": "*",
+    "jsdom": "*",
+    "lcov": "*",
+    "playwright": "*",
     "tsx": "^4.7.0",
     "typescript": "*",
     "vite": "*",
-    "vitest": "*",
-  "@vitest/coverage-v8": "*",
-    "@testing-library/react": "*",
-    "@testing-library/jest-dom": "*",
-    "@testing-library/user-event": "*",
-    "jsdom": "*"
+    "vitest": "*"
   }
 }
