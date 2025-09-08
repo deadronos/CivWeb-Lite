@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CivWebLiteSave",
+  "type": "object",
+  "required": ["schemaVersion", "seed", "turn", "map", "players", "techCatalog"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "seed": { "type": "string", "minLength": 1 },
+    "turn": { "type": "integer", "minimum": 0 },
+    "mode": { "type": "string", "enum": ["standard", "ai-sim"] },
+    "map": {
+      "type": "object",
+      "required": ["width", "height", "tiles"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "tiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "coord", "biome"],
+            "properties": {
+              "id": { "type": "string" },
+              "coord": {
+                "type": "object",
+                "required": ["q", "r"],
+                "properties": {
+                  "q": { "type": "integer" },
+                  "r": { "type": "integer" }
+                }
+              },
+              "biome": { "type": "string" },
+              "elevation": { "type": "number" },
+              "moisture": { "type": "number" },
+              "exploredBy": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "players": { "type": "array", "items": { "type": "object" } },
+    "techCatalog": { "type": "array", "items": { "type": "object" } },
+    "log": { "type": "array", "items": { "type": "object" } },
+    "rngState": { "type": ["object", "string", "null"] }
+  }
+}

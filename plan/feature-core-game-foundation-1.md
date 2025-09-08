@@ -155,24 +155,24 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-035 | Define JSON schema file `schema/save.schema.json` |  |  |
-| TASK-036 | Implement `serializeState(state)` producing minimal JSON (exclude transient) |  |  |
-| TASK-037 | Implement `deserializeState(json)` with validation & version compatibility check |  |  |
-| TASK-038 | Implement load error types (VersionMismatch, ValidationError, SizeExceeded) |  |  |
-| TASK-039 | Add file export utility (Blob & download) |  |  |
-| TASK-040 | Add file import + drag-drop handler (UI component) |  |  |
-| TASK-041 | Add size guard (2 MB) + rejection message |  |  |
-| TASK-042 | Roundtrip tests (serialize → deserialize → deep compare) |  |  |
-| TASK-043 | Malformed JSON tests (missing tiles, wrong version) |  |  |
-| TASK-044 | Add schema version constant & compatibility strategy doc comment |  |  |
+| TASK-035 | Define JSON schema file `schema/save.schema.json` | ✅ | 2025-09-08 |
+| TASK-036 | Implement `serializeState(state)` producing minimal JSON (exclude transient) | ✅ | 2025-09-08 |
+| TASK-037 | Implement `deserializeState(json)` with validation & version compatibility check | ✅ | 2025-09-08 |
+| TASK-038 | Implement load error types (VersionMismatch, ValidationError, SizeExceeded) | ✅ | 2025-09-08 |
+| TASK-039 | Add file export utility (Blob & download) | ✅ | 2025-09-08 |
+| TASK-040 | Add file import + drag-drop handler (UI component) | ✅ | 2025-09-08 |
+| TASK-041 | Add size guard (2 MB) + rejection message | ✅ | 2025-09-08 |
+| TASK-042 | Roundtrip tests (serialize → deserialize → deep compare) | ✅ | 2025-09-08 |
+| TASK-043 | Malformed JSON tests (missing tiles, wrong version) | ✅ | 2025-09-08 |
+| TASK-044 | Add schema version constant & compatibility strategy doc comment | ✅ | 2025-09-08 |
 
 ### Implementation Phase 7
 - GOAL-007: UI controls & metrics (REQ-013, REQ-014, REQ-018, REQ-020, PER-002 instrumentation).
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-045 | Implement `GameHUD` component (turn, seed, mode, pause toggle, save/load buttons) |  |  |
-| TASK-046 | Implement seed regeneration action (rebuild world) confirming user prompt |  |  |
+| TASK-045 | Implement `GameHUD` component (turn, seed, mode, pause toggle, save/load buttons) | ✅ | 2025-09-08 |
+| TASK-046 | Implement seed regeneration action (rebuild world) confirming user prompt | ✅ | 2025-09-08 |
 | TASK-047 | Display tech progress summary (current research + % ) |  |  |
 | TASK-048 | Display AI performance average (ms) if instrumentation enabled |  |  |
 | TASK-049 | Event log panel (last N events) |  |  |
