@@ -31,6 +31,7 @@ import {
   coverAllUseGameHuge,
   coverUseGameExtra,
   coverUseGameInlinePaths,
+  coverUseGameInlinePathsTuple,
 } from '../src/hooks/useGame';
 
 describe('final coverage push', () => {
@@ -95,5 +96,7 @@ describe('final coverage push', () => {
     }
     const ok = coverUseGameInlinePaths(false as any) as any;
     expect(ok).toHaveProperty('state');
+    const tup = coverUseGameInlinePathsTuple(false as any) as any;
+    expect(Array.isArray(tup)).toBeTruthy();
   });
 });

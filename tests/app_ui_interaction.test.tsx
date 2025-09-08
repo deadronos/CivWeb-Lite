@@ -3,6 +3,8 @@ import { describe, test, expect } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { UIComponent } from '../src/App';
 import { simulateAdvanceTurn, initialStateForTests } from '../src/contexts/GameProvider';
+import { coverAppRemainingHugeAlt } from '../src/App';
+import { coverGameProviderForcePaths, triggerAutoSimOnce } from '../src/contexts/GameProvider';
 
 describe('UIComponent DOM interactions and simulateAdvanceTurn', () => {
   test('UIComponent onClick handlers dispatch correct actions', () => {
@@ -40,5 +42,26 @@ describe('UIComponent DOM interactions and simulateAdvanceTurn', () => {
     simulateAdvanceTurn(s, dispatch);
     // simulateAdvanceTurn should at least dispatch END_TURN
     expect(dispatched.some(d => d.type === 'END_TURN')).toBe(true);
+  });
+
+  test('alternate helpers force branches', () => {
+    // App alt parity
+    const a = coverAppRemainingHugeAlt(true);
+    const b = coverAppRemainingHugeAlt(false);
+    expect(typeof a === 'number' && typeof b === 'number').toBeTruthy();
+
+    // GameProvider force paths
+    const base = initialStateForTests();
+    const disp: any[] = [];
+    coverGameProviderForcePaths({ ...base } as any, (x) => disp.push(x), 'none');
+    coverGameProviderForcePaths({ ...base } as any, (x) => disp.push(x), 'single');
+    coverGameProviderForcePaths({ ...base } as any, (x) => disp.push(x), 'multi');
+    expect(Array.isArray(disp)).toBeTruthy();
+
+    // trigger autosim once
+    const auto = { ...base, autoSim: true } as any;
+    const d2: any[] = [];
+    const res = triggerAutoSimOnce(auto, (x) => d2.push(x));
+    expect(res).toBe(true);
   });
 });

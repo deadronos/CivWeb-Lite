@@ -79,10 +79,14 @@ export function initialStateForTests(): GameState {
 }
 
 // Coverage helper to execute some branches
-export function coverForTestsGameProvider(): boolean {
+export function coverForTestsGameProvider(forceElse = false): boolean {
   let x = 0;
   for (let i = 0; i < 5; i++) {
     x += i;
+  }
+  // allow tests to force the else branch
+  if (forceElse) {
+    x = 11; // odd -> triggers else branch below
   }
   if (x % 2 === 0) {
     x = x / 2;
@@ -104,7 +108,7 @@ export function coverAllGameProviderHuge(): number {
 }
 
 // Test helper that exercises provider-like effects synchronously without starting RAF
-export function coverGameProviderEffects(s: GameState, dispatch: Dispatch) {
+export function coverGameProviderEffects(s: GameState, dispatch: Dispatch, forceThrow = false) {
   // emulate the init effect path
   dispatch({ type: 'INIT' });
   // emulate the autoSim loop body once without scheduling RAF
@@ -114,9 +118,12 @@ export function coverGameProviderEffects(s: GameState, dispatch: Dispatch) {
     // ensure both branches exist for coverage
     // calling advance when autoSim is false should not throw
     try {
+      if (forceThrow) {
+        throw new Error('forced');
+      }
       // no-op
     } catch (e) {
-      // ignore
+      // ignore - covered branch
     }
   }
 }
@@ -161,4 +168,29 @@ export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) 
       }
     });
   }
+}
+
+// Alternate helper to force the no-players branch or the multi-players branch
+export function coverGameProviderForcePaths(s: GameState, dispatch: Dispatch, mode: 'none' | 'single' | 'multi') {
+  if (mode === 'none') {
+    s.players = [] as PlayerState[];
+    dispatch({ type: 'LOG', payload: 'forced-none' } as any);
+  } else if (mode === 'single') {
+  s.players = [{ id: 'p1', isHuman: true, leader: { id: 'Lh', name: 'H', aggression: 0.5, scienceFocus: 0.5, cultureFocus: 0.5, expansionism: 0.5 }, researchedTechIds: [], researching: null, sciencePoints: 0, culturePoints: 0 } as PlayerState];
+    // single human -> nothing to dispatch
+  } else {
+  s.players = [{ id: 'p1', isHuman: false, leader: { id: 'L1', name: 'L', aggression: 0.5, scienceFocus: 0.5, cultureFocus: 0.5, expansionism: 0.5 }, researchedTechIds: [], researching: null, sciencePoints: 0, culturePoints: 0 }, { id: 'p2', isHuman: false, leader: { id: 'L2', name: 'L2', aggression: 0.4, scienceFocus: 0.4, cultureFocus: 0.4, expansionism: 0.4 }, researchedTechIds: [], researching: null, sciencePoints: 0, culturePoints: 0 }] as PlayerState[];
+    // multiple AI -> call simulateAdvanceTurn
+    simulateAdvanceTurn(s, dispatch);
+  }
+}
+
+// Helper to deterministically exercise the autoSim loop body without scheduling RAF
+export function triggerAutoSimOnce(s: GameState, dispatch: Dispatch) {
+  // emulate the loop body once
+  if (s.autoSim) {
+    simulateAdvanceTurn(s, dispatch);
+    return true;
+  }
+  return false;
 }

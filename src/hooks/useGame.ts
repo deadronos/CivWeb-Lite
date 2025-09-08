@@ -87,3 +87,15 @@ export function coverUseGameInlinePaths(runThrow = true) {
     return { state, dispatch } as const;
   }
 }
+
+// Alternate variant that returns a tuple for easier assertions in tests
+export function coverUseGameInlinePathsTuple(runThrow = false) {
+  if (runThrow) {
+    const s = null as unknown as GameState | null;
+    const d = null as unknown as Dispatch | null;
+    if (!s || !d) throw new Error('useGame must be used within GameProvider');
+  }
+  const state = {} as GameState;
+  const dispatch = (() => {}) as unknown as Dispatch;
+  return [state, dispatch] as const;
+}

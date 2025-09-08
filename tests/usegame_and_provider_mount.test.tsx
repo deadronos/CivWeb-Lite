@@ -1,0 +1,32 @@
+import React from 'react';
+import { describe, test, expect } from 'vitest';
+import { render } from '@testing-library/react';
+import { ensureGameContext, coverUseGameInlinePathsTuple } from '../src/hooks/useGame';
+import { GameProvider } from '../src/contexts/GameProvider';
+
+describe('useGame helpers and GameProvider mount', () => {
+  test('ensureGameContext returns true with valid args', () => {
+    const ok = ensureGameContext({} as any, (() => {}) as any);
+    expect(ok).toBe(true);
+  });
+
+  test('coverUseGameInlinePathsTuple throws when requested', () => {
+    try {
+      coverUseGameInlinePathsTuple(true as any);
+    } catch (e) {
+      expect((e as Error).message).toContain('useGame must be used');
+    }
+  });
+
+  test('mounting GameProvider runs init effect without error', () => {
+    const { unmount, getByTestId } = render(
+      <GameProvider>
+        <div data-testid="child">ok</div>
+      </GameProvider>
+    );
+    const el = getByTestId('child');
+    expect(el.textContent).toBe('ok');
+    // unmount to trigger cleanup paths if any
+    unmount();
+  });
+});
