@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "test": "vitest run",
-  "test:watch": "vitest",
-  "lint": "eslint . --ext .ts,.tsx",
-  "bench:world": "tsx scripts/benchWorld.ts"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "bench:world": "tsx scripts/benchWorld.ts"
   },
   "dependencies": {
     "react": "*",
@@ -20,13 +20,18 @@
     "@react-three/drei": "*"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "@vitejs/plugin-react": "*",
+    "eslint": "^8.56.0",
+    "tsx": "^4.7.0",
     "typescript": "*",
     "vite": "*",
-    "@vitejs/plugin-react": "*",
-    "vitest": "^1.0.0",
-    "eslint": "^8.56.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "tsx": "^4.7.0"
+    "vitest": "*",
+  "@vitest/coverage-v8": "*",
+    "@testing-library/react": "*",
+    "@testing-library/jest-dom": "*",
+    "@testing-library/user-event": "*",
+    "jsdom": "*"
   }
 }
