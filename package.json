@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --ext .ts,.tsx",
-    "bench:world": "tsx scripts/benchWorld.ts"
+  "bench:world": "tsx scripts/benchWorld.ts",
+  "bench:ai": "tsx scripts/ai-benchmark.ts"
   },
   "dependencies": {
     "@react-three/drei": "*",

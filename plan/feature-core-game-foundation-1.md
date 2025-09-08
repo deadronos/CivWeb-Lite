@@ -271,3 +271,77 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 - Planned: `spec-design-ai-decision-engine.md`
 - Planned: `spec-data-tech-tree-schema.md`
 - Planned: `spec-process-testing-strategy.md`
+
+## Review summary (autonomous review on 2025-09-08)
+
+What I inspected
+
+- Verified the implementation plan structure, task lists for Phases 1–9, and the explicit mapping of requirements (REQ-*) to phase goals.
+- Cross-checked that Phase 1–6 tasks are marked completed in the plan and that the save schema and tests entries exist.
+
+High-level status
+
+- Core types, RNG, event bus, immutable helpers, GameProvider scaffold, world generation, basic turn engine, tech system, save/load, and many unit tests are documented as completed.
+- Several engineering and UX items remain uncompleted or marked blank (noted as open below): AI micro-benchmarks and optimization (TASK-032/033), HUD detail panels (TASK-047..049), deterministic replay harness (TASK-051), larger performance and rendering optimizations (TASK-052..054), CI / coverage enforcement (TASK-055..056), E2E smoke (TASK-057), and documentation/logging tasks in Phase 9.
+
+Quick risk re-evaluation
+
+- AI performance (REQ-011) remains unverified: TASK-032 and TASK-033 are required to ensure AI meets the ≤50ms per-turn budget. This is a gating risk for larger maps and multi-AI games.
+- Deterministic replay (TASK-051) is important for REQ-008 and debugging; without it, reproducing non-deterministic failures will be harder.
+- Performance tasks (instancing/memoization) should be scheduled before increasing default map sizes to 100x100 (PER-003).
+
+Open items and next steps (prioritized)
+
+1. AI performance benchmark & optimizations (High priority)
+
+- TASK-032: Add micro-benchmark harness for AI decision ms across representative leader counts (1, 3, 5) and map sizes (30x30, 50x50). Target: measure mean/median/95th percentile.
+- TASK-033: If mean > 50ms, implement incremental optimizations: early-exit heuristics, cache evaluations, and limit number of considered actions per AI.
+
+1. Deterministic replay & action recording (High priority)
+
+- TASK-051: Implement action log recording (per-turn list) and a replay mode that replays actions against an isolated RNG to produce a deterministic final state. Add a small hash comparison test (e.g., JSON canonicalization + SHA-256) to assert equality between live run and replayed run.
+
+1. HUD & UI metrics (Medium priority)
+
+- TASK-047: Tech progress UI: expose current research and % progress in `GameHUD`.
+- TASK-048: AI perf average: surface mean/median ms when instrumentation is enabled.
+- TASK-049: Event log panel: simple in-memory ring buffer showing last N structured events.
+
+1. Rendering & performance (Medium priority)
+
+- TASK-052: Add benchmark script for map sizes (30x30, 50x50, 100x100) to log per-turn time and memory.
+- TASK-053/TASK-054: Start with React.memo on tile components; if render still slows, implement instanced meshes for tiles (three.js / @react-three/fiber specific).
+
+1. CI, tests, and E2E (Medium/low priority but important)
+
+- TASK-055: Add a CI workflow (GitHub Actions) that runs install, typecheck, tests, and build. Include node version pinning (Node >= 18).
+- TASK-056: Add coverage threshold for `src/game` once tests for all core features pass.
+- TASK-057: Implement Playwright smoke test: start game, advance 2 turns, save, load, assert roundtrip.
+
+1. Documentation & logging (Low priority)
+
+- TASK-059/TASK-060: Add structured logging module and the `docs/state-architecture.md` file to document invariants and how deterministic RNG + immutable state are enforced.
+
+Suggested owners and ETA (optional estimates)
+
+- AI perf & replay: owner - core-engineer; ETA: 2–3 days to implement benchmarks and basic optimizations.
+- HUD metrics & event log: owner - frontend; ETA: 1–2 days.
+- Rendering/perf (instancing): owner - graphics engineer; ETA: 3–5 days depending on complexity.
+- CI and E2E: owner - devops/tester; ETA: 1–2 days.
+
+Acceptance checks before closing the plan
+
+- AI: mean decision time ≤ 50ms for default 30x30 map with 4 AI players.
+- Deterministic replay: replay-run hash matches live-run hash for randomized seeds tested (≥10 seeds).
+- Save/load: roundtrip deep equality for canonicalized state JSON and schema validation.
+- Performance: per-turn time for 30x30 ≤ 50ms, and reasonable scaling observed for 50x50.
+
+Notes and caveats
+
+- The plan intentionally defers WebWorker offload (ALT-004). If AI or turn processing fails to meet budgets even after heuristics, schedule Worker migration as an accelerated mitigation.
+- The plan assumes tests and small harnesses run in CI on a machine comparable to dev environments; report CPU/time differences when benchmarking.
+
+## Edits applied
+
+- Added this "Review summary" and "Open items and next steps" to provide a developer-facing checklist for finishing Phase 5–9.
+
