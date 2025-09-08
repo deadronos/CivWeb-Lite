@@ -6,6 +6,7 @@ export interface GameEvents {
   'turn:start': { turn: number };
   'turn:end': { turn: number };
   'action:applied': { action: GameAction };
+  'tech:unlocked': { playerId: string; techId: string };
 }
 
 export class GameEventBus<E extends Record<string, any>> {
