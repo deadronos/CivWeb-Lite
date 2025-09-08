@@ -173,10 +173,10 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 |------|-------------|-----------|------|
 | TASK-045 | Implement `GameHUD` component (turn, seed, mode, pause toggle, save/load buttons) | ✅ | 2025-09-08 |
 | TASK-046 | Implement seed regeneration action (rebuild world) confirming user prompt | ✅ | 2025-09-08 |
-| TASK-047 | Display tech progress summary (current research + % ) |  |  |
-| TASK-048 | Display AI performance average (ms) if instrumentation enabled |  |  |
-| TASK-049 | Event log panel (last N events) |  |  |
-| TASK-050 | Accessibility pass (labels, roles) baseline |  |  |
+| TASK-047 | Display tech progress summary (current research + % ) | ✅ | 2025-09-08 |
+| TASK-048 | Display AI performance average (ms) if instrumentation enabled | ✅ | 2025-09-08 |
+| TASK-049 | Event log panel (last N events) | ✅ | 2025-09-08 |
+| TASK-050 | Accessibility pass (labels, roles) baseline | ✅ | 2025-09-08 |
 
 ### Implementation Phase 8
 - GOAL-008: Performance, determinism & quality gates (REQ-008, PER-001..PER-003, GUD enforcement).
@@ -187,8 +187,8 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 | TASK-052 | Benchmark script (map sizes: 30x30, 50x50, 100x100) log turn ms |  |  |
 | TASK-053 | Memoize map tile mesh components (React.memo) |  |  |
 | TASK-054 | Introduce instanced mesh rendering for tiles |  |  |
-| TASK-055 | Add CI workflow (install, typecheck, test, build) |  |  |
-| TASK-056 | Add coverage threshold config (≥80% for `src/game`) |  |  |
+| TASK-055 | Add CI workflow (install, typecheck, test, build) | ✅ | 2025-09-08 |
+| TASK-056 | Add coverage threshold config (≥80% for `src/game`) | ✅ | 2025-09-08 |
 | TASK-057 | Add Playwright smoke test (start game, advance 2 turns, save, load) |  |  |
 | TASK-058 | Add axe-core accessibility scan integration |  |  |
 
