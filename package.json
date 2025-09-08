@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "lint": "eslint . --ext .ts,.tsx",
   "bench:world": "tsx scripts/benchWorld.ts",
-  "bench:ai": "tsx scripts/ai-benchmark.ts"
+  "bench:ai": "tsx scripts/ai-benchmark.ts",
+  "bench:turn": "tsx scripts/turn-benchmark.ts",
+  "test:e2e": "playwright test"
   },
   "dependencies": {
     "@react-three/drei": "*",
@@ -35,6 +37,8 @@
     "jsdom": "*",
     "lcov": "*",
     "playwright": "*",
+    "@axe-core/playwright": "*",
+    "axe-core": "*",
     "tsx": "^4.7.0",
     "typescript": "*",
     "vite": "*",

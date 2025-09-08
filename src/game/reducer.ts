@@ -3,6 +3,7 @@ import { GameAction } from './actions';
 import { produceNextState } from './state';
 import { generateWorld } from './world/generate';
 import { globalGameBus } from './events';
+import { appendLog } from './logging';
 
 function findPlayer(players: PlayerState[], id: string) {
   return players.find(p => p.id === id);
@@ -74,8 +75,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         break;
       }
       case 'LOG_EVENT': {
-        draft.log.push(action.payload.entry);
-        if (draft.log.length > 50) draft.log.shift();
+        appendLog(draft as any as GameState, action.payload.entry);
         break;
       }
       case 'RECORD_AI_PERF': {

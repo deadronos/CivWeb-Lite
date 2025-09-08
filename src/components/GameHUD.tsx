@@ -2,7 +2,7 @@ import React from 'react';
 import { useGame } from '../hooks/useGame';
 import { exportToFile, importFromFile } from '../game/save';
 
-export default function GameHUD() {
+function GameHUDInner() {
   const { state, dispatch } = useGame();
 
   const handleSave = () => {
@@ -63,12 +63,20 @@ export default function GameHUD() {
       <button onClick={handleSave} aria-label="save game">Save</button>
       <input type="file" accept="application/json" aria-label="load file" onChange={onFileChange} />
       <div role="log" aria-label="event log" aria-live="polite">
-        <ul>
-          {state.log.slice(-10).map((e, i) => (
-            <li key={i}>{e.type}</li>
-          ))}
-        </ul>
+        <LogList entries={state.log.slice(-10)} />
       </div>
     </div>
   );
 }
+
+const LogList = React.memo(function LogList({ entries }: { entries: { type: string }[] }) {
+  return (
+    <ul>
+      {entries.map((e, i) => (
+        <li key={i}>{e.type}</li>
+      ))}
+    </ul>
+  );
+});
+
+export default React.memo(GameHUDInner);
