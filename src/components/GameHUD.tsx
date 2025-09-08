@@ -5,19 +5,16 @@ import { exportToFile, importFromFile } from '../game/save';
 function GameHUDInner() {
   const { state, dispatch } = useGame();
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // Export using statically imported helper
     exportToFile(state);
   };
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
     importFromFile(file)
-      .then(loaded => {
-        dispatch({ type: 'LOAD_STATE', payload: loaded } as any);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+      .then(loaded => dispatch({ type: 'LOAD_STATE', payload: loaded } as any))
+      .catch(err => console.error(err));
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

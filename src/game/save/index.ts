@@ -1,6 +1,5 @@
-import Ajv from 'ajv';
-import saveSchema from '../../../schema/save.schema.json';
 import { GameState } from '../types';
+import { ensureValidator, getAjvInstance } from './validator';
 
 /**
  * Current version of the save file schema.
@@ -9,8 +8,8 @@ import { GameState } from '../types';
  */
 export const SCHEMA_VERSION = 1;
 
-const ajv = new Ajv({ allErrors: true, strict: false });
-const validate = ajv.compile<GameState>(saveSchema as any);
+// use validator helper to lazy-load AJV
+// ensureValidator will compile the schema on first use
 
 export class VersionMismatchError extends Error {}
 export class ValidationError extends Error {}
@@ -26,9 +25,13 @@ export function deserializeState(json: string): GameState {
   if (typeof data.schemaVersion !== 'number' || data.schemaVersion !== SCHEMA_VERSION) {
     throw new VersionMismatchError(`Expected schemaVersion ${SCHEMA_VERSION} but received ${data.schemaVersion}`);
   }
-  const valid = validate(data);
+  const validateFn = ensureValidator();
+  const valid = validateFn(data as any);
   if (!valid) {
-    throw new ValidationError(ajv.errorsText(validate.errors));
+    // Use the AJV instance to format errors if available
+    const ajv = getAjvInstance();
+    const text = ajv ? ajv.errorsText((validateFn as any).errors) : 'Validation failed';
+    throw new ValidationError(text);
   }
   return data as GameState;
 }
@@ -48,5 +51,7 @@ export async function importFromFile(file: File): Promise<GameState> {
     throw new SizeExceededError('Save file exceeds 2MB');
   }
   const text = await file.text();
+  // Ensure validator is ready before deserializing (lazy-loaded).
+  ensureValidator();
   return deserializeState(text);
 }
