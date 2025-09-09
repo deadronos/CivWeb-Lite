@@ -1,3 +1,6 @@
+// Filename remains PascalCase to match exported component names; bulk renames will be
+// done in a separate refactor PR to avoid noisy import changes across the repo.
+/* eslint-disable unicorn/filename-case -- defer renaming files to a dedicated PR */
 import React from 'react';
 import { gltfEnabled } from '../../utils/flags';
 import GLTFModel from '../drei/GLTFModel';
@@ -40,10 +43,10 @@ export function UnitModelSwitch({
   anim,
   gltf,
 }: UnitModelProps) {
-  const lower = type.toLowerCase();
-  const label = (model || '').toLowerCase();
+  const lowerType = type.toLowerCase();
+  const modelLabel = (model || '').toLowerCase();
   if (gltfEnabled()) {
-    const url = resolveGLTF(gltf || label || lower);
+    const url = resolveGLTF(gltf || modelLabel || lowerType);
     if (url) return <GLTFModel url={url} position={position} scale={scale ?? 0.6} />;
   }
 
@@ -58,7 +61,7 @@ export function UnitModelSwitch({
   const phase = phaseFromId(id);
 
   // Use labeled model if provided in data registry
-  const Labeled = getModelComponent(label);
+  const Labeled = getModelComponent(modelLabel);
   if (Labeled) {
     return (
       <CommonWrap>
@@ -66,15 +69,15 @@ export function UnitModelSwitch({
           {/* Archer supports showArrow; other models ignore prop */}
           <Labeled
             teamColor={teamColor}
-            {...(lower === 'archer' ? { showArrow: !!rangedReady } : {})}
+            {...(lowerType === 'archer' ? { showArrow: !!rangedReady } : {})}
           />
         </Bob>
       </CommonWrap>
     );
   }
 
-  switch (lower) {
-    case 'warrior': {
+  switch (lowerType) {
+  case 'warrior': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
@@ -83,7 +86,7 @@ export function UnitModelSwitch({
         </CommonWrap>
       );
     }
-    case 'spearman': {
+  case 'spearman': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
@@ -92,7 +95,7 @@ export function UnitModelSwitch({
         </CommonWrap>
       );
     }
-    case 'archer': {
+  case 'archer': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.4} phase={phase}>
@@ -101,7 +104,7 @@ export function UnitModelSwitch({
         </CommonWrap>
       );
     }
-    case 'settler': {
+  case 'settler': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.3} phase={phase}>
@@ -110,7 +113,7 @@ export function UnitModelSwitch({
         </CommonWrap>
       );
     }
-    case 'worker': {
+  case 'worker': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.45} phase={phase}>
@@ -119,7 +122,7 @@ export function UnitModelSwitch({
         </CommonWrap>
       );
     }
-    case 'galley': {
+  case 'galley': {
       return (
         <CommonWrap>
           <group>
@@ -130,7 +133,7 @@ export function UnitModelSwitch({
         </CommonWrap>
       );
     }
-    default: {
+  default: {
       return (
         <CommonWrap>
           {/* Minimal placeholder for unknown types */}

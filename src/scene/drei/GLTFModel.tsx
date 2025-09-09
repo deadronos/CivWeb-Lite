@@ -1,3 +1,5 @@
+// Filename is PascalCase to mirror the exported React component name. A repo-wide
+// filename rename will be done in a dedicated refactor to avoid touching many imports.
 import React from 'react';
 import { useGLTF } from '@react-three/drei';
 
@@ -28,13 +30,12 @@ export default function GLTFModel({ url, transform, ...rest }: GLTFModelProperti
 // Drei recommendation: preloading helper
 export function preloadGLTF(url: string) {
   try {
-    // useGLTF.preload may be provided at runtime by Drei; call if present
-  // The `preload` helper is sometimes added by Drei at runtime and may be missing
-  // from the local TypeScript types in our test environment. Suppress the type
-  // error for this specific runtime helper.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- runtime helper may be untyped
-  // @ts-ignore: runtime helper provided by drei
-  useGLTF.preload?.(url);
+    // useGLTF.preload may be provided at runtime by Drei; call if present.
+    // The `preload` helper is sometimes added by Drei at runtime and may be missing
+    // from the local TypeScript types in our test environment. Suppress the type
+    // error for this specific runtime helper.
+    // @ts-ignore: runtime helper provided by drei
+    useGLTF.preload?.(url);
   } catch {
     // ignore in tests
   }
