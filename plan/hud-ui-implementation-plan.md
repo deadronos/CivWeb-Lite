@@ -22,37 +22,37 @@ that integrates with `useGame()` and satisfies the acceptance criteria (AC-HUD-0
 
 ## High-level Milestones
 
-1. Scaffolding (components + styles)
+- [x] 1. Scaffolding (components + styles)
 
-2. TopBar & ResourceBadge implementation + unit tests
+- [x] 2. TopBar & ResourceBadge implementation + unit tests
 
-3. NextTurnControl implementation + integration test for endTurn
+- [x] 3. NextTurnControl implementation + integration test for endTurn
 
-4. LeftPanel (research) implementation + unit tests
+- [x] 4. LeftPanel (research) implementation + unit tests
 
-5. Minimap + camera-centering integration + E2E test
+- [x] 5. Minimap + camera-centering integration + E2E test (baseline)
 
-6. ContextPanel implementation + integration tests
+- [x] 6. ContextPanel implementation + integration tests
 
-7. Accessibility scans + responsive tweaks
+- [ ] 7. Accessibility scans + responsive tweaks (axe run pending)
 
-8. CI wiring and final verification
+- [ ] 8. CI wiring and final verification (CI run pending)
 
 ## Deliverables
 
-- `src/components/ui/TopBar.tsx` (+ `TopBar.test.tsx`)
+- [x] `src/components/ui/TopBar.tsx` (+ tests: `tests/ui_topbar.test.tsx`, `tests/topbar_container.test.tsx`)
 
-- `src/components/ui/ResourceBadge.tsx` (+ tests)
+- [x] `src/components/ui/ResourceBadge.tsx` (+ covered via TopBar tests)
 
-- `src/components/ui/NextTurnControl.tsx` (+ integration test `nextturn.integration.test.ts`)
+- [x] `src/components/ui/NextTurnControl.tsx` (+ integration: `tests/nextturn.integration.test.tsx`)
 
-- `src/components/ui/LeftPanel.tsx` (+ tests for changing research target)
+- [x] `src/components/ui/LeftPanel.tsx` (+ tests: `tests/leftpanel.test.tsx`)
 
-- `src/components/ui/Minimap.tsx` (+ E2E test to assert camera-centering)
+- [x] `src/components/ui/Minimap.tsx` (+ E2E: `playwright/tests/minimap-centering.spec.ts`)
 
-- `src/components/ui/ContextPanel.tsx` (+ tests)
+- [x] `src/components/ui/ContextPanel.tsx` (+ tests: `tests/contextpanel.test.tsx`)
 
-- docs: short README describing HUD components and required hooks (`plan/hud-ui-implementation-plan.md`)
+- [x] docs: `src/components/ui/README.md` (HUD overview)
 
 ## Detailed Tasks
 
@@ -119,13 +119,26 @@ Acceptance: AC-HUD-005 satisfied.
 - Ensure color tokens meet contrast (use tokens in CSS variables: `--color-bg`, `--color-fg`, `--accent`).
 - Add keyboard focus order tests for TopBar → LeftPanel toggle → NextTurnControl → Minimap → ContextPanel.
 
+Status:
+- [x] Color tokens and roles added in `src/styles.css` and components.
+- [ ] Axe-core scans not yet automated for unit level; Playwright smoke runs axe but does not assert zero violations.
+- [ ] Keyboard focus order test pending.
+
 Acceptance: axe shows no critical violations; keyboard navigation test passes.
 
 ### 8. CI and Final Verification (1-2 hours)
 - Add tests to `tests/` and ensure `npm test` passes locally and in CI.
 - Confirm linting and typecheck pass.
 
+Status:
+- [x] Tests added for new HUD.
+- [ ] CI execution pending; local npm install/test stability needs verification (Rollup optional dep issue noted).
+- [ ] Lint/typecheck to run in CI.
+
 Acceptance: All tests pass in CI; PR ready.
+
+---
+Progress last updated: 2025-09-09.
 
 ## Risks & Mitigations
 - Risk: Import-time side-effects from third-party validators or heavy libs. Mitigation: use runtime/lazy helpers (already introduced for AJV in `src/game/save/validator.ts`).
