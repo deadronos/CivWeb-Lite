@@ -17,12 +17,12 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@react-three/drei": "*",
+    "@react-three/drei": "^10.7.5",
     "@react-three/fiber": "*",
-    "react-icons": "^4.11.0",
     "ajv": "^8.17.1",
     "react": "*",
     "react-dom": "*",
+    "react-icons": "^4.11.0",
     "three": "*"
   },
   "devDependencies": {
