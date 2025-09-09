@@ -44,8 +44,8 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
     }
   }, []);
 
-  const start = (e: React.FormEvent) => {
-    e.preventDefault();
+  const start = (evt: React.FormEvent) => {
+    evt.preventDefault();
     const { width, height } = MAP_SIZES[size];
     const payload: StartConfig = {
       width,
@@ -70,10 +70,10 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
         <h1 style={{ marginTop: 0 }}>CivWeb‑Lite</h1>
         <div style={styles.field}>
           <label htmlFor="size">Map Size</label>
-          <select id="size" value={size} onChange={(e) => setSize(e.target.value as MapSizeKey)}>
-            {Object.entries(MAP_SIZES).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v.label}
+          <select id="size" value={size} onChange={(evt) => setSize(evt.target.value as MapSizeKey)}>
+            {Object.entries(MAP_SIZES).map(([key, sizeObj]) => (
+              <option key={key} value={key}>
+                {sizeObj.label}
               </option>
             ))}
           </select>
@@ -83,19 +83,19 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
           <input
             id="seed"
             value={seed}
-            onChange={(e) => setSeed(e.target.value)}
+            onChange={(evt) => setSeed(evt.target.value)}
             placeholder="random if blank"
           />
         </div>
         <div style={styles.field}>
           <label htmlFor="players">Players (total)</label>
-          <input
+            <input
             id="players"
             type="number"
             min={1}
             max={6}
             value={players}
-            onChange={(e) => setPlayers(Number.parseInt(e.target.value || '2', 10))}
+              onChange={(evt) => setPlayers(Number.parseInt(evt.target.value || '2', 10))}
           />
         </div>
         <div style={{ marginTop: 12 }}>
@@ -122,13 +122,13 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
                 }}
               >
                 <option value="random">Random</option>
-                {(leaders as any[]).map((l) => (
+                {(leaders as any[]).map((leader) => (
                   <option
-                    key={l.id}
-                    value={l.id}
-                    title={`${l.historical_note || ''} | Victory: ${(l.preferred_victory || []).join(', ')}`}
+                    key={leader.id}
+                    value={leader.id}
+                    title={`${leader.historical_note || ''} | Victory: ${(leader.preferred_victory || []).join(', ')}`}
                   >
-                    {l.name}
+                    {leader.name}
                   </option>
                 ))}
               </select>
@@ -137,7 +137,13 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
           <button type="submit">Start New Game</button>
-          <button type="button" onClick={() => document.querySelector('#hud-load-input')?.click()}>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.querySelector('#load-input');
+              if (el && el instanceof HTMLInputElement) el.click();
+            }}
+          >
             Load Save…
           </button>
           <input

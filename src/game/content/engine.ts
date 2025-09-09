@@ -1,4 +1,4 @@
-import type { GameStateExt as GameStateExtension, Technology, Civic } from './types';
+import type { GameStateExtension, Technology, Civic } from './types';
 import { TECHS } from './registry';
 import { loadTechs, loadCivics } from '../../data/loader';
 
@@ -16,8 +16,8 @@ export function createEmptyState(): GameStateExtension {
       availableImprovements: [],
       science: 0,
       culture: 0,
-      research: null,
-      cultureResearch: null,
+      research: undefined,
+      cultureResearch: undefined,
     },
   };
 }
