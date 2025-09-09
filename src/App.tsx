@@ -1,12 +1,8 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GameProvider } from './contexts/game-provider';
-import GameHUD from './components/game-hud';
 import { ConnectedScene as Scene } from './scene/scene';
-import TopBarContainer from './components/ui/top-bar-container';
-import LeftPanelContainer from './components/ui/left-panel-container';
-import MinimapContainer from './components/ui/minimap-container';
-import NextTurnControlContainer from './components/ui/next-turn-control-container';
+import OverlayUI from './components/overhaul/OverlayUI';
 import { CameraProvider } from './hooks/use-camera';
 import { SelectionProvider } from './contexts/selection-context';
 import { HoverProvider } from './contexts/hover-context';
@@ -33,11 +29,8 @@ export default function App() {
               <CameraControls />
               <DevStats enabled={isDevelopmentOrTest()} />
             </Canvas>
-            <GameHUD />
-            <TopBarContainer />
-            <LeftPanelContainer />
-            <MinimapContainer />
-            <NextTurnControlContainer />
+            {/* New overlay UI replacing demo HUD */}
+            <OverlayUI />
             <div
               className="hud-cam-status"
               aria-label="camera position"

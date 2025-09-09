@@ -44,6 +44,20 @@ export function ConnectedScene() {
 
   const useInstanced = true;
 
+  // Quick biome->color mapping for visual readability
+  const colors = useMemo(() => {
+    const map: Record<string, string> = {
+      ocean: '#1b4f72',
+      grass: '#2ecc71',
+      forest: '#196f3d',
+      desert: '#d4ac0d',
+      mountain: '#7f8c8d',
+      tundra: '#cfd8dc',
+      ice: '#ecf0f1',
+    } as const as any;
+    return state.map.tiles.map((t) => map[(t.biome as any)] ?? '#7ac');
+  }, [state.map.tiles]);
+
   // Dev/test hook: allow tests to set hovered tile index via custom event
   React.useEffect(() => {
     if (!isDevelopmentOrTest()) return;
@@ -111,6 +125,7 @@ export function ConnectedScene() {
       {useInstanced ?
       <InstancedTiles
         positions={positions}
+        colors={colors}
         size={DEFAULT_HEX_SIZE}
         onPointerMove={(e) => {
           const index = (e as any).instanceId;
@@ -122,6 +137,7 @@ export function ConnectedScene() {
       <TileMesh
         key={index}
         position={p}
+        color={colors[index]}
         size={DEFAULT_HEX_SIZE}
         onPointerMove={() => setHoverIndex(index)} />
 

@@ -28,6 +28,95 @@ canvas {
   height: 100%;
   display: block;
 }
+
+/* New overlay UI (Civ-like) */
+.ui-topmenu {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  z-index: 20;
+}
+.ui-topmenu-left { display: flex; gap: 8px; }
+.ui-topmenu-item {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid transparent;
+  color: var(--color-fg);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.ui-turn {
+  background: var(--accent);
+  color: #081018;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 700;
+}
+.ui-statsbar {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  top: 56px;
+  height: 32px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.05));
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 4px 8px;
+  z-index: 19;
+}
+.ui-statsbar .stat { opacity: 0.9; }
+.ui-statsbar .sep { flex: 0 0 1px; height: 60%; background: rgba(255,255,255,0.1); }
+
+.ui-rightpanel {
+  position: fixed;
+  top: 100px;
+  right: 12px;
+  width: 320px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 18;
+}
+.ui-leftpanel {
+  position: fixed;
+  top: 100px;
+  left: 12px;
+  width: 340px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 18;
+}
+.panel-header { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid var(--panel-border); }
+.tabs { display: flex; gap: 6px; }
+.tab { padding: 6px 10px; border-radius: 6px; background: rgba(255,255,255,0.06); color: var(--color-fg); border: 1px solid transparent; }
+.tab.active { border-color: var(--accent); }
+.close { background: transparent; color: var(--color-fg); font-size: 20px; line-height: 1; }
+.panel-body { padding: 8px; overflow: auto; display: grid; gap: 6px; grid-auto-rows: min-content; }
+.list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: inherit; border: 1px solid transparent; text-align: left; }
+.list-item .title { font-weight: 600; }
+.list-item .meta { opacity: 0.7; font-size: 12px; }
 .ui {
   position: fixed;
   left: 12px;
