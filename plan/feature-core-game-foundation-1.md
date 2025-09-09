@@ -2,7 +2,7 @@
 goal: Implement core CivWeb-Lite game foundation (map, turn engine, tech, AI, save/load) per specification REQs
 version: 1.0
 date_created: 2025-09-08
-last_updated: 2025-09-08
+last_updated: 2025-09-09
 owner: deadronos
 status: In Progress
 tags: [feature, game, foundation, architecture, implementation-plan]
@@ -183,25 +183,25 @@ All tasks in Phase 2 are complete. Proceed to Phase 3 for turn engine work.
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-051 | Deterministic replay harness (record action list; re-run compare hash) |  |  |
-| TASK-052 | Benchmark script (map sizes: 30x30, 50x50, 100x100) log turn ms |  |  |
-| TASK-053 | Memoize map tile mesh components (React.memo) |  |  |
-| TASK-054 | Introduce instanced mesh rendering for tiles |  |  |
+| TASK-051 | Deterministic replay harness (record action list; re-run compare hash) | ✅ | 2025-09-09 |
+| TASK-052 | Benchmark script (map sizes: 30x30, 50x50, 100x100) log turn ms | ✅ | 2025-09-09 |
+| TASK-053 | Memoize map tile mesh components (React.memo) | ✅ | 2025-09-09 |
+| TASK-054 | Introduce instanced mesh rendering for tiles | ✅ | 2025-09-09 |
 | TASK-055 | Add CI workflow (install, typecheck, test, build) | ✅ | 2025-09-08 |
 | TASK-056 | Add coverage threshold config (≥80% for `src/game`) | ✅ | 2025-09-08 |
-| TASK-057 | Add Playwright smoke test (start game, advance 2 turns, save, load) |  |  |
-| TASK-058 | Add axe-core accessibility scan integration |  |  |
+| TASK-057 | Add Playwright smoke test (start game, advance 2 turns, save, load) | ✅ | 2025-09-09 |
+| TASK-058 | Add axe-core accessibility scan integration | ✅ | 2025-09-09 |
 
 ### Implementation Phase 9
 - GOAL-009: Future-ready scaffolding & documentation (REQ-020 logging depth, PAT extensibility).
 
 | Task | Description | Completed | Date |
 |------|-------------|-----------|------|
-| TASK-059 | Structured logging module (in-memory ring buffer) |  |  |
-| TASK-060 | Developer doc `docs/state-architecture.md` summarizing patterns & invariants |  |  |
-| TASK-061 | Add TODO registry for FUT-* placeholders |  |  |
-| TASK-062 | Refactor any duplicated logic discovered in prior phases |  |  |
-| TASK-063 | Post-implementation spec delta review; update spec if drift |  |  |
+| TASK-059 | Structured logging module (in-memory ring buffer) | ✅ | 2025-09-09 |
+| TASK-060 | Developer doc `docs/state-architecture.md` summarizing patterns & invariants | ✅ | 2025-09-09 |
+| TASK-061 | Add TODO registry for FUT-* placeholders | ✅ | 2025-09-09 |
+| TASK-062 | Refactor any duplicated logic discovered in prior phases | ✅ | 2025-09-09 |
+| TASK-063 | Post-implementation spec delta review; update spec if drift | ✅ | 2025-09-09 |
 
 ## 3. Alternatives
 

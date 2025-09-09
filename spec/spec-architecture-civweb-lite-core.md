@@ -374,3 +374,59 @@ Edge Cases:
 
 ---
 END OF SPEC
+
+## UI & HUD Requirements
+
+The application SHALL provide a compact, accessible, and testable Heads-Up Display (HUD)
+inspired by classic 4X strategy game layouts (for example: Civilization series). The HUD is a
+presentational layer only and MUST not contain simulation logic; all actions dispatched from the
+HUD should use the public `useGame()` hook or provided action dispatchers.
+
+Goals:
+- Surface essential game status and controls without obscuring the main 3D map view.
+- Be keyboard- and screen-reader friendly (WCAG AA where practical).
+- Use design tokens for colors, spacing, and typography to enable theming.
+
+Placement and Components:
+- `TopBar` (component: `src/components/ui/TopBar.tsx`)
+  - Shows current `turn`, per-player primary resource totals (e.g., science, culture, production), and per-turn deltas.
+  - Contains a compact settings/menu affordance and a save/export button.
+- `LeftPanel` (component: `src/components/ui/LeftPanel.tsx`)
+  - Collapsible panel for research/tech tree and active quests.
+  - Shows currently researching tech with progress and allows selecting a new research target for the human player.
+- `NextTurnControl` (component: `src/components/ui/NextTurnControl.tsx`)
+  - Primary call-to-action to end the current player's turn and advance the simulation.
+  - Displays a turn badge and visual confirmation of queued actions.
+  - Must be reachable by keyboard (tab focus) and have an ARIA name and role.
+- `Minimap` (component: `src/components/ui/Minimap.tsx`)
+  - Small overview map in a corner (default bottom-right) with click-to-center behavior.
+  - Optional toggle to show/hide.
+- `ContextPanel` (component: `src/components/ui/ContextPanel.tsx`)
+  - Displays contextual information for the currently selected tile or city (yields, population, improvements).
+  - Displays action buttons relevant to the selection (e.g., Found City, Build Improvement) and delegates commands to `useGame()`.
+
+Design & Accessibility Requirements:
+- All components must be presentational and use `useGame()` or dispatchers to perform actions. No direct simulation mutations.
+- Keyboard navigation: tab order must move through TopBar → LeftPanel toggle → NextTurnControl → Minimap → ContextPanel.
+- ARIA: interactive elements must have clear ARIA labels/roles; tooltips should be accessible.
+- Color contrast: all text and important UI elements must meet WCAG AA contrast ratios.
+- Responsive: HUD components should collapse gracefully on small viewports; Minimap may hide under a threshold.
+
+Acceptance Criteria (additional to those in section 5):
+- **AC-HUD-001**: The TopBar renders and displays current `turn` and at least one resource total when `useGame()` provides state.
+- **AC-HUD-002**: The NextTurnControl triggers the same state transition as calling the programmatic `endTurn()` dispatch (integration test required).
+- **AC-HUD-003**: The Minimap centers the main camera on click and is keyboard-focusable.
+- **AC-HUD-004**: The LeftPanel allows changing the human player's research target and reflects changes in `useGame()` state.
+- **AC-HUD-005**: The ContextPanel displays city or tile details when a city/tile is selected and correctly issues actions to the simulation.
+
+Testing Notes and Implementation Guidance:
+- Place presentational components under `src/components/ui/` and prefer small, testable units (e.g., `TopBar`, `ResourceBadge`, `NextTurnControl`).
+- Unit tests: mount components with mocked `useGame()` provider state and assert DOM output and dispatched actions.
+- Integration tests: use Vitest + jsdom to assert keyboard navigation and basic click flows. Use Playwright for an end-to-end scenario that opens a saved game, selects a city, issues an action, and advances a turn.
+- Accessibility tests: run axe-core scans on the top-level HUD layout and ensure no critical violations.
+
+Notes:
+- The HUD SHOULD be decoupled from Three.js rendering. Interactions that require camera control should use a camera controller utility exposed from the scene layer (for example, `useCamera()` hook) instead of manipulating renderer internals directly.
+- The HUD components must avoid import-time side-effects (do not import AJV or other heavy validators directly at module top-level). If validation/helpers are required, call runtime helpers that lazily initialize heavy dependencies.
+
+END OF SPEC

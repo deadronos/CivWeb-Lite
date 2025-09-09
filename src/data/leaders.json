@@ -1,0 +1,6 @@
+[
+  { "id": "pericles", "name": "Pericles", "historical_note": "Athenian statesman; culture-focused.", "preferred_victory": ["culture"], "weights": { "aggression": 0.2, "expansion": 0.3, "science": 0.4, "culture": 0.8, "trade": 0.4, "diplomacy": 0.6 } },
+  { "id": "genghis", "name": "Genghis Khan", "historical_note": "Mongol conqueror; domination-focused.", "preferred_victory": ["domination"], "weights": { "aggression": 0.9, "expansion": 0.8, "science": 0.3, "culture": 0.2, "trade": 0.5, "diplomacy": 0.2 } },
+  { "id": "cleopatra", "name": "Cleopatra", "historical_note": "Ptolemaic Egypt; trade and diplomacy.", "preferred_victory": ["diplomacy", "culture"], "weights": { "aggression": 0.3, "expansion": 0.4, "science": 0.4, "culture": 0.6, "trade": 0.9, "diplomacy": 0.8 } }
+]
+

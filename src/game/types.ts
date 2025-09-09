@@ -65,6 +65,9 @@ export interface GameState {
   aiPerf?: { total: number; count: number };
   mode: 'standard' | 'ai-sim';
   autoSim: boolean;
+  // Optional extension for spec-driven content (biomes/units/cities/tech system)
+  // This keeps the main GameState backward compatible while allowing incremental rollout.
+  contentExt?: import('./content/types').GameStateExt;
 }
 
 export interface LoadResult {
