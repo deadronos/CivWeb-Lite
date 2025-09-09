@@ -470,9 +470,12 @@ function SpecControls() {
             value={queueBuildingId}
             onChange={(e) => setQueueBuildingId(e.target.value)}
           >
-            {catalogBuildings.map((b) => {
-              const built = (extension.cities[ensureDemoCity()]?.buildings ?? []).includes(b.id);
-              const request = b.requires;
+        {catalogBuildings.map((b) => {
+          // Avoid side-effects during render: don't call ensureDemoCity() here
+          // which may dispatch and trigger "update a component while rendering" errors.
+          const demoCityId = Object.keys(extension.cities)[0] ?? null;
+          const built = demoCityId ? (extension.cities[demoCityId]?.buildings ?? []).includes(b.id) : false;
+          const request = b.requires;
               const canBuild =
                 !request ||
                 extension.playerState.researchedTechs.includes(request) ||
