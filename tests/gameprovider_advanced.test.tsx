@@ -4,10 +4,10 @@ import { describe, it, expect } from 'vitest';
 import {
   GameProvider,
   simulateAdvanceTurn,
-  initialStateForTests,
-} from '../src/contexts/GameProvider';
+  initialStateForTests } from
+"..\\src\\contexts\\game-provider";
 // GameStateContext intentionally removed; not used in this test
-import { useGame } from '../src/hooks/useGame';
+import { useGame } from "..\\src\\hooks\\use-game";
 
 function ConsumerShow() {
   const { state, dispatch } = useGame();
@@ -16,8 +16,8 @@ function ConsumerShow() {
     <div>
       <span data-testid="turn">{state.turn}</span>
       <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
-    </div>
-  );
+    </div>);
+
 }
 
 describe('GameProvider advanced', () => {
@@ -25,14 +25,14 @@ describe('GameProvider advanced', () => {
     const s = initialStateForTests();
     // add one AI player with a leader defined so evaluateAI returns something predictable
     s.players = [
-      {
-        id: 'p1',
-        isHuman: false,
-        researchedTechIds: [],
-        researching: null,
-        leader: { scienceFocus: 10, cultureFocus: 1 },
-      } as any,
-    ];
+    {
+      id: 'p1',
+      isHuman: false,
+      researchedTechIds: [],
+      researching: null,
+      leader: { scienceFocus: 10, cultureFocus: 1 }
+    } as any];
+
     const dispatched: any[] = [];
     const dispatch = (a: any) => dispatched.push(a);
     simulateAdvanceTurn(s as any, dispatch as any);

@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialStateForTests } from '../src/contexts/GameProvider';
+import { initialStateForTests } from "..\\src\\contexts\\game-provider";
 import { globalGameBus } from '../src/game/events';
 
 test('END_TURN completes research and emits tech:unlocked', () => {
@@ -12,7 +12,7 @@ test('END_TURN completes research and emits tech:unlocked', () => {
     sciencePoints: 1,
     culturePoints: 0,
     researchedTechIds: [] as string[],
-    researching: { techId: 'pottery', progress: 19 },
+    researching: { techId: 'pottery', progress: 19 }
   } as any;
   s.players = [player];
 

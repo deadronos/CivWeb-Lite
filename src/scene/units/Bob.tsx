@@ -1,7 +1,10 @@
-export * from './bob';
-export { default } from './bob';
+// Bob procedural unit model (canonical kebab-case implementation)
+// The PascalCase shim was removed to avoid duplicate-export issues on
+// case-insensitive filesystems. Keep the implementation here as the single
+// source of truth.
 import React from 'react';
 import { useFrame } from '@react-three/fiber';
+import type { Group } from 'three';
 
 export function Bob({
   children,
@@ -14,7 +17,7 @@ export function Bob({
   speed?: number;
   phase?: number;
 }) {
-  const reference = React.useRef<THREE.Group>(null!);
+  const reference = React.useRef<Group | null>(null);
   const baseY = React.useRef<number | null>(null);
   // Guard: no-op if not in a r3f render loop (tests/SSR)
   try {
@@ -24,7 +27,7 @@ export function Bob({
       const current = reference.current.position.y;
       if (baseY.current == undefined) baseY.current = current;
       const y = (baseY.current ?? 0) + amplitude * Math.sin((t + phase) * speed * 2 * Math.PI);
-      reference.current.position.y = y;
+      reference.current!.position.y = y;
     });
   } catch {
     // ignore when useFrame is not available

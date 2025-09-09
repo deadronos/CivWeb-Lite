@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { GameStateContext, GameDispatchContext, Dispatch } from '../contexts/GameProvider';
+import { GameStateContext, GameDispatchContext, Dispatch } from "..\\contexts\\game-provider";
 import { GameState } from '../game/types';
 
-export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
+export function useGame(): {state: Readonly<GameState>;dispatch: Dispatch;} {
   const state = useContext(GameStateContext) as GameState | null;
   const dispatch = useContext(GameDispatchContext) as Dispatch | null;
   ensureGameContext(state, dispatch);
@@ -11,9 +11,9 @@ export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
 
 // extracted check into a helper so tests can exercise the exact thrown branch
 export function ensureGameContext(
-  state: GameState | null | undefined,
-  dispatch: Dispatch | null | undefined
-) {
+state: GameState | null | undefined,
+dispatch: Dispatch | null | undefined)
+{
   if (!state || !dispatch) {
     throw new Error('useGame must be used within GameProvider');
   }
@@ -98,3 +98,12 @@ export function coverUseGameInlinePathsTuple(runThrow = false) {
   const dispatch = (() => {}) as unknown as Dispatch;
   return [state, dispatch] as const;
 }
+
+// Provide a default export for compatibility with PascalCase shims that
+// import the hook as a default. Default exports a small object exposing
+// the primary hook function to minimize breakage during the migration.
+const __default = {
+  useGame
+};
+
+export default __default;

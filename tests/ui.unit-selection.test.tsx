@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { UnitSelectionOverlay } from '../src/components/ui/UnitSelectionOverlay';
+import { UnitSelectionOverlay } from '../src/components/ui/unit-selection-overlay';
 
 describe('UnitSelectionOverlay scaffold', () => {
   it('renders when a unit is selected', () => {

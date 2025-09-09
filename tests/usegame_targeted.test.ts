@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import * as UG from '../src/hooks/useGame';
-import { ensureGameContext } from '../src/hooks/useGame';
+import * as UG from "..\\src\\hooks\\use-game";
+import { ensureGameContext } from "..\\src\\hooks\\use-game";
 
 describe('useGame targeted helpers', () => {
   it('cover thrown helper path without using hooks', () => {

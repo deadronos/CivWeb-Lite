@@ -5,8 +5,8 @@ import {
   coverAllUseGameHuge,
   coverUseGameInlinePaths,
   coverUseGameInlinePathsTuple,
-  coverUseGameExtra,
-} from '../src/hooks/useGame';
+  coverUseGameExtra } from
+"..\\src\\hooks\\use-game";
 
 describe('useGame coverage helpers', () => {
   it('ensureGameContext throws when missing', () => {

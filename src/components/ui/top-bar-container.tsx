@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGame } from '../../hooks/useGame';
-import TopBar from './TopBar';
+import { useGame } from "..\\..\\hooks\\use-game";
+import TopBar from "./top-bar";
 
 export default function TopBarContainer() {
   const { state } = useGame();
@@ -8,7 +8,7 @@ export default function TopBarContainer() {
   const resources = React.useMemo(() => {
     return {
       science: human?.sciencePoints ?? 0,
-      culture: human?.culturePoints ?? 0,
+      culture: human?.culturePoints ?? 0
     } as const;
   }, [human]);
   const onOpenLoad = () => globalThis.dispatchEvent(new Event('hud:openLoad'));
@@ -18,7 +18,7 @@ export default function TopBarContainer() {
       turn={state.turn}
       resources={resources}
       onOpenLoad={onOpenLoad}
-      onOpenLoadPaste={onOpenLoadPaste}
-    />
-  );
+      onOpenLoadPaste={onOpenLoadPaste} />);
+
+
 }

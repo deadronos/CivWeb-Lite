@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { GameProvider } from '../src/contexts/GameProvider';
-import TopBarContainer from '../src/components/ui/TopBarContainer';
+import { GameProvider } from '../src/contexts/game-provider';
+import TopBarContainer from '../src/components/ui/top-bar-container';
 
 describe('TopBarContainer', () => {
   it('renders turn and resource badges from provider', () => {

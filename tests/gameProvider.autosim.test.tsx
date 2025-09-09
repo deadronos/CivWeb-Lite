@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
-import { GameProvider, coverAllGameProviderHuge } from '../src/contexts/GameProvider';
+import { GameProvider, coverAllGameProviderHuge } from "..\\src\\contexts\\game-provider";
 
 describe('GameProvider autoSim loop', () => {
   test('autoSim RAF loop body runs once with mock', () => {
@@ -14,9 +14,9 @@ describe('GameProvider autoSim loop', () => {
       return q.length; // id
     };
     (globalThis as any).cancelAnimationFrame = () => {
+
       // no-op
     };
-
     // mount provider with autoSim true in initial state by patching initialState
     const { container } = render(
       <GameProvider>

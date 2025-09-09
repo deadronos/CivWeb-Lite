@@ -3,14 +3,14 @@
 // done in a separate refactor PR to avoid noisy import changes across the repo.
 import React from 'react';
 import { gltfEnabled } from '../../utils/flags';
-import GLTFModel from '../drei/GLTFModel';
-import { WarriorModel } from './procedural/WarriorModel';
-import { SettlerModel } from './procedural/SettlerModel';
-import { WorkerModel } from './procedural/WorkerModel';
-import { ArcherModel } from './procedural/ArcherModel';
-import { SpearmanModel } from './procedural/SpearmanModel';
-import { GalleyModel } from './procedural/GalleyModel';
-import { getModelComponent } from './modelRegistry';
+import GLTFModel from "..\\drei\\gltf-model";
+import { WarriorModel } from './procedural/warrior-model';
+import { SettlerModel } from './procedural/settler-model';
+import { WorkerModel } from './procedural/worker-model';
+import { ArcherModel } from './procedural/archer-model';
+import { SpearmanModel } from './procedural/spearman-model';
+import { GalleyModel } from './procedural/galley-model';
+import { getModelComponent } from "./model-registry";
 
 export type UnitModelProperties = {
   type: string;
@@ -21,7 +21,7 @@ export type UnitModelProperties = {
   rangedReady?: boolean;
   model?: string;
   offsetY?: number;
-  anim?: { bobAmp?: number; bobSpeed?: number };
+  anim?: {bobAmp?: number;bobSpeed?: number;};
   gltf?: string;
 };
 
@@ -34,7 +34,7 @@ export type UnitModelProps = UnitModelProperties;
 // add it to `gltfRegistry` or export a dedicated mapping module.
 
 import { Bob, phaseFromId } from './bob';
-import { resolveGLTF } from './gltfRegistry';
+import { resolveGLTF } from "./gltf-registry";
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
@@ -46,7 +46,7 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   model,
   offsetY,
   anim,
-  gltf,
+  gltf
 }) => {
   const lowerType = type.toLowerCase();
   const modelLabel = (model || '').toLowerCase();
@@ -55,14 +55,14 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
     if (url) return <GLTFModel url={url} position={position} scale={scale ?? 0.6} />;
   }
 
-  const CommonWrap: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <group
-      position={[position?.[0] ?? 0, (position?.[1] ?? 0) + (offsetY ?? 0), position?.[2] ?? 0]}
-      scale={scale ?? 1}
-    >
+  const CommonWrap: React.FC<{children: React.ReactNode;}> = ({ children }) =>
+  <group
+    position={[position?.[0] ?? 0, (position?.[1] ?? 0) + (offsetY ?? 0), position?.[2] ?? 0]}
+    scale={scale ?? 1}>
+
       {children}
-    </group>
-  );
+    </group>;
+
   const phase = phaseFromId(id);
 
   // Use labeled model if provided in data registry
@@ -74,80 +74,80 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
           {/* Archer supports showArrow; other models ignore prop */}
           <Labeled
             teamColor={teamColor}
-            {...(lowerType === 'archer' ? { showArrow: !!rangedReady } : {})}
-          />
+            {...lowerType === 'archer' ? { showArrow: !!rangedReady } : {}} />
+
         </Bob>
-      </CommonWrap>
-    );
+      </CommonWrap>);
+
   }
 
   switch (lowerType) {
-  case 'warrior': {
-      return (
-        <CommonWrap>
+    case 'warrior':{
+        return (
+          <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
             <WarriorModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>
-      );
-    }
-  case 'spearman': {
-      return (
-        <CommonWrap>
+        </CommonWrap>);
+
+      }
+    case 'spearman':{
+        return (
+          <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
             <SpearmanModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>
-      );
-    }
-  case 'archer': {
-      return (
-        <CommonWrap>
+        </CommonWrap>);
+
+      }
+    case 'archer':{
+        return (
+          <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.4} phase={phase}>
             <ArcherModel teamColor={teamColor} showArrow={!!rangedReady} />
           </Bob>
-        </CommonWrap>
-      );
-    }
-  case 'settler': {
-      return (
-        <CommonWrap>
+        </CommonWrap>);
+
+      }
+    case 'settler':{
+        return (
+          <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.3} phase={phase}>
             <SettlerModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>
-      );
-    }
-  case 'worker': {
-      return (
-        <CommonWrap>
+        </CommonWrap>);
+
+      }
+    case 'worker':{
+        return (
+          <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.45} phase={phase}>
             <WorkerModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>
-      );
-    }
-  case 'galley': {
-      return (
-        <CommonWrap>
+        </CommonWrap>);
+
+      }
+    case 'galley':{
+        return (
+          <CommonWrap>
           <group>
             <Bob amplitude={anim?.bobAmp ?? 0.02} speed={anim?.bobSpeed ?? 0.25} phase={phase}>
               <GalleyModel teamColor={teamColor} />
             </Bob>
           </group>
-        </CommonWrap>
-      );
-    }
-  default: {
-      return (
-        <CommonWrap>
+        </CommonWrap>);
+
+      }
+    default:{
+        return (
+          <CommonWrap>
           {/* Minimal placeholder for unknown types */}
           <mesh>
             <boxGeometry args={[0.4, 0.4, 0.4]} />
             <meshStandardMaterial color={teamColor} />
           </mesh>
-        </CommonWrap>
-      );
-    }
+        </CommonWrap>);
+
+      }
   }
-}
+};

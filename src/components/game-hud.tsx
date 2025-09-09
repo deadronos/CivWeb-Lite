@@ -1,11 +1,11 @@
 import React from 'react';
-import { useGame } from '../hooks/useGame';
+import { useGame } from '../hooks/use-game';
 import { exportToFile, importFromFile } from '../game/save';
 import { TECHS } from '../game/content/registry';
 import { loadUnits, loadBuildings } from '../data/loader';
-import CivicPanelContainer from './ui/CivicPanelContainer';
-import ExtTechPanelContainer from './ui/ExtTechPanelContainer';
-import LoadModal from './ui/LoadModal';
+import CivicPanelContainer from './ui/civic-panel-container';
+import ExtTechPanelContainer from './ui/ext-tech-panel-container';
+import LoadModal from './ui/load-modal';
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();

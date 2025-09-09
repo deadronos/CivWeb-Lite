@@ -1,9 +1,9 @@
 import React from 'react';
 import Minimap from './minimap';
-import { useGame } from '../../hooks/useGame';
-import { useSelection } from '../../contexts/SelectionContext';
+import { useGame } from "..\\..\\hooks\\use-game";
+import { useSelection } from "..\\..\\contexts\\selection-context";
 import { computeMovementRange } from '../../game/pathfinder';
-import { useCamera } from '../../hooks/useCamera';
+import { useCamera } from "..\\..\\hooks\\use-camera";
 
 export default function MinimapContainer() {
   const { state } = useGame();
@@ -17,7 +17,7 @@ export default function MinimapContainer() {
   }
   const camera = useCamera();
   const onPickCoord = React.useCallback(
-    (coord: { q: number; r: number }) => {
+    (coord: {q: number;r: number;}) => {
       camera.centerOn(coord);
     },
     [camera]
@@ -36,7 +36,7 @@ export default function MinimapContainer() {
       width={state.map.width}
       height={state.map.height}
       onPickCoord={onPickCoord}
-      highlightedTileIds={highlighted}
-    />
-  );
+      highlightedTileIds={highlighted} />);
+
+
 }

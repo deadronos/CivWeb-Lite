@@ -1,18 +1,18 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { GameProvider } from '../src/contexts/GameProvider';
-import { SelectionProvider } from '../src/contexts/SelectionContext';
-import { HoverProvider } from '../src/contexts/HoverContext';
-import { useGame } from '../src/hooks/useGame';
-import { ConnectedScene as Scene } from '../src/scene/Scene';
+import { GameProvider } from "..\\src\\contexts\\game-provider";
+import { SelectionProvider } from "..\\src\\contexts\\selection-context";
+import { HoverProvider } from "..\\src\\contexts\\hover-context";
+import { useGame } from "..\\src\\hooks\\use-game";
+import { ConnectedScene as Scene } from "..\\src\\scene\\scene";
 
-const Adder: React.FC<{ unitId: string }> = ({ unitId }) => {
+const Adder: React.FC<{unitId: string;}> = ({ unitId }) => {
   const { dispatch } = useGame();
   React.useEffect(() => {
     dispatch({
       type: 'EXT_ADD_UNIT',
-      payload: { unitId, type: 'warrior', ownerId: 'p1', tileId: 'hex_0_0' },
+      payload: { unitId, type: 'warrior', ownerId: 'p1', tileId: 'hex_0_0' }
     });
   }, [dispatch, unitId]);
   return null;

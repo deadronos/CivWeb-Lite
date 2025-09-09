@@ -1,6 +1,6 @@
 import React from 'react';
 import { axialToWorld } from '../scene/utils/coords';
-import { useGame } from '../hooks/useGame';
+import { useGame } from "..\\hooks\\use-game";
 
 export type HoverState = {
   hoverIndex: number | null;
@@ -9,7 +9,7 @@ export type HoverState = {
 
 const HoverContext = React.createContext<HoverState | null>(null);
 
-export function HoverProvider({ children }: { children: React.ReactNode }) {
+export function HoverProvider({ children }: {children: React.ReactNode;}) {
   const [hoverIndex, setHoverIndex] = React.useState<number | null>(null);
   const value = React.useMemo(() => ({ hoverIndex, setHoverIndex }), [hoverIndex]);
   return <HoverContext.Provider value={value}>{children}</HoverContext.Provider>;
@@ -18,7 +18,7 @@ export function HoverProvider({ children }: { children: React.ReactNode }) {
 export function useHoverTile(): {
   index: number | null;
   id: string | null;
-  coord: { q: number; r: number } | null;
+  coord: {q: number;r: number;} | null;
   biome: string | null;
   world: [number, number] | null;
   setHoverIndex: (index: number | null) => void;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { useGame } from '../../hooks/useGame';
-import CivicPanel from './CivicPanel';
+import { useGame } from "..\\..\\hooks\\use-game";
+import CivicPanel from './civic-panel';
 
 export default function CivicPanelContainer() {
   const { state, dispatch } = useGame();
@@ -10,11 +10,11 @@ export default function CivicPanelContainer() {
 
   const available = React.useMemo(() => {
     const list = Object.values(civics);
-    return list
-      .filter((c) => !researched.includes(c.id))
-      .filter((c) => c.prerequisites.every((p) => researched.includes(p)))
-      .slice(0, 6)
-      .map((c) => ({ id: c.id, name: c.name, cost: c.cost }));
+    return list.
+    filter((c) => !researched.includes(c.id)).
+    filter((c) => c.prerequisites.every((p) => researched.includes(p))).
+    slice(0, 6).
+    map((c) => ({ id: c.id, name: c.name, cost: c.cost }));
   }, [civics, researched]);
 
   const currentCivicId = extension?.playerState.cultureResearch?.civicId ?? null;

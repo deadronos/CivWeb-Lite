@@ -1,7 +1,7 @@
 import React from 'react';
-import { StickFigure } from './StickFigure';
+import { StickFigure } from "./stick-figure";
 
-export function SpearmanModel({ teamColor = '#16a085' }: { teamColor?: string }) {
+export function SpearmanModel({ teamColor = '#16a085' }: {teamColor?: string;}) {
   return <StickFigure teamColor={teamColor} accessories={{ spear: true }} />;
 }
 
