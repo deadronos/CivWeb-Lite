@@ -67,7 +67,7 @@ export function ConnectedScene() {
           <HtmlLabel position={[0, 1, 0]} data-testid="scene-label">
             Tiles: {positions.length}
           </HtmlLabel>
-          <BillboardLabel position={[0, 2, 0]} fontSize={0.25} data-testid="scene-billboard">
+          <BillboardLabel position={[0, 2, 0]} fontSize={0.25}>
             CivWeb-Lite
           </BillboardLabel>
         </>
