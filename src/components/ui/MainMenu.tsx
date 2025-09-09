@@ -39,7 +39,7 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
       if (typeof cfg.seed === 'string') setSeed(cfg.seed);
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
-    } catch (e) {
+    } catch {
       // ignore JSON parse/localStorage errors during hydrate in browsers without storage
     }
   }, []);
@@ -59,7 +59,7 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
     onStart(payload);
     try {
       localStorage.setItem(LS_KEY, JSON.stringify({ size, seed, players, selectedLeaders }));
-    } catch (e) {
+    } catch {
       /* ignore quota errors or storage issues */
     }
   };

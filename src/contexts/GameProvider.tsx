@@ -87,20 +87,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       // schedule next frame if available
       try {
         id = requestAnimationFrame(loop) as unknown as number;
-      } catch (e) {
+      } catch {
         // ignore if environment doesn't support RAF
       }
     };
     try {
       id = requestAnimationFrame(loop) as unknown as number;
-    } catch (e) {
+    } catch {
       // ignore
     }
     return () => {
       try {
         if (typeof cancelAnimationFrame === 'function' && typeof id !== 'undefined')
           cancelAnimationFrame(id);
-      } catch (e) {
+      } catch {
         // ignore
       }
     };
@@ -184,7 +184,7 @@ export function coverGameProviderEffects(s: GameState, dispatch: Dispatch, force
         throw new Error('forced');
       }
       // no-op
-    } catch (e) {
+    } catch {
       // ignore - covered branch
     }
   }

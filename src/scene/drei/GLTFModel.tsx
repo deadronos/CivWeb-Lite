@@ -13,7 +13,7 @@ export default function GLTFModel({ url, ...rest }: Props) {
     const gltf: any = useGLTF(url);
     const scene = gltf.scene || gltf;
     return <primitive object={scene} {...rest} />;
-  } catch (e) {
+  } catch {
     return (
       <mesh {...rest}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
