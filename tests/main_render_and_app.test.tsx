@@ -35,7 +35,7 @@ test('render App default with mocked three deps', async () => {
   // mock Canvas and children to be simple DOM
   vi.doMock('@react-three/fiber', () => ({ Canvas: ({ children }: any) => <div data-testid="canvas">{children}</div> }))
   vi.doMock('@react-three/drei', () => ({ OrbitControls: () => <div data-testid="orbit" />, Stats: () => <div data-testid="stats" /> }))
-  vi.doMock('../src/scene/Scene', () => ({ default: () => <div data-testid="scene" /> }))
+  vi.doMock('../src/scene/Scene', () => ({ default: () => <div data-testid="scene" />, ConnectedScene: () => <div data-testid="scene" /> }))
   // import App after mocks
   const App = (await import('../src/App')).default
   render(<App />)

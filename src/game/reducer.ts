@@ -20,6 +20,45 @@ export function applyAction(state: GameState, action: GameAction): GameState {
   }
   return produceNextState(state, draft => {
     switch (action.type) {
+      case 'LOG_EVENT': {
+        // append log entry with cap (50)
+        const entry = (action.payload as any)?.entry;
+        if (entry) {
+          draft.log.push(entry);
+          if (draft.log.length > 50) draft.log.splice(0, draft.log.length - 50);
+        }
+        break;
+      }
+      case 'SET_RESEARCH': {
+        const playerId = (action as any).playerId as string;
+        const techId = (action as any).payload?.techId as string | undefined;
+        if (!playerId || !techId) break;
+        const player = findPlayer(draft.players, playerId);
+        const tech = draft.techCatalog.find(t => t.id === techId);
+        if (!player || !tech) break;
+        const hasPrereqs = (tech.prerequisites || []).every((p: string) => player.researchedTechIds?.includes(p));
+        if (!hasPrereqs) break;
+        player.researching = { techId, progress: 0 } as any;
+        break;
+      }
+      case 'ADVANCE_RESEARCH': {
+        const playerId = (action as any).playerId as string;
+        const pts = (action as any).payload?.points as number | undefined;
+        if (!playerId) break;
+        const player = findPlayer(draft.players, playerId);
+        if (!player || !player.researching) break;
+        const tech = draft.techCatalog.find(t => t.id === player.researching!.techId);
+        if (!tech) break;
+        const add = typeof pts === 'number' ? pts : player.sciencePoints ?? 0;
+        player.researching.progress = (player.researching.progress ?? 0) + add;
+        if (player.researching.progress >= tech.cost) {
+          if (!player.researchedTechIds) player.researchedTechIds = [] as any;
+          player.researchedTechIds.push(tech.id);
+          player.researching = null as any;
+          globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+        }
+        break;
+      }
       case 'INIT': {
         const seed = action.payload?.seed ?? draft.seed;
         const width = action.payload?.width ?? draft.map.width;
@@ -168,6 +207,16 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         }
         draft.turn += 1;
         globalGameBus.emit('turn:end', { turn: draft.turn });
+        break;
+      }
+      case 'AUTO_SIM_TOGGLE': {
+        // payload may be { enabled?: boolean } or absent -> toggle
+        const enabled = action.payload && typeof (action.payload as any).enabled === 'boolean' ? (action.payload as any).enabled : undefined;
+        if (typeof enabled === 'boolean') {
+          draft.autoSim = enabled;
+        } else {
+          draft.autoSim = !draft.autoSim;
+        }
         break;
       }
       case 'EXT_BEGIN_RESEARCH': {

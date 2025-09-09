@@ -60,13 +60,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!state.autoSim) return;
-    let id: number;
+    let id: number | undefined;
+    let running = false;
     const loop = () => {
-      advanceTurn();
-      id = requestAnimationFrame(loop);
+      if (running) return; // guard re-entrancy when tests synchronously invoke RAF
+      try {
+        running = true;
+        advanceTurn();
+      } finally {
+        running = false;
+      }
+      // schedule next frame if available
+      try {
+        id = requestAnimationFrame(loop) as unknown as number;
+      } catch (e) {
+        // ignore if environment doesn't support RAF
+      }
     };
-    id = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(id);
+    try {
+      id = requestAnimationFrame(loop) as unknown as number;
+    } catch (e) {
+      // ignore
+    }
+    return () => {
+      try {
+        if (typeof cancelAnimationFrame === 'function' && typeof id !== 'undefined') cancelAnimationFrame(id);
+      } catch (e) {
+        // ignore
+      }
+    };
   }, [state.autoSim, advanceTurn]);
 
   const frozen = useMemo(() => Object.freeze(state), [state]);

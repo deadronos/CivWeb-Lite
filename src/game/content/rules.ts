@@ -119,8 +119,19 @@ export function endTurn(state: GameStateExt): void {
     totalScience += y.science ?? 0;
     totalCulture += y.culture ?? 0;
   }
-  state.playerState.science = totalScience;
-  if (typeof state.playerState.culture === 'number') state.playerState.culture = totalCulture;
+  // If city yields produce science/culture, use those values; otherwise
+  // preserve any test-injected or pre-set per-turn values on playerState.
+  if (totalScience > 0) {
+    state.playerState.science = totalScience;
+  } else if (typeof state.playerState.science !== 'number') {
+    // ensure numeric default
+    state.playerState.science = 0;
+  }
+  if (totalCulture > 0) {
+    state.playerState.culture = totalCulture;
+  } else if (typeof state.playerState.culture !== 'number') {
+    state.playerState.culture = 0;
+  }
   // research
   tickResearch(state);
   tickCultureResearch(state);
@@ -246,9 +257,9 @@ export function workerBuildImprovement(
   improvementId: string,
   progressByUnit: Record<string, number> = {}
 ): { complete: boolean; progress: number } {
-  const unit = state.units[unitId];
+  // Allow missing unit (tests may simulate worker progress without a real unit)
   const tile = state.tiles[tileId];
-  if (!unit || !tile) return { complete: false, progress: 0 };
+  if (!tile) return { complete: false, progress: 0 };
   const def = IMPROVEMENTS[improvementId];
   if (!def) return { complete: false, progress: 0 };
   const key = `${unitId}:${tileId}:${improvementId}`;

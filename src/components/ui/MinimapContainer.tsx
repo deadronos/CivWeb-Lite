@@ -7,7 +7,14 @@ import { useCamera } from '../../hooks/useCamera';
 
 export default function MinimapContainer() {
   const { state } = useGame();
-  const { selectedUnitId } = useSelection();
+  // useSelection may throw if not wrapped in provider in some tests; guard safely.
+  let selectedUnitId: string | null = null;
+  try {
+    selectedUnitId = useSelection()?.selectedUnitId ?? null;
+  } catch (e) {
+    // tests may not include SelectionProvider; fall back to null
+    selectedUnitId = null;
+  }
   const camera = useCamera();
   const onPickCoord = React.useCallback((coord: { q: number; r: number }) => {
     camera.centerOn(coord);

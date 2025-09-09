@@ -6,10 +6,9 @@ export default function TopBarContainer() {
   const { state } = useGame();
   const human = state.players.find(p => p.isHuman);
   const resources = React.useMemo(() => {
-    if (!human) return {} as Record<string, number>;
     return {
-      science: human.sciencePoints,
-      culture: human.culturePoints,
+      science: human?.sciencePoints ?? 0,
+      culture: human?.culturePoints ?? 0,
     } as const;
   }, [human]);
   const onOpenLoad = () => window.dispatchEvent(new Event('hud:openLoad'));

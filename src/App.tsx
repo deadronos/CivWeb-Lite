@@ -9,6 +9,7 @@ import LeftPanelContainer from './components/ui/LeftPanelContainer';
 import MinimapContainer from './components/ui/MinimapContainer';
 import NextTurnControlContainer from './components/ui/NextTurnControlContainer';
 import { CameraProvider } from './hooks/useCamera';
+import { SelectionProvider } from './contexts/SelectionContext';
 import MainMenu from './components/ui/MainMenu';
 import { useGame } from './hooks/useGame';
 
@@ -17,6 +18,7 @@ export default function App() {
   const [started, setStarted] = React.useState(false);
   return (
     <GameProvider>
+      <SelectionProvider>
       <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
         {!started && (
           <MainMenu onStart={() => setStarted(true)} />
@@ -42,6 +44,7 @@ export default function App() {
           Camera: {cam ? `${cam.q},${cam.r}` : '-'}
         </div>
       </CameraProvider>
+      </SelectionProvider>
     </GameProvider>
   );
 }
