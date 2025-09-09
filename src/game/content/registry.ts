@@ -1,4 +1,7 @@
 import type { Technology } from './types';
+import unitsData from '../../data/units.json';
+import improvementsData from '../../data/improvements.json';
+import buildingsData from '../../data/buildings.json';
 
 export interface UnitTypeDef {
   id: string;
@@ -20,42 +23,43 @@ export interface ImprovementDef {
   buildTime: number; // turns with worker
 }
 
-export const UNIT_TYPES: Record<string, UnitTypeDef> = {
-  worker: {
-    id: 'worker',
-    domain: 'land',
-    base: { movement: 2, attack: 0, defense: 1, sight: 2, hp: 100 },
-    abilities: [],
-    cost: 2,
-  },
-  warrior: {
-    id: 'warrior',
-    domain: 'land',
-    base: { movement: 2, attack: 6, defense: 4, sight: 2, hp: 100 },
-    abilities: [],
-    cost: 2,
-  },
-  settler: {
-    id: 'settler',
-    domain: 'land',
-    base: { movement: 2, attack: 0, defense: 0, sight: 2, hp: 100 },
-    abilities: [],
-    cost: 3,
-  },
-  scout: {
-    id: 'scout',
-    domain: 'land',
-    base: { movement: 3, attack: 2, defense: 1, sight: 3, hp: 100 },
-    abilities: [],
-    cost: 2,
-  },
-};
+export interface BuildingDef {
+  id: string;
+  name: string;
+  cost: number;
+  requires: string | null;
+  yields?: { food?: number; production?: number; gold?: number; science?: number; culture?: number; faith?: number };
+  effects?: string[];
+}
 
-export const IMPROVEMENTS: Record<string, ImprovementDef> = {
-  farm: { id: 'farm', yield: { food: 1 }, buildTime: 2 },
-  mine: { id: 'mine', yield: { production: 2 }, buildTime: 3 },
-  road: { id: 'road', yield: { gold: 0.1 }, buildTime: 1 },
-};
+// Build registries from JSON data at module load time to keep synchronous APIs
+export const UNIT_TYPES: Record<string, UnitTypeDef> = Object.fromEntries(
+  (unitsData as any[]).map(u => {
+    const domain: 'land' | 'naval' = u.category === 'naval' ? 'naval' : 'land';
+    const attack = typeof u.strength === 'number' ? u.strength : 0;
+    const defense = Math.max(0, Math.round((u.strength ?? 0) * 0.7));
+    const sight = 2;
+    const hp = 100;
+    return [
+      u.id,
+      {
+        id: u.id,
+        domain,
+        base: { movement: u.movement ?? 2, attack, defense, sight, hp },
+        abilities: u.abilities ?? [],
+        cost: Math.max(1, Math.round((u.cost ?? 40) / 40)), // rough turn estimate at prod=1
+      } as UnitTypeDef,
+    ];
+  })
+);
+
+export const IMPROVEMENTS: Record<string, ImprovementDef> = Object.fromEntries(
+  (improvementsData as any[]).map((imp) => [imp.id, imp as ImprovementDef])
+);
+
+export const BUILDINGS: Record<string, BuildingDef> = Object.fromEntries(
+  (buildingsData as any[]).map((b) => [b.id, b as BuildingDef])
+);
 
 export const TECHS: Record<string, Technology> = {
   agriculture: {
@@ -67,4 +71,3 @@ export const TECHS: Record<string, Technology> = {
     unlocks: { improvements: ['farm'] },
   },
 };
-

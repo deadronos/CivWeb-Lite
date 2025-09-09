@@ -4,9 +4,10 @@ export type MinimapProps = {
   width: number;
   height: number;
   onPickCoord: (coord: { q: number; r: number }) => void;
+  highlightedTileIds?: string[];
 };
 
-export default function Minimap({ width, height, onPickCoord }: MinimapProps) {
+export default function Minimap({ width, height, onPickCoord, highlightedTileIds }: MinimapProps) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const onClick = (e: React.MouseEvent) => {
     const el = ref.current;
@@ -27,7 +28,7 @@ export default function Minimap({ width, height, onPickCoord }: MinimapProps) {
       aria-label="minimap"
       onClick={onClick}
       style={{ width: 120, height: 120, background: 'var(--color-minimap, #222)' }}
-    />
+     data-highlight={(highlightedTileIds||[]).join(',')} />
   );
 }
 

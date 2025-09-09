@@ -55,6 +55,7 @@ export interface City {
   tilesWorked: string[];
   garrisonUnitIds: string[];
   happiness: number;
+  buildings?: string[];
 }
 
 export interface Technology {
@@ -66,17 +67,29 @@ export interface Technology {
   unlocks: { units?: string[]; improvements?: string[]; abilities?: string[] };
 }
 
+export interface Civic {
+  id: string;
+  name: string;
+  description?: string;
+  cost: number; // culture turns required
+  prerequisites: string[];
+  unlocks: { units?: string[]; improvements?: string[]; abilities?: string[]; buildings?: string[] };
+}
+
 export interface GameStateExt {
   tiles: Record<string, Hextile>;
   units: Record<string, Unit>;
   cities: Record<string, City>;
   techs: Record<string, Technology>;
+  civics?: Record<string, Civic>;
   playerState: {
     researchedTechs: string[];
+    researchedCivics?: string[];
     availableUnits: string[];
     availableImprovements: string[];
-    science: number; // points per turn
+    science: number; // points per turn (computed from buildings/cities)
+    culture?: number; // optional: culture per turn
     research?: { techId: string; progress: number } | null;
+    cultureResearch?: { civicId: string; progress: number } | null;
   };
 }
-

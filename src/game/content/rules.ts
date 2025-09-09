@@ -1,8 +1,8 @@
 import { movementCost, isPassable } from './biomes';
 import type { City, GameStateExt, Hextile, Unit } from './types';
-import { IMPROVEMENTS, UNIT_TYPES } from './registry';
+import { IMPROVEMENTS, UNIT_TYPES, BUILDINGS } from './registry';
 
-export type TileYield = { food: number; production: number; gold: number };
+export type TileYield = { food: number; production: number; gold: number; science?: number; culture?: number };
 
 export function getTileBaseYield(tile: Hextile): TileYield {
   switch (tile.biome) {
@@ -37,7 +37,7 @@ export function getTileYield(tile: Hextile): TileYield {
 }
 
 export function cityBaseYield(): TileYield {
-  return { food: 2, production: 1, gold: 0 };
+  return { food: 2, production: 1, gold: 0, science: 0, culture: 0 };
 }
 
 export function getCityYield(state: GameStateExt, city: City): TileYield {
@@ -49,6 +49,18 @@ export function getCityYield(state: GameStateExt, city: City): TileYield {
     total.food += y.food;
     total.production += y.production;
     total.gold += y.gold;
+  }
+  // Apply building yields (food/production/gold/science/culture components)
+  if (city.buildings && city.buildings.length) {
+    for (const bid of city.buildings) {
+      const b = BUILDINGS[bid];
+      if (!b || !b.yields) continue;
+      total.food += b.yields.food ?? 0;
+      total.production += b.yields.production ?? 0;
+      total.gold += b.yields.gold ?? 0;
+      total.science = (total.science ?? 0) + (b.yields.science ?? 0);
+      total.culture = (total.culture ?? 0) + (b.yields.culture ?? 0);
+    }
   }
   return total;
 }
@@ -99,8 +111,19 @@ export function endTurn(state: GameStateExt): void {
   for (const city of Object.values(state.cities)) {
     tickCityProduction(state, city);
   }
+  // recompute empire-wide science/culture per turn from cities
+  let totalScience = 0;
+  let totalCulture = 0;
+  for (const city of Object.values(state.cities)) {
+    const y = getCityYield(state, city);
+    totalScience += y.science ?? 0;
+    totalCulture += y.culture ?? 0;
+  }
+  state.playerState.science = totalScience;
+  if (typeof state.playerState.culture === 'number') state.playerState.culture = totalCulture;
   // research
   tickResearch(state);
+  tickCultureResearch(state);
 }
 
 export function tickCityProduction(state: GameStateExt, city: City): void {
@@ -137,6 +160,10 @@ export function tickCityProduction(state: GameStateExt, city: City): void {
       if (tile && !tile.improvements.includes(head.item)) {
         tile.improvements.push(head.item);
       }
+    } else if (head.type === 'building') {
+      // add building to city
+      if (!city.buildings) city.buildings = [];
+      if (!city.buildings.includes(head.item)) city.buildings.push(head.item);
     }
     city.productionQueue.shift();
   }
@@ -177,6 +204,41 @@ export function tickResearch(state: GameStateExt) {
   }
 }
 
+export function beginCultureResearch(state: GameStateExt, civicId: string) {
+  const civic = state.civics?.[civicId];
+  if (!civic) return false;
+  const researched = state.playerState.researchedCivics ?? [];
+  if (!civic.prerequisites.every(p => researched.includes(p))) return false;
+  state.playerState.cultureResearch = { civicId, progress: 0 };
+  return true;
+}
+
+export function tickCultureResearch(state: GameStateExt) {
+  if (!state.playerState.cultureResearch) return;
+  const { civicId } = state.playerState.cultureResearch;
+  const civic = state.civics?.[civicId];
+  if (!civic) return;
+  const culture = state.playerState.culture ?? 0;
+  state.playerState.cultureResearch.progress += culture;
+  if (state.playerState.cultureResearch.progress >= civic.cost) {
+    if (!state.playerState.researchedCivics) state.playerState.researchedCivics = [];
+    state.playerState.researchedCivics.push(civic.id);
+    if (civic.unlocks.improvements) {
+      for (const imp of civic.unlocks.improvements) {
+        if (!state.playerState.availableImprovements.includes(imp))
+          state.playerState.availableImprovements.push(imp);
+      }
+    }
+    if (civic.unlocks.units) {
+      for (const u of civic.unlocks.units) {
+        if (!state.playerState.availableUnits.includes(u))
+          state.playerState.availableUnits.push(u);
+      }
+    }
+    state.playerState.cultureResearch = null;
+  }
+}
+
 export function workerBuildImprovement(
   state: GameStateExt,
   unitId: string,
@@ -199,4 +261,3 @@ export function workerBuildImprovement(
   }
   return { complete: false, progress: next };
 }
-

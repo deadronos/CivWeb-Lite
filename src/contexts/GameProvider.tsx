@@ -239,3 +239,44 @@ export function triggerAutoSimOnce(s: GameState, dispatch: Dispatch) {
   }
   return false;
 }
+
+// UI event handler stubs for early wiring from UI components.
+// These can be replaced to dispatch real actions in later phases.
+export const uiHandlers = Object.freeze({
+  selectUnit(unitId: string) {
+    console.debug('[ui] selectUnit', unitId);
+  },
+  previewPath(payload: { unitId: string; targetTileId: string; computedPath?: string[]; totalCost?: number }) {
+    console.debug('[ui] previewPath', payload);
+  },
+  issueMove(payload: { unitId: string; path: string[]; confirmCombat?: boolean }) {
+    console.debug('[ui] issueMove', payload);
+  },
+  cancelSelection(payload: { unitId: string }) {
+    console.debug('[ui] cancelSelection', payload);
+  },
+  openCityPanel(payload: { cityId: string }) {
+    console.debug('[ui] openCityPanel', payload);
+  },
+  chooseProductionItem(payload: { cityId: string; order: { type: 'unit'|'improvement'|'building'; itemId: string; targetTileId?: string } }) {
+    console.debug('[ui] chooseProductionItem', payload);
+  },
+  reorderProductionQueue(payload: { cityId: string; newQueue: Array<{ type: 'unit'|'improvement'|'building'; itemId: string; targetTileId?: string }> }) {
+    console.debug('[ui] reorderProductionQueue', payload);
+  },
+  cancelOrder(payload: { cityId: string; orderIndex: number }) {
+    console.debug('[ui] cancelOrder', payload);
+  },
+  openResearchPanel() {
+    console.debug('[ui] openResearchPanel');
+  },
+  startResearch(payload: { playerId: string; techId: string }) {
+    console.debug('[ui] startResearch', payload);
+  },
+  queueResearch(payload: { playerId: string; techId: string }) {
+    console.debug('[ui] queueResearch', payload);
+  },
+  switchResearchPolicy(payload: { playerId: string; policy: 'preserveProgress'|'discardProgress' }) {
+    console.debug('[ui] switchResearchPolicy', payload);
+  },
+});

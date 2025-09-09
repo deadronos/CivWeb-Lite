@@ -2,6 +2,9 @@ import React from 'react';
 import { useGame } from '../hooks/useGame';
 import { exportToFile, importFromFile } from '../game/save';
 import { TECHS } from '../game/content/registry';
+import { loadUnits, loadBuildings } from '../data/loader';
+import CivicPanelContainer from './ui/CivicPanelContainer';
+import ExtTechPanelContainer from './ui/ExtTechPanelContainer';
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();
@@ -59,6 +62,23 @@ function GameHUDInner() {
     const pct = Math.floor((ext.playerState.research.progress / tech.cost) * 100);
     return `${tech.name} ${pct}%`;
   }, [ext?.playerState.research]);
+  const extCultureResearch = React.useMemo(() => {
+    if (!ext?.playerState.cultureResearch || !ext?.civics) return null;
+    const civic = ext.civics[ext.playerState.cultureResearch.civicId];
+    if (!civic) return null;
+    const pct = Math.floor((ext.playerState.cultureResearch.progress / civic.cost) * 100);
+    return `${civic.name} ${pct}%`;
+  }, [ext?.playerState.cultureResearch]);
+
+  // Minimal data-backed catalog view (Units/Buildings)
+  const [unitList, setUnitList] = React.useState<{ id: string; name: string; category: string }[]>([]);
+  const [buildingList, setBuildingList] = React.useState<{ id: string; name: string; cost: number }[]>([]);
+  React.useEffect(() => {
+    let on = true;
+    loadUnits().then(us => { if (on) setUnitList(us.map(u => ({ id: u.id, name: u.name, category: u.category }))); });
+    loadBuildings().then(bs => { if (on) setBuildingList(bs.map(b => ({ id: b.id, name: b.name, cost: b.cost as number }))); });
+    return () => { on = false; };
+  }, []);
 
   return (
     <div role="region" aria-label="game heads up display" className="game-hud" onDrop={onDrop} onDragOver={onDragOver}>
@@ -68,13 +88,48 @@ function GameHUDInner() {
       {techSummary && <div>Research: {techSummary}</div>}
       {ext && (
         <>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <ExtTechPanelContainer />
+            <CivicPanelContainer />
+          </div>
           <div>Cities: {cityCount}</div>
           <div>Science/turn: {ext.playerState.science}</div>
+          {typeof ext.playerState.culture === 'number' && (
+            <div>Culture/turn: {ext.playerState.culture}</div>
+          )}
           {extResearch && <div>Ext Research: {extResearch}</div>}
+          {extCultureResearch && <div>Ext Civic: {extCultureResearch}</div>}
           <SpecControls />
         </>
       )}
       {aiAvg && <div>AI Avg: {aiAvg}ms</div>}
+      <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+        <div>
+          <div style={{ fontWeight: 600 }}>Units</div>
+          <ul aria-label="catalog units" style={{ maxHeight: 120, overflow: 'auto', margin: 0, paddingLeft: 16 }}>
+            {(ext
+              ? unitList.filter(u => (ext.playerState.availableUnits?.includes(u.id)) || !u.requires || ext.playerState.researchedTechs.includes(u.requires))
+              : unitList
+            ).map(u => (
+              <li key={u.id}>{u.name} <span style={{ opacity: 0.6 }}>({u.category})</span></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div style={{ fontWeight: 600 }}>Buildings</div>
+          <ul aria-label="catalog buildings" style={{ maxHeight: 120, overflow: 'auto', margin: 0, paddingLeft: 16 }}>
+            {(ext
+              ? buildingList.filter(b => {
+                  const req = (b as any).requires ?? null;
+                  return !req || ext.playerState.researchedTechs.includes(req) || (ext.playerState.researchedCivics ?? []).includes(req);
+                })
+              : buildingList
+            ).map(b => (
+              <li key={b.id}>{b.name} <span style={{ opacity: 0.6 }}>({b.cost})</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
       <button onClick={toggleAuto} aria-label="toggle simulation">{state.autoSim ? 'Pause' : 'Start'}</button>
       <button onClick={regenerate} aria-label="regenerate seed">Regenerate Seed</button>
       <button onClick={handleSave} aria-label="save game">Save</button>
@@ -103,6 +158,22 @@ function SpecControls() {
   const ext = state.contentExt!;
   const [moveUnitId, setMoveUnitId] = React.useState('');
   const [moveToTileId, setMoveToTileId] = React.useState('');
+  const [spawnUnitType, setSpawnUnitType] = React.useState('');
+  const [catalogUnits, setCatalogUnits] = React.useState<{ id: string; name: string; requires: string | null }[]>([]);
+  const [catalogBuildings, setCatalogBuildings] = React.useState<{ id: string; name: string; requires: string | null }[]>([]);
+  const [queueBuildingId, setQueueBuildingId] = React.useState('');
+  const [cultureCivics, setCultureCivics] = React.useState<{ id: string; name: string; cost: number; prereqs: string[] }[]>([]);
+  React.useEffect(() => {
+    let on = true;
+    import('../data/loader').then(m => Promise.all([m.loadUnits(), m.loadBuildings(), m.loadCivics() as any]).then(([ulist, blist, clist]) => {
+      if (on) setCatalogUnits(ulist.map(u => ({ id: u.id, name: u.name, requires: (u as any).requires ?? null })));
+      if (on && ulist.length && !spawnUnitType) setSpawnUnitType(ulist[0].id);
+      if (on) setCatalogBuildings(blist.map(b => ({ id: b.id, name: b.name, requires: (b as any).requires ?? null })));
+      if (on && blist.length && !queueBuildingId) setQueueBuildingId(blist[0].id);
+      if (on && clist) setCultureCivics(clist.map((c: any) => ({ id: c.id, name: c.name, cost: c.culture_cost, prereqs: c.prereqs })));
+    }));
+    return () => { on = false; };
+  }, []);
 
   const ensureDemoCity = () => {
     if (!ext) return;
@@ -128,6 +199,14 @@ function SpecControls() {
     dispatch({ type: 'EXT_ADD_UNIT', payload: { unitId: `worker_${Date.now()}`, type: 'worker', ownerId: city.ownerId, tileId: city.location } });
   };
 
+  const spawnFromCatalog = () => {
+    const cid = ensureDemoCity();
+    if (!cid) return;
+    const city = ext.cities[cid];
+    if (!spawnUnitType) return;
+    dispatch({ type: 'EXT_ADD_UNIT', payload: { unitId: `${spawnUnitType}_${Date.now()}`, type: spawnUnitType, ownerId: city.ownerId, tileId: city.location } });
+  };
+
   const addNeighborTile = () => {
     // create a simple neighbor tile to move to
     dispatch({ type: 'EXT_ADD_TILE', payload: { tile: { id: 'hex_demo_neighbor', q: 0, r: 1, biome: 'hills' } } });
@@ -136,6 +215,19 @@ function SpecControls() {
 
   const moveUnit = () => {
     if (moveUnitId && moveToTileId) dispatch({ type: 'EXT_MOVE_UNIT', payload: { unitId: moveUnitId, toTileId: moveToTileId } });
+  };
+
+  const queueBuilding = () => {
+    const cid = ensureDemoCity();
+    if (!cid) return;
+    if (!queueBuildingId) return;
+    // Rough turns estimate: map from building cost via same model used for units (turns at production 1)
+    const turns = 2;
+    dispatch({ type: 'EXT_QUEUE_PRODUCTION', payload: { cityId: cid, order: { type: 'building', item: queueBuildingId, turns } } });
+  };
+
+  const startCivic = (civicId: string) => {
+    dispatch({ type: 'EXT_BEGIN_CULTURE_RESEARCH', payload: { civicId } });
   };
 
   const researchLabel = ext.playerState.research ? `Researching ${ext.playerState.research.techId}` : 'Start Agriculture';
@@ -148,6 +240,15 @@ function SpecControls() {
         <button onClick={startAgriculture} disabled={!!ext.playerState.research}>{researchLabel}</button>
         <button onClick={queueWarrior}>Queue Warrior</button>
         <button onClick={spawnWorker}>Spawn Worker</button>
+        <label>
+          Spawn Unit
+          <select aria-label="spawn unit select" value={spawnUnitType} onChange={e => setSpawnUnitType(e.target.value)}>
+            {catalogUnits.filter(u => (ext.playerState.availableUnits?.includes(u.id)) || !u.requires || ext.playerState.researchedTechs.includes(u.requires)).map(u => (
+              <option key={u.id} value={u.id}>{u.name}</option>
+            ))}
+          </select>
+          <button onClick={spawnFromCatalog}>Spawn</button>
+        </label>
         <button onClick={addNeighborTile}>Add Neighbor Tile</button>
         <label>
           Unit ID
@@ -158,6 +259,32 @@ function SpecControls() {
           <input aria-label="to tile id" value={moveToTileId} onChange={e => setMoveToTileId(e.target.value)} placeholder="hex_..." />
         </label>
         <button onClick={moveUnit}>Move Unit</button>
+        <label>
+          Start Civic
+          <select aria-label="start civic select" onChange={e => startCivic(e.target.value)} value="">
+            <option value="" disabled>Choose...</option>
+            {cultureCivics
+              .filter(c => (ext.playerState.researchedCivics ?? []).every(id => id !== c.id))
+              .filter(c => c.prereqs.every(p => (ext.playerState.researchedCivics ?? []).includes(p)))
+              .map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
+          </select>
+        </label>
+        <label>
+          Queue Building
+          <select aria-label="queue building select" value={queueBuildingId} onChange={e => setQueueBuildingId(e.target.value)}>
+            {catalogBuildings.map(b => {
+              const built = (ext.cities[ensureDemoCity()]?.buildings ?? []).includes(b.id);
+              const req = b.requires;
+              const canBuild = !req || (ext.playerState.researchedTechs.includes(req)) || (ext.playerState.researchedCivics ?? []).includes(req);
+              return (
+                <option key={b.id} value={b.id} disabled={!canBuild || built}>
+                  {b.name}{built ? ' (built)' : (!canBuild ? ' (locked)' : '')}
+                </option>
+              );
+            })}
+          </select>
+          <button onClick={queueBuilding}>Queue</button>
+        </label>
       </div>
     </div>
   );

@@ -1,0 +1,12 @@
+[
+  { "id": "warrior", "name": "Warrior", "category": "melee", "era": "ancient", "movement": 2, "strength": 10, "ranged": false, "cost": 40, "requires": null, "upgrade_to": "swordsman", "abilities": [] },
+  { "id": "swordsman", "name": "Swordsman", "category": "melee", "era": "classical", "movement": 2, "strength": 20, "ranged": false, "cost": 80, "requires": "bronze-working", "upgrade_to": null, "abilities": [] },
+  { "id": "spearman", "name": "Spearman", "category": "melee", "era": "ancient", "movement": 2, "strength": 15, "ranged": false, "cost": 60, "requires": "bronze-working", "upgrade_to": null, "abilities": [] },
+  { "id": "scout", "name": "Scout", "category": "recon", "era": "ancient", "movement": 3, "strength": 5, "ranged": false, "cost": 30, "requires": "animal-husbandry", "upgrade_to": null, "abilities": ["ignore-rough-terrain"] },
+  { "id": "archer", "name": "Archer", "category": "ranged", "era": "ancient", "movement": 2, "strength": 10, "ranged": true, "range": 2, "cost": 60, "requires": "archery", "upgrade_to": null, "abilities": [] },
+  { "id": "slinger", "name": "Slinger", "category": "ranged", "era": "ancient", "movement": 2, "strength": 6, "ranged": true, "range": 2, "cost": 35, "requires": null, "upgrade_to": "archer", "abilities": [] },
+  { "id": "worker", "name": "Worker", "category": "support", "era": "ancient", "movement": 2, "strength": 0, "ranged": false, "cost": 40, "requires": null, "upgrade_to": null, "abilities": ["build-improvements"] },
+  { "id": "settler", "name": "Settler", "category": "support", "era": "ancient", "movement": 2, "strength": 0, "ranged": false, "cost": 80, "requires": null, "upgrade_to": null, "abilities": ["found-city"] },
+  { "id": "galley", "name": "Galley", "category": "naval", "era": "ancient", "movement": 2, "strength": 15, "ranged": false, "cost": 65, "requires": "sailing", "upgrade_to": null, "abilities": [] }
+]
+

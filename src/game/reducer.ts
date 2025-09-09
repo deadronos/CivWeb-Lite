@@ -4,7 +4,7 @@ import { produceNextState } from './state';
 import { generateWorld } from './world/generate';
 import { globalGameBus } from './events';
 import { appendLog } from './logging';
-import { endTurn as contentEndTurn, beginResearch as extBeginResearch, moveUnit as extMoveUnit } from './content/rules';
+import { endTurn as contentEndTurn, beginResearch as extBeginResearch, beginCultureResearch as extBeginCulture, moveUnit as extMoveUnit } from './content/rules';
 import { createEmptyState as createContentExt } from './content/engine';
 import { UNIT_TYPES } from './content/registry';
 
@@ -60,6 +60,11 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       case 'EXT_BEGIN_RESEARCH': {
         if (!draft.contentExt) draft.contentExt = createContentExt();
         extBeginResearch(draft.contentExt, action.payload.techId);
+        break;
+      }
+      case 'EXT_BEGIN_CULTURE_RESEARCH': {
+        if (!draft.contentExt) draft.contentExt = createContentExt();
+        extBeginCulture(draft.contentExt, action.payload.civicId);
         break;
       }
       case 'EXT_QUEUE_PRODUCTION': {
@@ -154,42 +159,32 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         }
         break;
       }
-      case 'EXT_MOVE_UNIT': {
+            case 'EXT_ISSUE_MOVE_PATH': {
         const ext = (draft.contentExt ||= createContentExt());
-        extMoveUnit(ext, action.payload.unitId, action.payload.toTileId);
-        break;
-      }
-      case 'SET_RESEARCH': {
-        const player = findPlayer(draft.players, action.playerId);
-        if (player) {
-          const tech = draft.techCatalog.find(t => t.id === action.payload.techId);
-          if (tech && tech.prerequisites.every(p => player.researchedTechIds.includes(p))) {
-            player.researching = { techId: tech.id, progress: 0 };
+        const u = ext.units[action.payload.unitId];
+        if (u && action.payload.path && action.payload.path.length) {
+          const enemyAt = (tileId: string): boolean => {
+            const t = ext.tiles[tileId];
+            if (!t) return false;
+            if (t.occupantCityId) {
+              const c = ext.cities[t.occupantCityId];
+              if (c && c.ownerId !== u.ownerId) return true;
+            }
+            for (const other of Object.values(ext.units)) {
+              if (other.id !== u.id && other.location === tileId && other.ownerId !== u.ownerId) return true;
+            }
+            return false;
+          };
+          for (const tid of action.payload.path) {
+            if (enemyAt(tid) && !action.payload.confirmCombat) {
+              break; // require confirmCombat to proceed into enemy tile
+            }
+            const before = u.location;
+            const ok = extMoveUnit(ext, u.id, tid);
+            if (!ok) break;
+            if (u.location === before) break; // no progress safeguard
           }
-        }
-        break;
-      }
-      case 'ADVANCE_RESEARCH': {
-        const player = findPlayer(draft.players, action.playerId);
-        if (player && player.researching) {
-          const points = action.payload?.points ?? 1;
-          player.researching.progress += points;
-          const tech = draft.techCatalog.find(t => t.id === player.researching.techId);
-          if (tech && player.researching.progress >= tech.cost) {
-            player.researchedTechIds.push(tech.id);
-            player.researching = null;
-            globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
-          }
-        }
-        break;
-      }
-      case 'AUTO_SIM_TOGGLE': {
-        draft.autoSim = action.payload?.enabled ?? !draft.autoSim;
-        break;
-      }
-      case 'LOG_EVENT': {
-        appendLog(draft as any as GameState, action.payload.entry);
-        break;
+        }        break;
       }
       case 'RECORD_AI_PERF': {
         if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };

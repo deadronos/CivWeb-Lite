@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "validate:data": "node scripts/validate-content.mjs",
     "test:watch": "vitest",
     "lint": "eslint . --ext .ts,.tsx",
     "bench:world": "tsx scripts/benchWorld.ts",
