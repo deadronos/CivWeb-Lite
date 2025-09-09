@@ -2,10 +2,19 @@ module.exports = {
   root: true,
   env: { browser: true, es2021: true },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  plugins: ['@typescript-eslint', 'eslint-comments', 'security'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+  ],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
+    // Require a short description when disabling eslint rules inline
+    'eslint-comments/require-description': ['warn', { ignore: [] }],
+    'eslint-comments/no-unused-disable': 'error',
+  // Basic security-oriented checks (from eslint-plugin-security)
+  'security/detect-object-injection': 'off',
   },
   ignorePatterns: ['dist', 'node_modules'],
   overrides: [

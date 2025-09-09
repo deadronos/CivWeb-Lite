@@ -18,7 +18,7 @@ if (mountPoint) {
   } catch (err) {
     // Don't rethrow; tests that import this file expect import to succeed.
     // Log at debug level if available.
-    // eslint-disable-next-line no-console
+     
     console.debug('App render skipped during import:', err)
   }
 }

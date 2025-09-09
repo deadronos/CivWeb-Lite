@@ -45,7 +45,7 @@ describe('AI benchmark', () => {
     }
     const avgMsPerCall = totalMs / (iterations * players.length);
     // Log summary so it's visible in test output
-    // eslint-disable-next-line no-console
+     
     console.info(`AI benchmark: avg evaluateAI ${avgMsPerCall.toFixed(4)} ms over ${iterations * players.length} calls`);
     // Keep test non-blocking — assert that it's a number and not NaN
     if (!Number.isFinite(avgMsPerCall)) throw new Error('Invalid benchmark result');
