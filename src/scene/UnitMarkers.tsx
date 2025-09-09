@@ -1,8 +1,9 @@
+/* eslint-disable unicorn/filename-case -- defer filename renames to a dedicated codemod PR that updates imports */
 import React from 'react';
 import HtmlLabel from './drei/HtmlLabel';
 import { useUnitPositions } from './hooks/useUnitPositions';
 
-export default function UnitMarkers() {
+export const UnitMarkers: React.FC = () => {
   const positions = useUnitPositions({ y: 1 });
   return (
     <group>
@@ -13,4 +14,6 @@ export default function UnitMarkers() {
       ))}
     </group>
   );
-}
+};
+
+export default UnitMarkers;

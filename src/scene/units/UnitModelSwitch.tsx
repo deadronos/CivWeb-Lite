@@ -1,6 +1,6 @@
+/* eslint-disable unicorn/filename-case -- defer renaming files to a dedicated PR */
 // Filename remains PascalCase to match exported component names; bulk renames will be
 // done in a separate refactor PR to avoid noisy import changes across the repo.
-/* eslint-disable unicorn/filename-case -- defer renaming files to a dedicated PR */
 import React from 'react';
 import { gltfEnabled } from '../../utils/flags';
 import GLTFModel from '../drei/GLTFModel';
@@ -12,7 +12,7 @@ import { SpearmanModel } from './procedural/SpearmanModel';
 import { GalleyModel } from './procedural/GalleyModel';
 import { getModelComponent } from './modelRegistry';
 
-export type UnitModelProps = {
+export type UnitModelProperties = {
   type: string;
   teamColor?: string;
   position?: [number, number, number];
@@ -25,13 +25,18 @@ export type UnitModelProps = {
   gltf?: string;
 };
 
+// Backward-compatible alias for code that used the previous name
+// Backward-compatible alias for code that used the previous name
+// eslint-disable-next-line unicorn/prevent-abbreviations -- keep legacy alias to avoid mass import updates; remove in dedicated refactor
+export type UnitModelProps = UnitModelProperties;
+
 // Note: GLTF paths are resolved via `gltfRegistry`. If you need a static map later,
 // add it to `gltfRegistry` or export a dedicated mapping module.
 
 import { Bob, phaseFromId } from './Bob';
 import { resolveGLTF } from './gltfRegistry';
 
-export function UnitModelSwitch({
+export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
   teamColor = '#bdc3c7',
   position,
@@ -42,7 +47,7 @@ export function UnitModelSwitch({
   offsetY,
   anim,
   gltf,
-}: UnitModelProps) {
+}) => {
   const lowerType = type.toLowerCase();
   const modelLabel = (model || '').toLowerCase();
   if (gltfEnabled()) {

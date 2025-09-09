@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case -- defer filename renames to a dedicated codemod PR that updates imports */
 import React from 'react';
 import { useGame } from '../hooks/useGame';
 import { useUnitPositions } from './hooks/useUnitPositions';
@@ -7,9 +8,11 @@ import unitsData from '../data/units.json';
 import { UNIT_TYPES } from '../game/content/registry';
 import { distance } from '../game/world/hex';
 
-export default function UnitMeshes() {
+export const UnitMeshes: React.FC = () => {
   const { state } = useGame();
   const positions = useUnitPositions({ y: 0.01 });
+  // Returning null is the standard React convention for rendering nothing here.
+  // eslint-disable-next-line unicorn/no-null -- React component render: return null to render nothing
   if (!state.contentExt) return null;
   const extension = state.contentExt;
   const rangedByType: Record<string, { ranged: boolean; range: number }> = Object.fromEntries(
@@ -31,9 +34,9 @@ export default function UnitMeshes() {
           const locId = unit.location as string;
           const selfTile = extension.tiles[locId];
           if (selfTile) {
-            for (const other of Object.values(extension.units)) {
-              if (other.ownerId === unit.ownerId) continue;
-              const otherTile = extension.tiles[other.location as string];
+            for (const other of Object.values(extension.units) as any[]) {
+              if ((other as any).ownerId === unit.ownerId) continue;
+              const otherTile = extension.tiles[(other as any).location as string];
               if (!otherTile) continue;
               const d = distance(
                 { q: selfTile.q, r: selfTile.r },
@@ -46,12 +49,12 @@ export default function UnitMeshes() {
             }
           }
         }
-        const def = UNIT_TYPES[u.type];
-        const model = def?.visual?.model ?? def?.model ?? undefined;
-        const gltf = def?.visual?.gltf ?? undefined;
-        const offsetY = def?.visual?.offsetY ?? (def?.domain === 'naval' ? 0.06 : 0);
-        const anim = def?.visual?.anim;
-        const vScale = def?.visual?.scale;
+  const unitDefinition = UNIT_TYPES[u.type];
+  const model = unitDefinition?.visual?.model ?? unitDefinition?.model ?? undefined;
+  const gltf = unitDefinition?.visual?.gltf ?? undefined;
+  const offsetY = unitDefinition?.visual?.offsetY ?? (unitDefinition?.domain === 'naval' ? 0.06 : 0);
+  const anim = unitDefinition?.visual?.anim;
+  const vScale = unitDefinition?.visual?.scale;
         return (
           <UnitModelSwitch
             key={u.id}
@@ -70,4 +73,6 @@ export default function UnitMeshes() {
       })}
     </group>
   );
-}
+};
+
+export default UnitMeshes;

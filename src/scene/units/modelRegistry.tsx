@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case -- defer filename renames to a dedicated PR that updates imports */
 import React from 'react';
 import { WarriorModel, MODEL_LABEL as WARRIOR } from './procedural/WarriorModel';
 import { SettlerModel, MODEL_LABEL as SETTLER } from './procedural/SettlerModel';
