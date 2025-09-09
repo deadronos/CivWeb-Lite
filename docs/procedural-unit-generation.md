@@ -18,6 +18,34 @@ The fundamental idea is to construct units by combining and grouping primitive 3
 
 4.  **Preload Geometries:** To avoid any in-game performance stutters, it's best to "preload" the units. This means creating one of each unit type during the initial game loading screen and caching the geometries. When a new unit is needed in-game, you can efficiently clone these pre-generated models instead of calculating them from scratch.
 
+### Feature Flag: GLTF vs Procedural
+
+- Procedural models are the default.
+- To enable GLTF models (when assets are available), set `VITE_ENABLE_GLTF=true` in your env. Without this flag, the renderer uses procedural stick figures.
+- Code entry points:
+  - `src/scene/units/UnitModelSwitch.tsx` – selects GLTF or procedural per unit type.
+  - Procedural components live in `src/scene/units/procedural/`.
+  - Scene wiring: `src/scene/UnitMeshes.tsx` and `src/scene/Scene.tsx`.
+
+### Visual Schema (data-driven)
+
+- Each unit in `src/data/units.json` can define a `visual` object:
+  - `model`: string label to pick a procedural component (e.g., `"warrior"`, `"archer"`, `"galley"`). Labels are registered in `src/scene/units/modelRegistry.tsx`.
+  - `scale`: number or `[x, y, z]` to scale the model.
+  - `offsetY`: number to nudge the model vertically (e.g., ships above waterline).
+  - `anim`: `{ bobAmp?: number; bobSpeed?: number }` to tweak idle bob animation.
+  - `gltf`: optional GLTF label or path. When `VITE_ENABLE_GLTF=true`, the renderer will try to resolve this via `src/scene/units/gltfRegistry.ts` and load that URL. If absent or resolution fails, it falls back to the procedural `model`.
+
+Example:
+```
+{
+  "id": "archer",
+  "visual": { "model": "archer", "anim": { "bobAmp": 0.05, "bobSpeed": 0.4 }, "gltf": "archer" }
+}
+```
+
+See `src/game/content/registry.ts` for how `visual` is parsed and exposed to the scene.
+
 ### Conceptual Code Example
 
 ```jsx
@@ -57,6 +85,8 @@ export function WarriorModel({ teamColor = 'red' }) {
   );
 }
 ```
+
+In this codebase, see the live components under `src/scene/units/procedural/` (e.g., `WarriorModel.tsx`, `SettlerModel.tsx`, `WorkerModel.tsx`), and the runtime switcher in `src/scene/units/UnitModelSwitch.tsx`.
 
 ---
 

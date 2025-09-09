@@ -45,6 +45,12 @@
     "tsx": "^4.7.0",
     "typescript": "*",
     "vite": "*",
+    "vite-plugin-checker": "latest",
+    "vite-bundle-analyzer":"latest",
+    "vite-plugin-svgr":"latest",
+    "vite-plugin-glsl":"latest",
+    "vite-plugin-compression":"latest",
+    "vite-plugin-image-optimizer":"latest",
     "vitest": "*"
   }
 }

@@ -4,14 +4,18 @@ type TileMeshProps = {
   position: [number, number, number];
   color?: string;
   onPointerMove?: (e: any) => void;
+  size?: number; // hex radius (default: 0.5)
 };
 
-// Memoized placeholder for a tile mesh; ready for future map rendering
-export const TileMesh = React.memo(function TileMesh({ position, color = '#88c', onPointerMove }: TileMeshProps) {
-  // Intentionally simple box geometry placeholder
+// TileMesh: renders a flat-top hex using a short cylinder with 6 radial segments.
+// Size is the hex radius (distance center->corner). Orientation: flat-top.
+export const TileMesh = React.memo(function TileMesh({ position, color = '#88c', onPointerMove, size = 0.5 }: TileMeshProps) {
+  const radius = size;
+  const thickness = 0.08; // small height for slight elevation
   return (
     <mesh position={position} onPointerMove={onPointerMove as any}>
-      <boxGeometry args={[0.9, 0.1, 0.9]} />
+      {/* cylinderGeometry(topRadius, bottomRadius, height, radialSegments) */}
+      <cylinderGeometry args={[radius, radius, thickness, 6]} />
       <meshStandardMaterial color={color} />
     </mesh>
   );

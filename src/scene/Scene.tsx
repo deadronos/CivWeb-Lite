@@ -9,8 +9,10 @@ import BillboardLabel from './drei/BillboardLabel';
 import { isDevOrTest } from '../utils/env';
 import { useSelection } from '../contexts/SelectionContext';
 import { useHoverTile } from '../contexts/HoverContext';
-import { axialToWorld, tileIdToWorldFromExt } from './utils/coords';
+import { axialToWorld, tileIdToWorldFromExt, DEFAULT_HEX_SIZE } from './utils/coords';
 import UnitMarkers from './UnitMarkers';
+import UnitMeshes from './UnitMeshes';
+import ProceduralPreload from './units/ProceduralPreload';
 
 // Base Scene used by existing tests; remains minimal and provider-agnostic
 export default function Scene() {
@@ -27,10 +29,10 @@ export function ConnectedScene() {
   const { index: hoverIndex, setHoverIndex } = useHoverTile();
   const tiles = state.map.tiles;
   const positions = useMemo(() => {
-    // derive simple axial-to-plane positions; placeholder layout
+    // derive simple axial-to-plane positions using shared hex size
     const pos: Array<[number, number, number]> = [];
     for (const t of tiles) {
-      const [x, z] = axialToWorld(t.coord.q, t.coord.r);
+      const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       pos.push([x, 0, z]);
     }
     // Cap positions during tests to keep the DOM light
@@ -55,6 +57,7 @@ export function ConnectedScene() {
 
   return (
     <group>
+      <ProceduralPreload />
       {/* Drei wrappers: camera controls and dev stats */}
       <CameraControls />
       <DevStats enabled={isDevOrTest()} />
@@ -75,7 +78,7 @@ export function ConnectedScene() {
         const q = (loc as any).q;
         const r = (loc as any).r;
         const biome = (loc as any).biome;
-        const world = typeof unit.location === 'string' ? tileIdToWorldFromExt(state.contentExt as any, unit.location) : axialToWorld(q, r);
+  const world = typeof unit.location === 'string' ? tileIdToWorldFromExt(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE) : axialToWorld(q, r, DEFAULT_HEX_SIZE);
         const [x, z] = world as [number, number];
         return (
           <HtmlLabel position={[x, 1.5, z]} data-testid="selected-unit-label">
@@ -86,9 +89,11 @@ export function ConnectedScene() {
       {isDevOrTest() && state.contentExt && (
         <UnitMarkers />
       )}
+      {/* Units (procedural by default, GLTF behind flag) */}
+      {state.contentExt && <UnitMeshes />}
       {hoverIndex != null && tiles[hoverIndex] && (() => {
         const t = tiles[hoverIndex];
-        const [x, z] = axialToWorld(t.coord.q, t.coord.r);
+  const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
         return (
           <HtmlLabel position={[x, 1.2, z]} data-testid="hovered-tile-label">
             {t.id} ({t.coord.q},{t.coord.r}) • {t.biome}
@@ -96,13 +101,13 @@ export function ConnectedScene() {
         );
       })()}
       {useInstanced ? (
-        <InstancedTiles positions={positions} onPointerMove={(e) => {
+        <InstancedTiles positions={positions} size={DEFAULT_HEX_SIZE} onPointerMove={(e) => {
           const idx = (e as any).instanceId;
           if (typeof idx === 'number') setHoverIndex(idx);
         }} />
       ) : (
         positions.map((p, i) => (
-          <TileMesh key={i} position={p} onPointerMove={() => setHoverIndex(i)} />
+          <TileMesh key={i} position={p} size={DEFAULT_HEX_SIZE} onPointerMove={() => setHoverIndex(i)} />
         ))
       )}
     </group>
