@@ -30,7 +30,9 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
       if (typeof cfg.seed === 'string') setSeed(cfg.seed);
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
-    } catch {}
+    } catch (e) {
+      // ignore JSON parse/localStorage errors during hydrate in browsers without storage
+    }
   }, []);
 
   const start = (e: React.FormEvent) => {
@@ -39,7 +41,7 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
     const payload: StartConfig = { width, height, seed: seed || undefined, totalPlayers: players, humanPlayers, selectedLeaders: selectedLeaders.slice(0, players) };
     dispatch({ type: 'NEW_GAME', payload } as any);
     onStart(payload);
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ size, seed, players, selectedLeaders })); } catch {}
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ size, seed, players, selectedLeaders })); } catch (e) { /* ignore quota errors or storage issues */ }
   };
 
   return (

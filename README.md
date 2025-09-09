@@ -85,6 +85,23 @@ src/
 - Prefer pure functions for simulation logic so state transitions are deterministic and testable.
 - Use the provided seedable RNG utilities in `src/game/rng.ts` rather than `Math.random()` to ensure reproducibility.
 
+## Linting note (TypeScript / @typescript-eslint)
+
+This repository currently uses a stable `@typescript-eslint` release with ESLint configured via `eslint.config.cjs`.
+
+- Current TypeScript in the repo: 5.9.x (may be newer on contributor machines).
+- Current `@typescript-eslint` stable release: 8.43.0.
+
+There is a known compatibility warning where `@typescript-eslint` lists a supported TypeScript range that does not yet include 5.9. The linter and parser generally still work, but type-aware lint rules may behave unexpectedly in some edge cases.
+
+If you hit parser or type-analysis errors from ESLint locally or in CI, consider one of the following:
+
+1. Temporarily pin `typescript` to a supported version (for example `5.5.x`) in your local environment or CI image.
+2. Use the `@typescript-eslint` canary builds if you need immediate support for newer TypeScript features (note: canary releases may be unstable).
+3. Report the failing rule/output here in an issue and the maintainers will triage and either pin or upgrade accordingly.
+
+When opening PRs, don't be alarmed by the compatibility warning — it's informational. Run `npm run lint` and file an issue if you see rule failures that appear to be caused by the parser mismatch.
+
 ## Documentation & planning
 
 - Specification: `spec/spec-architecture-civweb-lite-core.md` — definitive requirements and constraints.

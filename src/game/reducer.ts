@@ -4,7 +4,6 @@ import { GameAction } from './actions';
 import { produceNextState } from './state';
 import { generateWorld } from './world/generate';
 import { globalGameBus } from './events';
-import { appendLog } from './logging';
 import { endTurn as contentEndTurn, beginResearch as extBeginResearch, beginCultureResearch as extBeginCulture, moveUnit as extMoveUnit } from './content/rules';
 import { createEmptyState as createContentExt } from './content/engine';
 import { UNIT_TYPES } from './content/registry';

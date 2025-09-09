@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('smoke: start, advance 2 turns, save, load', async ({ page, context }) => {
+test('smoke: start, advance 2 turns, save, load', async ({ page }) => {
   await page.goto('/');
 
   // Ensure initial UI visible

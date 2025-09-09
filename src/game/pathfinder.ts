@@ -10,7 +10,7 @@ import { neighbors as hexNeighbors } from './world/hex';
 import { movementCost, isPassable } from './content/biomes';
 import { UNIT_TYPES } from './content/registry';
 
-type Node = { id: string; cost: number; prev?: string };
+// ...existing code...
 
 function keyOf(tile: Hextile) {
   return `${tile.q},${tile.r}`;

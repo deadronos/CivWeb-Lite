@@ -18,7 +18,7 @@ function setupWorld() {
 
 describe('UnitSelectionOverlayContainer preview', () => {
   it('renders overlay and shows reachable tiles', () => {
-    const s = setupWorld();
+  setupWorld();
     // Render with a provider freeze state via context is internal; this test asserts render shape
     render(
       <GameProvider>

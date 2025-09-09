@@ -1,11 +1,32 @@
 module.exports = {
-  root: true,
   env: { browser: true, es2021: true },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'eslint-comments', 'security'],
+  plugins: [
+    '@typescript-eslint',
+    'eslint-comments',
+    'security',
+    'react',
+    'react-hooks',
+    'jsx-a11y',
+    'import',
+    'simple-import-sort',
+    'testing-library',
+    'vitest',
+    'playwright',
+    'unicorn',
+    'sonarjs',
+    'promise',
+  ],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:testing-library/react',
+    'plugin:vitest/recommended',
     'prettier',
   ],
   rules: {
@@ -16,8 +37,23 @@ module.exports = {
   // Basic security-oriented checks (from eslint-plugin-security)
   'security/detect-object-injection': 'off',
   },
+  settings: {
+    react: { version: 'detect' },
+    'import/resolver': { typescript: {} },
+  },
   ignorePatterns: ['dist', 'node_modules'],
   overrides: [
+    // Tests: vitest, testing-library, playwright rules
+    {
+      files: ['**/*.test.{ts,tsx}', 'tests/**', 'playwright/**', '**/*.spec.{ts,tsx}'],
+      env: { vitest: true },
+      plugins: ['testing-library', 'vitest', 'playwright'],
+      extends: ['plugin:testing-library/react', 'plugin:vitest/recommended'],
+      rules: {
+        // allow dev-only imports in tests
+        'import/no-extraneous-dependencies': 'off',
+      },
+    },
     {
       files: ['src/game/**/*.{ts,tsx}'],
       rules: {
@@ -29,6 +65,13 @@ module.exports = {
             message: 'Use deterministic RNG from src/game/rng.ts',
           },
         ],
+      },
+    },
+    // Small override for JS files where type-aware rules aren't necessary
+    {
+      files: ['scripts/**', 'playwright/**'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
       },
     },
   ],

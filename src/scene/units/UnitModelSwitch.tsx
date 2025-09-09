@@ -22,12 +22,8 @@ export type UnitModelProps = {
   gltf?: string;
 };
 
-const GLTF_MAP: Record<string, string> = {
-  // Example paths (placeholders). Provide real assets later.
-  warrior: '/models/warrior.glb',
-  settler: '/models/settler.glb',
-  worker: '/models/worker.glb',
-};
+// Note: GLTF paths are resolved via `gltfRegistry`. If you need a static map later,
+// add it to `gltfRegistry` or export a dedicated mapping module.
 
 import { Bob, phaseFromId } from './Bob';
 import { resolveGLTF } from './gltfRegistry';

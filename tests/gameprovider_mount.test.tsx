@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 // Mock heavy or external side-effect modules used by GameProvider
 vi.doMock('../src/game/ai/ai', () => ({ evaluateAI: () => [] }));

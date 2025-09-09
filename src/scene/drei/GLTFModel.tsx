@@ -26,7 +26,7 @@ export default function GLTFModel({ url, ...rest }: Props) {
 // Drei recommendation: preloading helper
 export function preloadGLTF(url: string) {
   try {
-    // @ts-ignore
+    // @ts-expect-error - useGLTF.preload is provided by Drei runtime; tests may not include types
     useGLTF.preload?.(url);
   } catch {
     // ignore in tests

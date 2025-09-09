@@ -19,8 +19,8 @@ function seedWorld() {
 
 describe('Minimap highlights reachable tiles when a unit is selected', () => {
   it('sets data-highlight when selection present', () => {
-    // prime provider state by calling reducer before render
-    const s = seedWorld();
+  // prime provider state by calling reducer before render
+  seedWorld();
     // Render providers and component. Note: GameProvider initializes its own state,
     // this test is primarily checking wiring exists and does not crash.
     render(

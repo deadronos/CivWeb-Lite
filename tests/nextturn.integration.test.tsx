@@ -5,7 +5,7 @@ import NextTurnControlContainer from '../src/components/ui/NextTurnControlContai
 
 describe('NextTurnControl integration', () => {
   it('advances turn via container + provider', () => {
-    const ui = render(
+  render(
       <GameProvider>
         <TopBarContainer />
         <NextTurnControlContainer />
