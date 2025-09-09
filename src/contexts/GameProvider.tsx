@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { RNGState } from '../game/rng';
 import { globalGameBus } from '../game/events';
 import { GameState, Tile, PlayerState } from '../game/types';
+import { createEmptyState as createContentExt } from '../game/content/engine';
 import { GameAction } from '../game/actions';
 import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
@@ -26,6 +27,7 @@ export const initialState = (): GameState => ({
   aiPerf: { total: 0, count: 0 },
   mode: 'standard',
   autoSim: false,
+  contentExt: createContentExt(),
 });
 
 export function GameProvider({ children }: { children: ReactNode }) {
