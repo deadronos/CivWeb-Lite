@@ -9,15 +9,15 @@ export function UnitSelectionOverlayContainer({
   selectedUnitId: string | null;
 }) {
   const { state, dispatch } = useGame();
-  const ext = state.contentExt;
+  const extension = state.contentExt;
   const [path, setPath] = useState<string[] | undefined>();
 
   const range = useMemo(() => {
-    if (!ext || !selectedUnitId) return { reachable: [], cost: {} as Record<string, number> };
-    return computeMovementRange(ext, selectedUnitId);
-  }, [ext, selectedUnitId]);
+    if (!extension || !selectedUnitId) return { reachable: [], cost: {} as Record<string, number> };
+    return computeMovementRange(extension, selectedUnitId);
+  }, [extension, selectedUnitId]);
 
-  if (!selectedUnitId || !ext) return null;
+  if (!selectedUnitId || !extension) return null;
 
   return (
     <UnitSelectionOverlay
@@ -25,8 +25,8 @@ export function UnitSelectionOverlayContainer({
       computedRangeTiles={range.reachable}
       computedPath={path}
       onPreviewPath={(targetTileId) => {
-        if (!ext) return;
-        const res = computePath(ext, selectedUnitId, targetTileId);
+        if (!extension) return;
+        const res = computePath(extension, selectedUnitId, targetTileId);
         if ('path' in res && res.path) setPath(res.path);
         else setPath(undefined);
       }}

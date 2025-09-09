@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case -- deferred filename rename to dedicated renaming PR */
 import React from 'react';
 import { getBox, getCone, getCylinder, getSphere, getTorus } from './shared';
 
@@ -14,11 +15,12 @@ export type StickFigureOptions = {
   };
 };
 
-export function StickFigure({
+// Keep this component small and self-contained. Use React.FC for clearer typing.
+export const StickFigure: React.FC<StickFigureOptions> = ({
   teamColor = '#bdc3c7',
   height = 1.6,
   accessories = {},
-}: StickFigureOptions) {
+}) => {
   const scale = height / 1.6;
   const headY = 1.2 * scale;
   const torsoY = 0.6 * scale;
@@ -138,4 +140,6 @@ export function StickFigure({
       )}
     </group>
   );
-}
+};
+
+export default StickFigure;

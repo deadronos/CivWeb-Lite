@@ -11,7 +11,7 @@ export default function MinimapContainer() {
   let selectedUnitId: string | null = null;
   try {
     selectedUnitId = useSelection()?.selectedUnitId ?? null;
-  } catch (e) {
+  } catch {
     // tests may not include SelectionProvider; fall back to null
     selectedUnitId = null;
   }
@@ -22,15 +22,15 @@ export default function MinimapContainer() {
     },
     [camera]
   );
-  const ext = state.contentExt;
+  const extension = state.contentExt;
   const highlighted = React.useMemo(() => {
-    if (!ext || !selectedUnitId) return [] as string[];
+    if (!extension || !selectedUnitId) return [] as string[];
     try {
-      return computeMovementRange(ext, selectedUnitId).reachable;
+      return computeMovementRange(extension, selectedUnitId).reachable;
     } catch {
       return [] as string[];
     }
-  }, [ext, selectedUnitId]);
+  }, [extension, selectedUnitId]);
   return (
     <Minimap
       width={state.map.width}

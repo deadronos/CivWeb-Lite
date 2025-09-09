@@ -11,9 +11,24 @@ export const SCHEMA_VERSION = 1;
 // use validator helper to lazy-load AJV
 // ensureValidator will compile the schema on first use
 
-export class VersionMismatchError extends Error {}
-export class ValidationError extends Error {}
-export class SizeExceededError extends Error {}
+export class VersionMismatchError extends Error {
+	constructor() {
+		super();
+		this.name = 'VersionMismatchError';
+	}
+}
+export class ValidationError extends Error {
+	constructor() {
+		super();
+		this.name = 'ValidationError';
+	}
+}
+export class SizeExceededError extends Error {
+	constructor() {
+		super();
+		this.name = 'SizeExceededError';
+	}
+}
 
 export function serializeState(state: GameState): string {
   const { ...clone } = state;
@@ -27,12 +42,12 @@ export function deserializeState(json: string): GameState {
       `Expected schemaVersion ${SCHEMA_VERSION} but received ${data.schemaVersion}`
     );
   }
-  const validateFn = ensureValidator();
-  const valid = validateFn(data as any);
+  const validateFunction = ensureValidator();
+  const valid = validateFunction(data as any);
   if (!valid) {
     // Use the AJV instance to format errors if available
     const ajv = getAjvInstance();
-    const text = ajv ? ajv.errorsText((validateFn as any).errors) : 'Validation failed';
+    const text = ajv ? ajv.errorsText((validateFunction as any).errors) : 'Validation failed';
     throw new ValidationError(text);
   }
   return data as GameState;

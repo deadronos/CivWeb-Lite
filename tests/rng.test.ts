@@ -7,7 +7,7 @@ describe('rng', () => {
     let s2 = seedFrom('abc');
     const vals1: number[] = [];
     const vals2: number[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let index = 0; index < 5; index++) {
       const out1 = next(s1);
       s1 = out1.state;
       vals1.push(out1.value);

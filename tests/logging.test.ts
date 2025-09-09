@@ -17,8 +17,8 @@ describe('logging helpers', () => {
 
   it('appendLog respects capacity', () => {
     const s = initialStateForTests();
-    for (let i = 0; i < 55; i++) {
-      appendLog(s as any, { timestamp: i, turn: 0, type: `e${i}` }, 5);
+    for (let index = 0; index < 55; index++) {
+      appendLog(s as any, { timestamp: index, turn: 0, type: `e${index}` }, 5);
     }
     expect(s.log.length).toBe(5);
     expect(s.log[0].type).toBe('e50');

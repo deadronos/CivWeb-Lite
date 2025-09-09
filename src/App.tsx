@@ -14,7 +14,7 @@ import MainMenu from './components/ui/MainMenu';
 import { useGame } from './hooks/useGame';
 import CameraControls from './scene/drei/CameraControls';
 import DevStats from './scene/drei/DevStats';
-import { isDevOrTest } from './utils/env';
+import { isDevOrTest as isDevelopmentOrTest } from './utils/env';
 
 export default function App() {
   const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
@@ -31,7 +31,7 @@ export default function App() {
               <directionalLight position={[5, 10, 5]} intensity={0.6} />
               <Scene />
               <CameraControls />
-              <DevStats enabled={isDevOrTest()} />
+              <DevStats enabled={isDevelopmentOrTest()} />
             </Canvas>
             <GameHUD />
             <TopBarContainer />
@@ -59,8 +59,8 @@ function LoadListener({ onLoaded }: { onLoaded: () => void }) {
       game.dispatch({ type: 'LOAD_STATE', payload: e.detail });
       onLoaded();
     };
-    window.addEventListener('civweblite:loadState', handler);
-    return () => window.removeEventListener('civweblite:loadState', handler);
+    globalThis.addEventListener('civweblite:loadState', handler);
+    return () => globalThis.removeEventListener('civweblite:loadState', handler);
   }, [game.dispatch, onLoaded]);
   return null;
 }

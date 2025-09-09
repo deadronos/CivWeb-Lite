@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case -- defer filename renames to a dedicated PR that updates imports */
 import React from 'react';
 import { WarriorModel, MODEL_LABEL as WARRIOR } from './procedural/WarriorModel';
 import { SettlerModel, MODEL_LABEL as SETTLER } from './procedural/SettlerModel';
@@ -6,9 +7,9 @@ import { ArcherModel, MODEL_LABEL as ARCHER } from './procedural/ArcherModel';
 import { SpearmanModel, MODEL_LABEL as SPEARMAN } from './procedural/SpearmanModel';
 import { GalleyModel, MODEL_LABEL as GALLEY } from './procedural/GalleyModel';
 
-export type ModelComponent = (props: { teamColor?: string }) => React.ReactNode;
+export type ModelComponent = React.ComponentType<{ teamColor?: string; showArrow?: boolean }>; 
 
-const components: Record<string, any> = {
+const registry: Record<string, ModelComponent> = {
   [WARRIOR]: WarriorModel,
   [SETTLER]: SettlerModel,
   [WORKER]: WorkerModel,
@@ -17,7 +18,7 @@ const components: Record<string, any> = {
   [GALLEY]: GalleyModel,
 };
 
-export function getModelComponent(label?: string): any | null {
-  if (!label) return null;
-  return components[label] ?? null;
+export function getModelComponent(label?: string): ModelComponent | undefined {
+  if (!label) return undefined;
+  return registry[label];
 }

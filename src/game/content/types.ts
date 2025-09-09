@@ -81,7 +81,7 @@ export interface Civic {
   };
 }
 
-export interface GameStateExt {
+export interface GameStateExtension {
   tiles: Record<string, Hextile>;
   units: Record<string, Unit>;
   cities: Record<string, City>;

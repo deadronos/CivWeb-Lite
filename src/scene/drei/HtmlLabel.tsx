@@ -1,11 +1,11 @@
 import React from 'react';
 import { Html } from '@react-three/drei';
 
-type Props = React.ComponentProps<typeof Html> & {
+type Properties = React.ComponentProps<typeof Html> & {
   className?: string;
 };
 
-export default function HtmlLabel({ children, className = 'label', ...rest }: Props) {
+export default function HtmlLabel({ children, className = 'label', ...rest }: Properties) {
   return (
     <Html center {...rest}>
       <div className={className}>{children}</div>

@@ -14,11 +14,11 @@ export function axialToWorld(q: number, r: number, size = 1): [number, number] {
 }
 
 export function tileIdToWorldFromExt(
-  ext: { tiles: Record<string, { q: number; r: number }> },
+  extension: { tiles: Record<string, { q: number; r: number }> },
   tileId: string,
   size = 1
 ): [number, number] | null {
-  const t = ext.tiles[tileId] as { q: number; r: number } | undefined;
+  const t = extension.tiles[tileId] as { q: number; r: number } | undefined;
   if (!t) return null;
   return axialToWorld(t.q, t.r, size);
 }

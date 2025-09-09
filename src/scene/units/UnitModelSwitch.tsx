@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/filename-case -- defer renaming files to a dedicated PR */
+// Filename remains PascalCase to match exported component names; bulk renames will be
+// done in a separate refactor PR to avoid noisy import changes across the repo.
 import React from 'react';
 import { gltfEnabled } from '../../utils/flags';
 import GLTFModel from '../drei/GLTFModel';
@@ -9,7 +12,7 @@ import { SpearmanModel } from './procedural/SpearmanModel';
 import { GalleyModel } from './procedural/GalleyModel';
 import { getModelComponent } from './modelRegistry';
 
-export type UnitModelProps = {
+export type UnitModelProperties = {
   type: string;
   teamColor?: string;
   position?: [number, number, number];
@@ -22,13 +25,18 @@ export type UnitModelProps = {
   gltf?: string;
 };
 
+// Backward-compatible alias for code that used the previous name
+// Backward-compatible alias for code that used the previous name
+// eslint-disable-next-line unicorn/prevent-abbreviations -- keep legacy alias to avoid mass import updates; remove in dedicated refactor
+export type UnitModelProps = UnitModelProperties;
+
 // Note: GLTF paths are resolved via `gltfRegistry`. If you need a static map later,
 // add it to `gltfRegistry` or export a dedicated mapping module.
 
 import { Bob, phaseFromId } from './Bob';
 import { resolveGLTF } from './gltfRegistry';
 
-export function UnitModelSwitch({
+export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
   teamColor = '#bdc3c7',
   position,
@@ -39,11 +47,11 @@ export function UnitModelSwitch({
   offsetY,
   anim,
   gltf,
-}: UnitModelProps) {
-  const lower = type.toLowerCase();
-  const label = (model || '').toLowerCase();
+}) => {
+  const lowerType = type.toLowerCase();
+  const modelLabel = (model || '').toLowerCase();
   if (gltfEnabled()) {
-    const url = resolveGLTF(gltf || label || lower);
+    const url = resolveGLTF(gltf || modelLabel || lowerType);
     if (url) return <GLTFModel url={url} position={position} scale={scale ?? 0.6} />;
   }
 
@@ -58,7 +66,7 @@ export function UnitModelSwitch({
   const phase = phaseFromId(id);
 
   // Use labeled model if provided in data registry
-  const Labeled = getModelComponent(label);
+  const Labeled = getModelComponent(modelLabel);
   if (Labeled) {
     return (
       <CommonWrap>
@@ -66,15 +74,15 @@ export function UnitModelSwitch({
           {/* Archer supports showArrow; other models ignore prop */}
           <Labeled
             teamColor={teamColor}
-            {...(lower === 'archer' ? { showArrow: !!rangedReady } : {})}
+            {...(lowerType === 'archer' ? { showArrow: !!rangedReady } : {})}
           />
         </Bob>
       </CommonWrap>
     );
   }
 
-  switch (lower) {
-    case 'warrior':
+  switch (lowerType) {
+  case 'warrior': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
@@ -82,7 +90,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'spearman':
+    }
+  case 'spearman': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
@@ -90,7 +99,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'archer':
+    }
+  case 'archer': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.4} phase={phase}>
@@ -98,7 +108,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'settler':
+    }
+  case 'settler': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.3} phase={phase}>
@@ -106,7 +117,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'worker':
+    }
+  case 'worker': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.45} phase={phase}>
@@ -114,7 +126,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'galley':
+    }
+  case 'galley': {
       return (
         <CommonWrap>
           <group>
@@ -124,7 +137,8 @@ export function UnitModelSwitch({
           </group>
         </CommonWrap>
       );
-    default:
+    }
+  default: {
       return (
         <CommonWrap>
           {/* Minimal placeholder for unknown types */}
@@ -134,5 +148,6 @@ export function UnitModelSwitch({
           </mesh>
         </CommonWrap>
       );
+    }
   }
 }

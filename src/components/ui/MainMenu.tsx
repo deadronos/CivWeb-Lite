@@ -35,7 +35,7 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return;
       const cfg = JSON.parse(raw);
-      if (cfg.size) setSize(cfg.size);
+      if (cfg.size > 0) setSize(cfg.size);
       if (typeof cfg.seed === 'string') setSeed(cfg.seed);
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
@@ -44,8 +44,8 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
     }
   }, []);
 
-  const start = (e: React.FormEvent) => {
-    e.preventDefault();
+  const start = (evt: React.FormEvent) => {
+    evt.preventDefault();
     const { width, height } = MAP_SIZES[size];
     const payload: StartConfig = {
       width,
@@ -70,10 +70,10 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
         <h1 style={{ marginTop: 0 }}>CivWeb‑Lite</h1>
         <div style={styles.field}>
           <label htmlFor="size">Map Size</label>
-          <select id="size" value={size} onChange={(e) => setSize(e.target.value as MapSizeKey)}>
-            {Object.entries(MAP_SIZES).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v.label}
+          <select id="size" value={size} onChange={(evt) => setSize(evt.target.value as MapSizeKey)}>
+            {Object.entries(MAP_SIZES).map(([key, sizeObj]) => (
+              <option key={key} value={key}>
+                {sizeObj.label}
               </option>
             ))}
           </select>
@@ -83,26 +83,26 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
           <input
             id="seed"
             value={seed}
-            onChange={(e) => setSeed(e.target.value)}
+            onChange={(evt) => setSeed(evt.target.value)}
             placeholder="random if blank"
           />
         </div>
         <div style={styles.field}>
           <label htmlFor="players">Players (total)</label>
-          <input
+            <input
             id="players"
             type="number"
             min={1}
             max={6}
             value={players}
-            onChange={(e) => setPlayers(parseInt(e.target.value || '2', 10))}
+              onChange={(evt) => setPlayers(Number.parseInt(evt.target.value || '2', 10))}
           />
         </div>
         <div style={{ marginTop: 12 }}>
           <div style={{ marginBottom: 4, fontWeight: 600 }}>Leaders</div>
-          {Array.from({ length: players }).map((_, i) => (
+          {Array.from({ length: players }).map((_, index) => (
             <div
-              key={i}
+              key={index}
               style={{
                 display: 'flex',
                 gap: 8,
@@ -111,24 +111,24 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
                 marginTop: 6,
               }}
             >
-              <label>Player {i + 1}</label>
+              <label>Player {index + 1}</label>
               <select
-                aria-label={`Leader for player ${i + 1}`}
-                value={selectedLeaders[i] ?? 'random'}
+                aria-label={`Leader for player ${index + 1}`}
+                value={selectedLeaders[index] ?? 'random'}
                 onChange={(e) => {
                   const next = [...selectedLeaders];
-                  next[i] = e.target.value as any;
+                  next[index] = e.target.value as any;
                   setSelectedLeaders(next);
                 }}
               >
                 <option value="random">Random</option>
-                {(leaders as any[]).map((l) => (
+                {(leaders as any[]).map((leader) => (
                   <option
-                    key={l.id}
-                    value={l.id}
-                    title={`${l.historical_note || ''} | Victory: ${(l.preferred_victory || []).join(', ')}`}
+                    key={leader.id}
+                    value={leader.id}
+                    title={`${leader.historical_note || ''} | Victory: ${(leader.preferred_victory || []).join(', ')}`}
                   >
-                    {l.name}
+                    {leader.name}
                   </option>
                 ))}
               </select>
@@ -137,7 +137,13 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
           <button type="submit">Start New Game</button>
-          <button type="button" onClick={() => document.getElementById('hud-load-input')?.click()}>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.querySelector('#load-input');
+              if (el && el instanceof HTMLInputElement) el.click();
+            }}
+          >
             Load Save…
           </button>
           <input
@@ -183,18 +189,18 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-async function onLoadFile(ev: React.ChangeEvent<HTMLInputElement>) {
-  const input = ev.currentTarget;
+async function onLoadFile(event: React.ChangeEvent<HTMLInputElement>) {
+  const input = event.currentTarget;
   if (!input.files || input.files.length === 0) return;
   const file = input.files[0];
   try {
     const { importFromFile } = await import('../../game/save');
     const state = await importFromFile(file);
     // Lazy import useGame hooks is not possible here; instead dispatch LOAD_STATE via a custom event
-    const evt = new CustomEvent('civweblite:loadState', { detail: state });
-    window.dispatchEvent(evt);
-  } catch (e: any) {
-    alert(`Failed to load save: ${e?.message || e}`);
+    const event = new CustomEvent('civweblite:loadState', { detail: state });
+    globalThis.dispatchEvent(event);
+  } catch (error: any) {
+    alert(`Failed to load save: ${error?.message || error}`);
   } finally {
     input.value = '';
   }

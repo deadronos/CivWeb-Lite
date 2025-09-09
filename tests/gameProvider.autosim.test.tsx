@@ -9,8 +9,8 @@ describe('GameProvider autoSim loop', () => {
     const q: Array<(t?: number) => void> = [];
     const originalRAF = globalThis.requestAnimationFrame;
     const originalCancel = globalThis.cancelAnimationFrame;
-    (globalThis as any).requestAnimationFrame = (cb: FrameRequestCallback) => {
-      q.push(cb as unknown as (t?: number) => void);
+    (globalThis as any).requestAnimationFrame = (callback: FrameRequestCallback) => {
+      q.push(callback as unknown as (t?: number) => void);
       return q.length; // id
     };
     (globalThis as any).cancelAnimationFrame = () => {
@@ -25,9 +25,9 @@ describe('GameProvider autoSim loop', () => {
     );
     // run queued RAF callbacks once
     // call all queued callbacks
-    while (q.length) {
-      const cb = q.shift()!;
-      cb(performance.now());
+    while (q.length > 0) {
+      const callback = q.shift()!;
+      callback(performance.now());
     }
 
     // cleanup

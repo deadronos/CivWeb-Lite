@@ -1,11 +1,11 @@
 export type CombatPreview = {
   tileId: string;
   attackerUnitId: string;
-  defender: { kind: 'unit' | 'city'; id: string; ownerId: string } | null;
+  defender: { kind: 'unit' | 'city'; id: string; ownerId: string } | undefined;
   requiresConfirm: boolean;
   expectedOutcome: 'unknown';
 };
-import type { GameStateExt, Hextile, Unit } from './content/types';
+import type { GameStateExt as GameStateExtension, Hextile, Unit } from './content/types';
 import { neighbors as hexNeighbors } from './world/hex';
 import { movementCost, isPassable } from './content/biomes';
 import { UNIT_TYPES } from './content/registry';
@@ -17,74 +17,74 @@ function keyOf(tile: Hextile) {
 }
 
 function buildIndex(tiles: Record<string, Hextile>): Map<string, string> {
-  const idx = new Map<string, string>();
+  const index = new Map<string, string>();
   for (const t of Object.values(tiles)) {
-    idx.set(keyOf(t), t.id);
+    index.set(keyOf(t), t.id);
   }
-  return idx;
+  return index;
 }
 
-function passableFor(state: GameStateExt, unit: Unit, tile: Hextile): boolean {
-  const def = UNIT_TYPES[unit.type];
-  if (!def) return false;
-  return isPassable(tile, { unitAbilities: unit.abilities, unitDomain: def.domain });
+function passableFor(state: GameStateExtension, unit: Unit, tile: Hextile): boolean {
+  const unitDef = UNIT_TYPES[unit.type];
+  if (!unitDef) return false;
+  return isPassable(tile, { unitAbilities: unit.abilities, unitDomain: unitDef.domain });
 }
 
 export function computePath(
-  state: GameStateExt,
+  state: GameStateExtension,
   unitId: string,
   targetTileId: string
-): { path: string[]; totalCost: number } | { path: null; totalCost: number } {
+): { path: string[]; totalCost: number; combatPreview?: CombatPreview } | { path: null; totalCost: number } {
   const unit = state.units[unitId];
   const start = unit ? state.tiles[unit.location] : undefined;
   const goal = state.tiles[targetTileId];
   if (!unit || !start || !goal) return { path: null, totalCost: Infinity };
-  const def = UNIT_TYPES[unit.type];
-  if (!def) return { path: null, totalCost: Infinity };
-  const idx = buildIndex(state.tiles);
+  const unitDef = UNIT_TYPES[unit.type];
+  if (!unitDef) return { path: null, totalCost: Infinity };
+  const index = buildIndex(state.tiles);
 
   // Dijkstra with predecessor map and simple sorted queue
   const pred = new Map<string, string | undefined>();
-  const dist = new Map<string, number>();
+  const distribution = new Map<string, number>();
   const pq: string[] = [];
   const push = (id: string) => {
-    let i = 0;
-    const d = dist.get(id)!;
-    while (i < pq.length && dist.get(pq[i])! <= d) i++;
-    pq.splice(i, 0, id);
+    let index_ = 0;
+    const d = distribution.get(id)!;
+    while (index_ < pq.length && distribution.get(pq[index_])! <= d) index_++;
+    pq.splice(index_, 0, id);
   };
-  dist.set(start.id, 0);
+  distribution.set(start.id, 0);
   pred.set(start.id, undefined);
   push(start.id);
-  while (pq.length) {
+  while (pq.length > 0) {
     const cid = pq.shift()!;
     if (cid === goal.id) break;
     const ct = state.tiles[cid];
     const neighCoords = hexNeighbors({ q: ct.q, r: ct.r });
     for (const nc of neighCoords) {
-      const nid = idx.get(`${nc.q},${nc.r}`);
+      const nid = index.get(`${nc.q},${nc.r}`);
       if (!nid) continue;
       const nt = state.tiles[nid];
       if (!passableFor(state, unit, nt)) continue;
       const step = Math.ceil(
-        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: def.domain })
+        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: unitDef.domain })
       );
-      const alt = (dist.get(cid) ?? Infinity) + step;
-      if (alt < (dist.get(nid) ?? Infinity)) {
-        dist.set(nid, alt);
+      const alt = (distribution.get(cid) ?? Infinity) + step;
+      if (alt < (distribution.get(nid) ?? Infinity)) {
+        distribution.set(nid, alt);
         pred.set(nid, cid);
         const existingIndex = pq.indexOf(nid);
-        if (existingIndex >= 0) pq.splice(existingIndex, 1);
+        if (existingIndex !== -1) pq.splice(existingIndex, 1);
         push(nid);
       }
     }
   }
   if (!pred.has(goal.id)) return { path: null, totalCost: Infinity };
   const out: string[] = [];
-  let cur: string | undefined = goal.id;
-  while (cur) {
-    out.push(cur);
-    cur = pred.get(cur);
+  let current: string | undefined = goal.id;
+  while (current) {
+    out.push(current);
+    current = pred.get(current);
   }
   out.reverse();
   // detect combat if path enters enemy tile
@@ -92,26 +92,26 @@ export function computePath(
   for (const tid of out.slice(1)) {
     const t = state.tiles[tid];
     if (!t) continue;
-    let def: CombatPreview['defender'] = null;
+    let defender: CombatPreview['defender'] = undefined;
     if (t.occupantCityId) {
       const c = state.cities[t.occupantCityId];
       if (c && c.ownerId !== unit.ownerId) {
-        def = { kind: 'city', id: c.id, ownerId: c.ownerId };
+        defender = { kind: 'city', id: c.id, ownerId: c.ownerId };
       }
     }
-    if (!def) {
-      for (const other of Object.values(state.units)) {
+    if (!defender) {
+      for (const other of Object.values(state.units) as Unit[]) {
         if (other.id !== unit.id && other.location === tid && other.ownerId !== unit.ownerId) {
-          def = { kind: 'unit', id: other.id, ownerId: other.ownerId };
+          defender = { kind: 'unit', id: other.id, ownerId: other.ownerId };
           break;
         }
       }
     }
-    if (def) {
+    if (defender) {
       combat = {
         tileId: tid,
         attackerUnitId: unit.id,
-        defender: def,
+        defender: defender,
         requiresConfirm: true,
         expectedOutcome: 'unknown',
       };
@@ -120,55 +120,55 @@ export function computePath(
   }
   return {
     path: out,
-    totalCost: dist.get(goal.id) ?? Infinity,
+    totalCost: distribution.get(goal.id) ?? Infinity,
     ...(combat ? { combatPreview: combat } : {}),
   };
 }
 export function computeMovementRange(
-  state: GameStateExt,
+  state: GameStateExtension,
   unitId: string
 ): { reachable: string[]; cost: Record<string, number> } {
   const unit = state.units[unitId];
   const start = unit ? state.tiles[unit.location] : undefined;
   if (!unit || !start) return { reachable: [], cost: {} };
-  const def = UNIT_TYPES[unit.type];
-  if (!def) return { reachable: [], cost: {} };
-  const idx = buildIndex(state.tiles);
-  const dist = new Map<string, number>();
+  const unitDef = UNIT_TYPES[unit.type];
+  if (!unitDef) return { reachable: [], cost: {} };
+  const index = buildIndex(state.tiles);
+  const distribution = new Map<string, number>();
   const reachable: string[] = [];
   const pq: string[] = [];
   const push = (id: string) => {
-    let i = 0;
-    const d = dist.get(id)!;
-    while (i < pq.length && dist.get(pq[i])! <= d) i++;
-    pq.splice(i, 0, id);
+    let index_ = 0;
+    const d = distribution.get(id)!;
+    while (index_ < pq.length && distribution.get(pq[index_])! <= d) index_++;
+    pq.splice(index_, 0, id);
   };
-  dist.set(start.id, 0);
+  distribution.set(start.id, 0);
   push(start.id);
-  while (pq.length) {
+  while (pq.length > 0) {
     const cid = pq.shift()!;
-    const ccost = dist.get(cid)!;
+    const ccost = distribution.get(cid)!;
     if (ccost <= unit.movementRemaining && cid !== start.id) reachable.push(cid);
     const ct = state.tiles[cid];
     const neighCoords = hexNeighbors({ q: ct.q, r: ct.r });
     for (const nc of neighCoords) {
-      const nid = idx.get(`${nc.q},${nc.r}`);
+      const nid = index.get(`${nc.q},${nc.r}`);
       if (!nid) continue;
       const nt = state.tiles[nid];
       if (!passableFor(state, unit, nt)) continue;
       const step = Math.ceil(
-        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: def.domain })
+        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: unitDef.domain })
       );
       const alt = ccost + step;
-      if (alt < (dist.get(nid) ?? Infinity)) {
-        dist.set(nid, alt);
+      if (alt < (distribution.get(nid) ?? Infinity)) {
+        distribution.set(nid, alt);
         const existingIndex = pq.indexOf(nid);
-        if (existingIndex >= 0) pq.splice(existingIndex, 1);
+        if (existingIndex !== -1) pq.splice(existingIndex, 1);
         push(nid);
       }
     }
   }
   const cost: Record<string, number> = {};
-  for (const [k, v] of dist.entries()) cost[k] = v;
+  for (const [k, v] of distribution.entries()) cost[k] = v;
   return { reachable, cost };
 }

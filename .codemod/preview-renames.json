@@ -1,0 +1,210 @@
+[
+  {
+    "from": "src/App.tsx",
+    "to": "src/app.tsx"
+  },
+  {
+    "from": "src/components/GameHUD.tsx",
+    "to": "src/components/game-hud.tsx"
+  },
+  {
+    "from": "src/components/ui/CityPanel.tsx",
+    "to": "src/components/ui/city-panel.tsx"
+  },
+  {
+    "from": "src/components/ui/CivicPanel.tsx",
+    "to": "src/components/ui/civic-panel.tsx"
+  },
+  {
+    "from": "src/components/ui/CivicPanelContainer.tsx",
+    "to": "src/components/ui/civic-panel-container.tsx"
+  },
+  {
+    "from": "src/components/ui/ContextPanel.tsx",
+    "to": "src/components/ui/context-panel.tsx"
+  },
+  {
+    "from": "src/components/ui/ExtTechPanelContainer.tsx",
+    "to": "src/components/ui/ext-tech-panel-container.tsx"
+  },
+  {
+    "from": "src/components/ui/Icon.tsx",
+    "to": "src/components/ui/icon.tsx"
+  },
+  {
+    "from": "src/components/ui/LeftPanel.tsx",
+    "to": "src/components/ui/left-panel.tsx"
+  },
+  {
+    "from": "src/components/ui/LeftPanelContainer.tsx",
+    "to": "src/components/ui/left-panel-container.tsx"
+  },
+  {
+    "from": "src/components/ui/LoadModal.tsx",
+    "to": "src/components/ui/load-modal.tsx"
+  },
+  {
+    "from": "src/components/ui/MainMenu.tsx",
+    "to": "src/components/ui/main-menu.tsx"
+  },
+  {
+    "from": "src/components/ui/Minimap.tsx",
+    "to": "src/components/ui/minimap.tsx"
+  },
+  {
+    "from": "src/components/ui/MinimapContainer.tsx",
+    "to": "src/components/ui/minimap-container.tsx"
+  },
+  {
+    "from": "src/components/ui/NextTurnControl.tsx",
+    "to": "src/components/ui/next-turn-control.tsx"
+  },
+  {
+    "from": "src/components/ui/NextTurnControlContainer.tsx",
+    "to": "src/components/ui/next-turn-control-container.tsx"
+  },
+  {
+    "from": "src/components/ui/README.md",
+    "to": "src/components/ui/readme.md"
+  },
+  {
+    "from": "src/components/ui/ResearchPanel.tsx",
+    "to": "src/components/ui/research-panel.tsx"
+  },
+  {
+    "from": "src/components/ui/ResourceBadge.tsx",
+    "to": "src/components/ui/resource-badge.tsx"
+  },
+  {
+    "from": "src/components/ui/TopBar.tsx",
+    "to": "src/components/ui/top-bar.tsx"
+  },
+  {
+    "from": "src/components/ui/TopBarContainer.tsx",
+    "to": "src/components/ui/top-bar-container.tsx"
+  },
+  {
+    "from": "src/components/ui/UnitSelectionOverlay.tsx",
+    "to": "src/components/ui/unit-selection-overlay.tsx"
+  },
+  {
+    "from": "src/components/ui/UnitSelectionOverlayContainer.tsx",
+    "to": "src/components/ui/unit-selection-overlay-container.tsx"
+  },
+  {
+    "from": "src/contexts/GameProvider.tsx",
+    "to": "src/contexts/game-provider.tsx"
+  },
+  {
+    "from": "src/contexts/HoverContext.tsx",
+    "to": "src/contexts/hover-context.tsx"
+  },
+  {
+    "from": "src/contexts/SelectionContext.tsx",
+    "to": "src/contexts/selection-context.tsx"
+  },
+  {
+    "from": "src/game/tech/techCatalog.ts",
+    "to": "src/game/tech/tech-catalog.ts"
+  },
+  {
+    "from": "src/hooks/useCamera.tsx",
+    "to": "src/hooks/use-camera.tsx"
+  },
+  {
+    "from": "src/hooks/useGame.ts",
+    "to": "src/hooks/use-game.ts"
+  },
+  {
+    "from": "src/scene/drei/BillboardLabel.tsx",
+    "to": "src/scene/drei/billboard-label.tsx"
+  },
+  {
+    "from": "src/scene/drei/CameraControls.tsx",
+    "to": "src/scene/drei/camera-controls.tsx"
+  },
+  {
+    "from": "src/scene/drei/DevStats.tsx",
+    "to": "src/scene/drei/dev-stats.tsx"
+  },
+  {
+    "from": "src/scene/drei/GLTFModel.tsx",
+    "to": "src/scene/drei/gltf-model.tsx"
+  },
+  {
+    "from": "src/scene/drei/HtmlLabel.tsx",
+    "to": "src/scene/drei/html-label.tsx"
+  },
+  {
+    "from": "src/scene/hooks/useUnitPositions.ts",
+    "to": "src/scene/hooks/use-unit-positions.ts"
+  },
+  {
+    "from": "src/scene/InstancedTiles.tsx",
+    "to": "src/scene/instanced-tiles.tsx"
+  },
+  {
+    "from": "src/scene/Scene.tsx",
+    "to": "src/scene/scene.tsx"
+  },
+  {
+    "from": "src/scene/TileMesh.tsx",
+    "to": "src/scene/tile-mesh.tsx"
+  },
+  {
+    "from": "src/scene/UnitMarkers.tsx",
+    "to": "src/scene/unit-markers.tsx"
+  },
+  {
+    "from": "src/scene/UnitMeshes.tsx",
+    "to": "src/scene/unit-meshes.tsx"
+  },
+  {
+    "from": "src/scene/units/Bob.tsx",
+    "to": "src/scene/units/bob.tsx"
+  },
+  {
+    "from": "src/scene/units/gltfRegistry.ts",
+    "to": "src/scene/units/gltf-registry.ts"
+  },
+  {
+    "from": "src/scene/units/modelRegistry.tsx",
+    "to": "src/scene/units/model-registry.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/ArcherModel.tsx",
+    "to": "src/scene/units/procedural/archer-model.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/GalleyModel.tsx",
+    "to": "src/scene/units/procedural/galley-model.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/SettlerModel.tsx",
+    "to": "src/scene/units/procedural/settler-model.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/SpearmanModel.tsx",
+    "to": "src/scene/units/procedural/spearman-model.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/StickFigure.tsx",
+    "to": "src/scene/units/procedural/stick-figure.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/WarriorModel.tsx",
+    "to": "src/scene/units/procedural/warrior-model.tsx"
+  },
+  {
+    "from": "src/scene/units/procedural/WorkerModel.tsx",
+    "to": "src/scene/units/procedural/worker-model.tsx"
+  },
+  {
+    "from": "src/scene/units/ProceduralPreload.tsx",
+    "to": "src/scene/units/procedural-preload.tsx"
+  },
+  {
+    "from": "src/scene/units/UnitModelSwitch.tsx",
+    "to": "src/scene/units/unit-model-switch.tsx"
+  }
+]

@@ -1,11 +1,11 @@
 import React from 'react';
 import { OrbitControls } from '@react-three/drei';
 
-type Props = React.ComponentProps<typeof OrbitControls> & {
+type Properties = React.ComponentProps<typeof OrbitControls> & {
   enabled?: boolean;
 };
 
-export default function CameraControls({ enabled = true, ...rest }: Props) {
+export default function CameraControls({ enabled = true, ...rest }: Properties) {
   if (!enabled) return null;
   return (
     // Sensible defaults, caller can override via props

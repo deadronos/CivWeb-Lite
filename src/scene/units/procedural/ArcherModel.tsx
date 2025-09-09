@@ -1,14 +1,14 @@
+/* eslint-disable unicorn/filename-case -- deferred filename rename to dedicated renaming PR */
 import React from 'react';
 import { StickFigure } from './StickFigure';
 
-export function ArcherModel({
+export const ArcherModel: React.FC<{ teamColor?: string; showArrow?: boolean }> = ({
   teamColor = '#9b59b6',
   showArrow = false,
-}: {
-  teamColor?: string;
-  showArrow?: boolean;
-}) {
+}) => {
   return <StickFigure teamColor={teamColor} accessories={{ bow: true, arrow: showArrow }} />;
-}
+};
 
 export const MODEL_LABEL = 'archer';
+
+export default ArcherModel;

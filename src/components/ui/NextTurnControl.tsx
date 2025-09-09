@@ -5,7 +5,7 @@ export type NextTurnControlProps = {
 };
 
 export default function NextTurnControl({ onNextTurn }: NextTurnControlProps) {
-  const btnRef = React.useRef<HTMLButtonElement | null>(null);
+  const buttonReference = React.useRef<HTMLButtonElement | null>(null);
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -14,7 +14,7 @@ export default function NextTurnControl({ onNextTurn }: NextTurnControlProps) {
   };
   return (
     <button
-      ref={btnRef}
+      ref={buttonReference}
       className="hud-nextturn"
       aria-label="end turn"
       onClick={onNextTurn}

@@ -1,8 +1,8 @@
-import type { GameStateExt, Technology, Civic } from './types';
+import type { GameStateExtension, Technology, Civic } from './types';
 import { TECHS } from './registry';
 import { loadTechs, loadCivics } from '../../data/loader';
 
-export function createEmptyState(): GameStateExt {
+export function createEmptyState(): GameStateExtension {
   return {
     tiles: {},
     units: {},
@@ -16,14 +16,14 @@ export function createEmptyState(): GameStateExt {
       availableImprovements: [],
       science: 0,
       culture: 0,
-      research: null,
-      cultureResearch: null,
+      research: undefined,
+      cultureResearch: undefined,
     },
   };
 }
 
 // Optional: load techs from JSON data and build a state using those
-export async function createStateWithLoadedData(): Promise<GameStateExt> {
+export async function createStateWithLoadedData(): Promise<GameStateExtension> {
   const base = createEmptyState();
   try {
     const techList = await loadTechs();
@@ -43,7 +43,7 @@ export async function createStateWithLoadedData(): Promise<GameStateExt> {
       };
     }
     base.techs = techs;
-  } catch (_e) {
+  } catch {
     // Fallback already in base
   }
   try {
@@ -65,7 +65,7 @@ export async function createStateWithLoadedData(): Promise<GameStateExt> {
       };
     }
     base.civics = civics;
-  } catch (_e) {
+  } catch {
     // optional
   }
   return base;

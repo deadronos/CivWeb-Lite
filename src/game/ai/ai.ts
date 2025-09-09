@@ -8,7 +8,7 @@ function chooseNextTech(player: PlayerState, state: GameState): TechNode | undef
     ? (player as any).researchedTechIds
     : [];
   const prefTree = leader.scienceFocus >= leader.cultureFocus ? 'science' : 'culture';
-  const candidates = state.techCatalog.filter((t) => {
+  const candidate = state.techCatalog.find((t) => {
     const prereqs: string[] = Array.isArray((t as any).prerequisites)
       ? (t as any).prerequisites
       : [];
@@ -18,7 +18,7 @@ function chooseNextTech(player: PlayerState, state: GameState): TechNode | undef
       prereqs.every((p) => researched.includes(p))
     );
   });
-  return candidates[0];
+  return candidate;
 }
 
 export function evaluateAI(player: PlayerState, state: GameState): GameAction[] {

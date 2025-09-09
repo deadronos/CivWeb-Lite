@@ -1,11 +1,11 @@
 import React from 'react';
 import { Stats } from '@react-three/drei';
 
-type Props = React.ComponentProps<typeof Stats> & {
+type Properties = React.ComponentProps<typeof Stats> & {
   enabled?: boolean;
 };
 
-export default function DevStats({ enabled = true, ...rest }: Props) {
+export default function DevelopmentStats({ enabled = true, ...rest }: Properties) {
   if (!enabled) return null;
   return <Stats {...rest} />;
 }
