@@ -480,7 +480,7 @@ function SpecControls() {
               return (
                 <option key={b.id} value={b.id} disabled={!canBuild || built}>
                   {b.name}
-                  {built ? ' (built)' : !canBuild ? ' (locked)' : ''}
+                  {built ? ' (built)' : (!canBuild ? ' (locked)' : '')}
                 </option>
               );
             })}

@@ -69,7 +69,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         });
       }),
     ];
-    return () => subs.forEach((u) => u());
+    return () => { for (const u of subs) u() };
   }, [dispatch, state.turn]);
 
   useEffect(() => {
@@ -122,10 +122,10 @@ export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
   globalGameBus.emit('turn:start', { turn: s.turn });
   const aiPlayers = s.players.filter((p) => !p.isHuman);
   const aiStart = performance.now();
-  aiPlayers.forEach((p) => {
+  for (const p of aiPlayers) {
     const acts = evaluateAI(p, s);
-    acts.forEach(dispatch);
-  });
+    for (const a of acts) dispatch(a);
+  }
   const aiDuration = aiPlayers.length ? (performance.now() - aiStart) / aiPlayers.length : 0;
   dispatch({ type: 'RECORD_AI_PERF', payload: { duration: aiDuration } });
   dispatch({ type: 'END_TURN' });
@@ -219,16 +219,16 @@ export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) 
     const p = s.players[0];
     if (!p.isHuman) {
       const acts = evaluateAI(p, s);
-      acts.forEach(dispatch);
+      for (const a of acts) dispatch(a);
     }
   } else {
     // multiple players path
-    s.players.forEach((p) => {
+    for (const p of s.players) {
       if (!p.isHuman) {
         const acts = evaluateAI(p, s);
-        acts.forEach(dispatch);
+        for (const a of acts) dispatch(a);
       }
-    });
+    }
   }
 }
 

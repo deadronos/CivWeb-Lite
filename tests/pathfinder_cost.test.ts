@@ -29,7 +29,7 @@ describe('computePath totalCost', () => {
     const res = computePath(s.contentExt!, 'u1', 'c');
     if ('path' in res && res.path) {
       expect(res.path[0]).toBe('a');
-      expect(res.path[res.path.length - 1]).toBe('c');
+      expect(res.path.at(-1)).toBe('c');
       expect(res.totalCost).toBe(2);
     } else {
       throw new Error('path not found');

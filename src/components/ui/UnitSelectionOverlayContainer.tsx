@@ -10,7 +10,7 @@ export function UnitSelectionOverlayContainer({
 }) {
   const { state, dispatch } = useGame();
   const ext = state.contentExt;
-  const [path, setPath] = useState<string[] | undefined>(undefined);
+  const [path, setPath] = useState<string[] | undefined>();
 
   const range = useMemo(() => {
     if (!ext || !selectedUnitId) return { reachable: [], cost: {} as Record<string, number> };

@@ -1,5 +1,25 @@
 // Minimal flat ESLint config for ESLint v9+.
 // This intentionally avoids FlatCompat to reduce complexity and loads required plugins directly.
+// Load unicorn recommended rules and lower them to 'warn' to opt-in gradually.
+const _unicorn = require('eslint-plugin-unicorn');
+const unicornPlugin = (_unicorn && _unicorn.default) ? _unicorn.default : _unicorn;
+const unicornRecommended = (unicornPlugin && unicornPlugin.configs && unicornPlugin.configs.recommended && unicornPlugin.configs.recommended.rules) || {};
+// Optionally prepare a selected subset of unicorn rules to enable at 'warn' level.
+const unicornAllowlist = [
+  'prefer-includes',
+  'no-array-for-each',
+  'no-nested-ternary',
+  'no-useless-undefined',
+  'prefer-array-index-of',
+  'prefer-array-some',
+  'prefer-at',
+  'expiring-todo-comments',
+  'no-empty-file',
+];
+const unicornSelectedWarned = Object.fromEntries(
+  unicornAllowlist.filter((k) => unicornPlugin && unicornPlugin.rules && k in unicornPlugin.rules).map((k) => [`unicorn/${k}`, 'warn'])
+);
+
 module.exports = [
   {
     ignores: ['dist', 'node_modules'],
@@ -33,7 +53,7 @@ module.exports = [
       'testing-library': require('eslint-plugin-testing-library'),
       vitest: require('eslint-plugin-vitest'),
       playwright: require('eslint-plugin-playwright'),
-      unicorn: require('eslint-plugin-unicorn'),
+  unicorn: unicornPlugin,
       sonarjs: require('eslint-plugin-sonarjs'),
       promise: require('eslint-plugin-promise'),
       'eslint-comments': require('eslint-plugin-eslint-comments'),
@@ -45,8 +65,21 @@ module.exports = [
       'eslint-comments/require-description': ['warn', { ignore: [] }],
       'eslint-comments/no-unused-disable': 'error',
       'security/detect-object-injection': 'off',
+      // Gradually enable a conservative subset of unicorn rules at 'warn' level.
+      // We avoid spreading the full recommended set to prevent rule resolution errors.
+      'unicorn/prefer-includes': 'warn',
+      'unicorn/no-array-for-each': 'warn',
+      'unicorn/no-nested-ternary': 'warn',
+      'unicorn/no-useless-undefined': 'warn',
+      'unicorn/prefer-array-index-of': 'warn',
+      'unicorn/prefer-array-some': 'warn',
+      'unicorn/prefer-at': 'warn',
+      'unicorn/expiring-todo-comments': 'warn',
+      'unicorn/no-empty-file': 'warn',
     },
   },
+
+  // (no direct insertion of unicorn plugin configs to avoid plugin redefinition)
 
   // Enable type-aware linting only for src/ (where tsconfig.json applies).
   {
