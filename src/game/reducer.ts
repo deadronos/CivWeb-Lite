@@ -1,4 +1,5 @@
 import { GameState, PlayerState } from './types';
+import leadersCatalog from '../data/leaders.json';
 import { GameAction } from './actions';
 import { produceNextState } from './state';
 import { generateWorld } from './world/generate';
@@ -30,6 +31,118 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         // ensure extension state exists
         if (!draft.contentExt) draft.contentExt = createContentExt();
         globalGameBus.emit('turn:start', { turn: draft.turn });
+        break;
+      }
+      case 'NEW_GAME': {
+        const seed = action.payload.seed ?? draft.seed ?? 'default';
+        const width = action.payload.width ?? draft.map.width;
+        const height = action.payload.height ?? draft.map.height;
+        // Reset core state
+        draft.turn = 0;
+        draft.seed = seed;
+        const world = generateWorld(seed, width, height);
+        draft.map = { width, height, tiles: world.tiles };
+        draft.rngState = world.state;
+        // Players
+        const total = Math.max(1, Math.min(6, action.payload.totalPlayers));
+        const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
+        draft.players = [] as PlayerState[];
+        // small deterministic hash from seed for leader randomization fallback
+        const hash = (str: string) => Array.from(str).reduce((a, c) => (a + c.charCodeAt(0)) >>> 0, 0);
+        const chosen = action.payload.selectedLeaders ?? [];
+        for (let i = 0; i < total; i++) {
+          const isHuman = i < humans;
+          const pickId = chosen[i];
+          let leaderDef: any | undefined;
+          if (pickId && pickId !== 'random') {
+            leaderDef = (leadersCatalog as any[]).find(l => l.id === pickId);
+          }
+          if (!leaderDef) {
+            const idx = ((hash(seed) + i) % (leadersCatalog as any[]).length) >>> 0;
+            leaderDef = (leadersCatalog as any[])[idx];
+          }
+          const mappedLeader = {
+            id: leaderDef.id,
+            name: leaderDef.name,
+            aggression: leaderDef.weights?.aggression ?? 0.5,
+            scienceFocus: leaderDef.weights?.science ?? 0.5,
+            cultureFocus: leaderDef.weights?.culture ?? 0.5,
+            expansionism: leaderDef.weights?.expansion ?? 0.5,
+            historicalNote: leaderDef.historical_note,
+            preferredVictory: leaderDef.preferred_victory,
+          } as PlayerState['leader'];
+          draft.players.push({
+            id: `P${i + 1}`,
+            isHuman,
+            leader: mappedLeader,
+            researchedTechIds: [],
+            researching: null as any,
+            sciencePoints: 0,
+            culturePoints: 0,
+          } as PlayerState);
+        }
+        // Content extension reset
+        draft.contentExt = createContentExt();
+        const ext = draft.contentExt;
+        // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal
+        const startPositions = (idx: number): string => {
+          const pad = 2;
+          const q = idx % 2 === 0 ? pad : Math.max(pad, width - pad - 1);
+          const r = idx < 2 ? pad : Math.max(pad, height - pad - 1);
+          return `${q},${r}`;
+        };
+        for (let i = 0; i < draft.players.length; i++) {
+          const ownerId = draft.players[i].id;
+          const tileId = startPositions(i);
+          // ensure tile exists in ext store and mark passable
+          if (!ext.tiles[tileId]) {
+            ext.tiles[tileId] = {
+              id: tileId,
+              q: parseInt(tileId.split(',')[0]!, 10),
+              r: parseInt(tileId.split(',')[1]!, 10),
+              biome: 'grassland',
+              elevation: 0.1,
+              features: [],
+              improvements: [],
+              occupantUnitId: null,
+              occupantCityId: null,
+              passable: true,
+            } as any;
+          }
+          // add warrior
+          const wId = `u_${ownerId}_warrior`;
+          ext.units[wId] = {
+            id: wId,
+            type: 'warrior',
+            ownerId,
+            location: tileId,
+            hp: 100,
+            movement: 2,
+            movementRemaining: 2,
+            attack: 6,
+            defense: 4,
+            sight: 2,
+            state: 'idle',
+            abilities: [],
+          } as any;
+          // add settler
+          const sId = `u_${ownerId}_settler`;
+          ext.units[sId] = {
+            id: sId,
+            type: 'settler',
+            ownerId,
+            location: tileId,
+            hp: 100,
+            movement: 2,
+            movementRemaining: 2,
+            attack: 0,
+            defense: 0,
+            sight: 2,
+            state: 'idle',
+            abilities: [],
+          } as any;
+        }
+        globalGameBus.emit('action:applied', { action });
         break;
       }
       case 'END_TURN': {

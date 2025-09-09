@@ -12,6 +12,7 @@ export default function TopBarContainer() {
       culture: human.culturePoints,
     } as const;
   }, [human]);
-  return <TopBar turn={state.turn} resources={resources} />;
+  const onOpenLoad = () => window.dispatchEvent(new Event('hud:openLoad'));
+  const onOpenLoadPaste = () => window.dispatchEvent(new Event('hud:openLoad:paste'));
+  return <TopBar turn={state.turn} resources={resources} onOpenLoad={onOpenLoad} onOpenLoadPaste={onOpenLoadPaste} />;
 }
-

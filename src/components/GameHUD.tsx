@@ -5,6 +5,7 @@ import { TECHS } from '../game/content/registry';
 import { loadUnits, loadBuildings } from '../data/loader';
 import CivicPanelContainer from './ui/CivicPanelContainer';
 import ExtTechPanelContainer from './ui/ExtTechPanelContainer';
+import LoadModal from './ui/LoadModal';
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();
@@ -80,11 +81,37 @@ function GameHUDInner() {
     return () => { on = false; };
   }, []);
 
+  const [showLoad, setShowLoad] = React.useState(false);
+  const [loadFocusPaste, setLoadFocusPaste] = React.useState(false);
+  React.useEffect(() => {
+    const handler = () => { setLoadFocusPaste(false); setShowLoad(true); };
+    const handlerPaste = () => { setLoadFocusPaste(true); setShowLoad(true); };
+    window.addEventListener('hud:openLoad', handler);
+    window.addEventListener('hud:openLoad:paste', handlerPaste);
+    return () => { window.removeEventListener('hud:openLoad', handler); window.removeEventListener('hud:openLoad:paste', handlerPaste); };
+  }, []);
+
+  const playersSummary = state.players.length ? (
+    <div aria-label="game summary" style={{ margin: '6px 0', opacity: 0.85 }}>
+      Players: {state.players.map(p => {
+        const pv = (p.leader.preferredVictory || []) as string[];
+        const badge = pv.length ? ` [${pv.map(v => victoryBadge(v)).join('')}]` : '';
+        return `${p.id}: ${p.leader.name}${badge}`;
+      }).join(' · ')}
+    </div>
+  ) : null;
+
   return (
     <div role="region" aria-label="game heads up display" className="game-hud" onDrop={onDrop} onDragOver={onDragOver}>
       <div>Turn: {state.turn}</div>
       <div>Seed: {state.seed}</div>
       <div>Mode: {state.mode}</div>
+      {playersSummary}
+      <div style={{ display: 'flex', gap: 8, margin: '8px 0' }}>
+        <button aria-label="save game" onClick={handleSave}>Save…</button>
+        <button aria-label="open load" onClick={() => setShowLoad(true)}>Load…</button>
+        <input id="hud-load-input" aria-label="load file" type="file" accept="application/json" style={{ display: 'none' }} onChange={onFileChange} />
+      </div>
       {techSummary && <div>Research: {techSummary}</div>}
       {ext && (
         <>
@@ -103,6 +130,7 @@ function GameHUDInner() {
         </>
       )}
       {aiAvg && <div>AI Avg: {aiAvg}ms</div>}
+      <LoadModal open={showLoad} onClose={() => setShowLoad(false)} autoFocusText={loadFocusPaste} />
       <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
         <div>
           <div style={{ fontWeight: 600 }}>Units</div>
@@ -288,4 +316,14 @@ function SpecControls() {
       </div>
     </div>
   );
+}
+
+function victoryBadge(v: string): string {
+  switch (v) {
+    case 'science': return 'SCI';
+    case 'culture': return 'CUL';
+    case 'domination': return 'DOM';
+    case 'diplomacy': return 'DIP';
+    default: return v.toUpperCase().slice(0,3);
+  }
 }

@@ -25,6 +25,8 @@ export interface LeaderPersonality {
   scienceFocus: number; // 0..1
   cultureFocus: number; // 0..1
   expansionism: number; // 0..1
+  historicalNote?: string;
+  preferredVictory?: string[];
 }
 
 export interface TechNode {

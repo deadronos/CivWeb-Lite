@@ -2,6 +2,7 @@ import { GameState } from './types';
 
 export type GameAction =
   | { type: 'INIT'; payload?: { seed?: string; width?: number; height?: number } }
+  | { type: 'NEW_GAME'; payload: { seed?: string; width?: number; height?: number; totalPlayers: number; humanPlayers?: number; selectedLeaders?: Array<string | 'random' | undefined> } }
   | { type: 'END_TURN' }
   | { type: 'SET_RESEARCH'; playerId: string; payload: { techId: string } }
   | { type: 'ADVANCE_RESEARCH'; playerId: string; payload?: { points?: number } }
@@ -20,6 +21,7 @@ export type GameAction =
 // Runtime helper used for lightweight runtime checks and to improve coverage in tests.
 export const GAME_ACTION_TYPES = [
   'INIT',
+  'NEW_GAME',
   'END_TURN',
   'SET_RESEARCH',
   'ADVANCE_RESEARCH',

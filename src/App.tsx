@@ -9,12 +9,19 @@ import LeftPanelContainer from './components/ui/LeftPanelContainer';
 import MinimapContainer from './components/ui/MinimapContainer';
 import NextTurnControlContainer from './components/ui/NextTurnControlContainer';
 import { CameraProvider } from './hooks/useCamera';
+import MainMenu from './components/ui/MainMenu';
+import { useGame } from './hooks/useGame';
 
 export default function App() {
   const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
+  const [started, setStarted] = React.useState(false);
   return (
     <GameProvider>
       <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
+        {!started && (
+          <MainMenu onStart={() => setStarted(true)} />
+        )}
+        <LoadListener onLoaded={() => setStarted(true)} />
         <Canvas camera={{ position: [8, 12, 12], fov: 50 }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 10, 5]} intensity={0.6} />
@@ -37,4 +44,17 @@ export default function App() {
       </CameraProvider>
     </GameProvider>
   );
+}
+
+function LoadListener({ onLoaded }: { onLoaded: () => void }) {
+  const game = useGame();
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      game.dispatch({ type: 'LOAD_STATE', payload: e.detail });
+      onLoaded();
+    };
+    window.addEventListener('civweblite:loadState', handler);
+    return () => window.removeEventListener('civweblite:loadState', handler);
+  }, [game.dispatch, onLoaded]);
+  return null;
 }
