@@ -81,6 +81,11 @@ module.exports = [
   'unicorn/prefer-array-flat-map': 'warn',
   'unicorn/prefer-string-replace-all': 'warn',
   'unicorn/prefer-set-has': 'warn',
+  // Next conservative batch: prefer modern built-ins and string APIs
+  'unicorn/prefer-negative-index': 'warn',
+  'unicorn/prefer-string-starts-ends-with': 'warn',
+  'unicorn/prefer-string-trim-start-end': 'warn',
+  'unicorn/prefer-object-from-entries': 'warn',
       'unicorn/prefer-at': 'warn',
       'unicorn/expiring-todo-comments': 'warn',
       'unicorn/no-empty-file': 'warn',
