@@ -23,12 +23,12 @@ export function useHoverTile(): {
   world: [number, number] | null;
   setHoverIndex: (index: number | null) => void;
 } {
-  const ctx = React.useContext(HoverContext);
-  if (!ctx) throw new Error('useHoverTile must be used within HoverProvider');
-  const { hoverIndex, setHoverIndex } = ctx;
+  const context = React.useContext(HoverContext);
+  if (!context) throw new Error('useHoverTile must be used within HoverProvider');
+  const { hoverIndex, setHoverIndex } = context;
   const { state } = useGame();
   const tiles = state.map.tiles;
-  const tile = hoverIndex != null ? tiles[hoverIndex] : null;
+  const tile = hoverIndex == undefined ? null : tiles[hoverIndex];
   const coord = tile ? tile.coord : null;
   const id = tile ? tile.id : null;
   const biome = tile ? (tile as any).biome : null;

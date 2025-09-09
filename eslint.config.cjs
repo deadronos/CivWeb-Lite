@@ -20,6 +20,18 @@ const unicornSelectedWarned = Object.fromEntries(
   unicornAllowlist.filter((k) => unicornPlugin && unicornPlugin.rules && k in unicornPlugin.rules).map((k) => [`unicorn/${k}`, 'warn'])
 );
 
+// Take the plugin's recommended rules and lower them to 'warn', but only for rules
+// that actually exist in the installed plugin. This avoids "Could not find ... in plugin"
+// errors when plugin versions differ.
+const unicornRecommendedLowered = Object.fromEntries(
+  Object.keys(unicornRecommended || {}).filter((k) => {
+    if (typeof k !== 'string') return false;
+    if (!k.startsWith('unicorn/')) return false;
+    const short = k.slice('unicorn/'.length);
+    return unicornPlugin && unicornPlugin.rules && short in unicornPlugin.rules;
+  }).map((k) => [k, 'warn'])
+);
+
 module.exports = [
   {
     ignores: ['dist', 'node_modules'],
@@ -65,8 +77,16 @@ module.exports = [
       'eslint-comments/require-description': ['warn', { ignore: [] }],
       'eslint-comments/no-unused-disable': 'error',
       'security/detect-object-injection': 'off',
-      // Gradually enable a conservative subset of unicorn rules at 'warn' level.
-      // We avoid spreading the full recommended set to prevent rule resolution errors.
+  // Gradually enable a conservative subset of unicorn rules at 'warn' level.
+  // We also spread the programmatically-lowered recommended rules (only those
+  // that exist in the installed plugin) so the repo opts into the plugin's
+  // recommended guidance at 'warn' without causing rule-not-found errors.
+  // Note: keep explicit overrides above/below this spread if you want to
+  // change severity for specific rules later.
+  ...unicornSelectedWarned,
+  ...unicornRecommendedLowered,
+
+  // We avoid spreading the full recommended set directly to prevent rule resolution errors.
       'unicorn/prefer-includes': 'warn',
       'unicorn/no-array-for-each': 'warn',
       'unicorn/no-nested-ternary': 'warn',
@@ -86,11 +106,11 @@ module.exports = [
       'unicorn/prefer-string-starts-ends-with': 'warn',
       'unicorn/prefer-string-trim-start-end': 'warn',
       'unicorn/prefer-object-from-entries': 'warn',
-  // Batch 4: small safe modernizations
-  'unicorn/prefer-spread': 'warn',
-  'unicorn/require-array-join-separator': 'warn',
-  'unicorn/prefer-global-this': 'warn',
-  'unicorn/prefer-dom-node-text-content': 'warn',
+      // Batch 4: small safe modernizations
+      'unicorn/prefer-spread': 'warn',
+      'unicorn/require-array-join-separator': 'warn',
+      'unicorn/prefer-global-this': 'warn',
+      'unicorn/prefer-dom-node-text-content': 'warn',
       'unicorn/prefer-at': 'warn',
       'unicorn/expiring-todo-comments': 'warn',
       'unicorn/no-empty-file': 'warn',

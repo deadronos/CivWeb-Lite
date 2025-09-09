@@ -8,7 +8,7 @@ test('main.tsx catches render errors when createRoot.render throws', async () =>
   // create a real root element so main attempts to mount
   const root = document.createElement('div');
   root.id = 'root';
-  document.body.appendChild(root);
+  document.body.append(root);
 
   // mock react-dom/client to throw during render
   vi.doMock('react-dom/client', () => ({
@@ -26,7 +26,7 @@ test('main.tsx catches render errors when createRoot.render throws', async () =>
 
   dbg.mockRestore();
   // cleanup
-  document.body.removeChild(root);
+  root.remove();
   vi.resetModules();
 });
 

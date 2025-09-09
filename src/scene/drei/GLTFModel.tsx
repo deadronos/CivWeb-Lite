@@ -1,13 +1,13 @@
 import React from 'react';
 import { useGLTF } from '@react-three/drei';
 
-type Props = {
+type Properties = {
   url: string;
   /** Optional scale/position/rotation passed to primitive */
   [key: string]: any;
 };
 
-export default function GLTFModel({ url, ...rest }: Props) {
+export default function GLTFModel({ url, ...rest }: Properties) {
   // Fail-safe for tests: wrap in try/catch and render a placeholder if load fails
   try {
     const gltf: any = useGLTF(url);

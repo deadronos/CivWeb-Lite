@@ -3,8 +3,8 @@ import * as THREE from 'three';
 type Key = string;
 const geoCache = new Map<Key, THREE.BufferGeometry>();
 
-function key(name: string, args: any[]): Key {
-  return `${name}:${args.join(',')}`;
+function key(name: string, arguments_: any[]): Key {
+  return `${name}:${arguments_.join(',')}`;
 }
 
 export function getSphere(radius = 0.2, widthSeg = 16, heightSeg = 12): THREE.SphereGeometry {
@@ -17,7 +17,7 @@ export function getSphere(radius = 0.2, widthSeg = 16, heightSeg = 12): THREE.Sp
   return g as THREE.SphereGeometry;
 }
 
-export function getBox(w = 0.5, h = 1.0, d = 0.3): THREE.BoxGeometry {
+export function getBox(w = 0.5, h = 1, d = 0.3): THREE.BoxGeometry {
   const k = key('box', [w, h, d]);
   let g = geoCache.get(k) as THREE.BoxGeometry | undefined;
   if (!g) {
@@ -27,7 +27,7 @@ export function getBox(w = 0.5, h = 1.0, d = 0.3): THREE.BoxGeometry {
   return g as THREE.BoxGeometry;
 }
 
-export function getCylinder(rTop = 0.05, rBot = 0.05, h = 1.0, radial = 8): THREE.CylinderGeometry {
+export function getCylinder(rTop = 0.05, rBot = 0.05, h = 1, radial = 8): THREE.CylinderGeometry {
   const k = key('cyl', [rTop, rBot, h, radial]);
   let g = geoCache.get(k) as THREE.CylinderGeometry | undefined;
   if (!g) {

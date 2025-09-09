@@ -14,11 +14,11 @@ export default function LoadModal({
   const { dispatch } = useGame();
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
-  const textRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const textReference = React.useRef<HTMLTextAreaElement | null>(null);
 
   React.useEffect(() => {
-    if (open && autoFocusText && textRef.current) {
-      textRef.current.focus();
+    if (open && autoFocusText && textReference.current) {
+      textReference.current.focus();
     }
   }, [open, autoFocusText]);
 
@@ -27,8 +27,8 @@ export default function LoadModal({
       const state = deserializeState(text);
       dispatch({ type: 'LOAD_STATE', payload: state } as any);
       onClose();
-    } catch (e: any) {
-      setError(e?.message || 'Failed to parse/validate save');
+    } catch (error_: any) {
+      setError(error_?.message || 'Failed to parse/validate save');
     }
   };
 
@@ -39,8 +39,8 @@ export default function LoadModal({
       const state = await importFromFile(file);
       dispatch({ type: 'LOAD_STATE', payload: state } as any);
       onClose();
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load file');
+    } catch (error_: any) {
+      setError(error_?.message || 'Failed to load file');
     } finally {
       e.currentTarget.value = '';
     }
@@ -59,7 +59,7 @@ export default function LoadModal({
         <div style={{ marginTop: 8 }}>
           <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Paste JSON</label>
           <textarea
-            ref={textRef}
+            ref={textReference}
             aria-label="save json"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -68,7 +68,7 @@ export default function LoadModal({
           />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={onPasteLoad}>Load from Text</button>
-            <button onClick={() => document.getElementById('load-file-input')?.click()}>
+            <button onClick={() => document.querySelector('#load-file-input')?.click()}>
               Choose File…
             </button>
             <input

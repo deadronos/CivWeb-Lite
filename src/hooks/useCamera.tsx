@@ -17,7 +17,7 @@ export function CameraProvider({
   api?: Partial<CameraAPI>;
   children: React.ReactNode;
 }) {
-  const merged = { ...defaultAPI, ...(api ?? {}) } as CameraAPI;
+  const merged = { ...defaultAPI, ...api } as CameraAPI;
   return <CameraContext.Provider value={merged}>{children}</CameraContext.Provider>;
 }
 

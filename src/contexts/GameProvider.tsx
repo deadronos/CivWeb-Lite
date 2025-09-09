@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { RNGState } from '../game/rng';
 import { globalGameBus } from '../game/events';
 import { GameState, Tile, PlayerState } from '../game/types';
-import { createEmptyState as createContentExt } from '../game/content/engine';
+import { createEmptyState as createContentExtension } from '../game/content/engine';
 import { GameAction } from '../game/actions';
 import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
@@ -27,7 +27,7 @@ export const initialState = (): GameState => ({
   aiPerf: { total: 0, count: 0 },
   mode: 'standard',
   autoSim: false,
-  contentExt: createContentExt(),
+  contentExt: createContentExtension(),
 });
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -98,7 +98,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
     return () => {
       try {
-        if (typeof cancelAnimationFrame === 'function' && typeof id !== 'undefined')
+        if (typeof cancelAnimationFrame === 'function' && id !== undefined)
           cancelAnimationFrame(id);
       } catch {
         // ignore
@@ -126,7 +126,7 @@ export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
     const acts = evaluateAI(p, s);
     for (const a of acts) dispatch(a);
   }
-  const aiDuration = aiPlayers.length ? (performance.now() - aiStart) / aiPlayers.length : 0;
+  const aiDuration = aiPlayers.length > 0 ? (performance.now() - aiStart) / aiPlayers.length : 0;
   dispatch({ type: 'RECORD_AI_PERF', payload: { duration: aiDuration } });
   dispatch({ type: 'END_TURN' });
   const duration = performance.now() - start;
@@ -143,27 +143,23 @@ export function initialStateForTests(): GameState {
 // Coverage helper to execute some branches
 export function coverForTestsGameProvider(forceElse = false): boolean {
   let x = 0;
-  for (let i = 0; i < 5; i++) {
-    x += i;
+  for (let index = 0; index < 5; index++) {
+    x += index;
   }
   // allow tests to force the else branch
   if (forceElse) {
     x = 11; // odd -> triggers else branch below
   }
-  if (x % 2 === 0) {
-    x = x / 2;
-  } else {
-    x = x * 2;
-  }
+  x = x % 2 === 0 ? x / 2 : x * 2;
   return x > 0;
 }
 
 // Large pad to exercise many statements during tests
 export function coverAllGameProviderHuge(): number {
   let s = 0;
-  for (let i = 0; i < 80; i++) {
-    if (i % 7 === 0) s += i * 3;
-    else if (i % 3 === 0) s -= i;
+  for (let index = 0; index < 80; index++) {
+    if (index % 7 === 0) s += index * 3;
+    else if (index % 3 === 0) s -= index;
     else s += 1;
   }
   return s;
@@ -193,9 +189,8 @@ export function coverGameProviderEffects(s: GameState, dispatch: Dispatch, force
 // small helper to hit extra branches during tests
 export function coverGameProviderExtra(n = 1): number {
   let r = 0;
-  if (n > 0) r = n * 2;
-  else r = -n;
-  for (let i = 0; i < 2; i++) r += i;
+  r = n > 0 ? n * 2 : -n;
+  for (let index = 0; index < 2; index++) r += index;
   return r;
 }
 
@@ -306,8 +301,7 @@ export function coverGameProviderForcePaths(
 export function coverGameProviderUncovered() {
   let x = 0;
   // simulate initialization branching
-  if (!Array.isArray([])) x = 1;
-  else x = 2;
+  x = Array.isArray([]) ? 2 : 1;
 
   // players-dependent branching
   const players: any[] = [];
@@ -316,8 +310,8 @@ export function coverGameProviderUncovered() {
   else x += 2;
 
   // small loop to exercise paths
-  for (let i = 0; i < 5; i++) {
-    if (i % 2 === 0) x += i;
+  for (let index = 0; index < 5; index++) {
+    if (index % 2 === 0) x += index;
     else x -= 1;
   }
   return x;

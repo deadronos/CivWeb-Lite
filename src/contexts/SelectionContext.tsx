@@ -22,7 +22,7 @@ export function SelectionProvider({
 }
 
 export function useSelection(): SelectionState {
-  const ctx = React.useContext(SelectionContext);
-  if (!ctx) throw new Error('useSelection must be used within SelectionProvider');
-  return ctx;
+  const context = React.useContext(SelectionContext);
+  if (!context) throw new Error('useSelection must be used within SelectionProvider');
+  return context;
 }

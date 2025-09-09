@@ -6,7 +6,7 @@ import { ArcherModel, MODEL_LABEL as ARCHER } from './procedural/ArcherModel';
 import { SpearmanModel, MODEL_LABEL as SPEARMAN } from './procedural/SpearmanModel';
 import { GalleyModel, MODEL_LABEL as GALLEY } from './procedural/GalleyModel';
 
-export type ModelComponent = (props: { teamColor?: string }) => React.ReactNode;
+export type ModelComponent = (properties: { teamColor?: string }) => React.ReactNode;
 
 const components: Record<string, any> = {
   [WARRIOR]: WarriorModel,

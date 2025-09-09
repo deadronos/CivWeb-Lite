@@ -8,11 +8,11 @@ export type MinimapProps = {
 };
 
 export default function Minimap({ width, height, onPickCoord, highlightedTileIds }: MinimapProps) {
-  const ref = React.useRef<HTMLDivElement | null>(null);
+  const reference = React.useRef<HTMLDivElement | null>(null);
   const onClick = (e: React.MouseEvent) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
+    const element = reference.current;
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     // naive mapping: scale to map coordinates and round
@@ -22,7 +22,7 @@ export default function Minimap({ width, height, onPickCoord, highlightedTileIds
   };
   return (
     <div
-      ref={ref}
+      ref={reference}
       className="hud-minimap"
       role="img"
       aria-label="minimap"

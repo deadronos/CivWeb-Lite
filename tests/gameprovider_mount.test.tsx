@@ -26,8 +26,8 @@ describe('GameProvider mount and context', () => {
       </GameProvider>
     );
 
-    const el = await findByTestId('turn');
-    expect(el).toBeTruthy();
+    const element = await findByTestId('turn');
+    expect(element).toBeTruthy();
     // provider marker should be true
     expect(GAME_PROVIDER_MARKER).toBe(true);
   });

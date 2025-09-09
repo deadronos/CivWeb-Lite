@@ -1,7 +1,7 @@
 import React from 'react';
 import type { IconType } from 'react-icons';
 
-type IconProps = {
+type IconProperties = {
   icon: IconType;
   size?: number | string;
   title?: string;
@@ -17,8 +17,8 @@ export default function Icon({
   className,
   color,
   ariaHidden,
-}: IconProps) {
-  const ariaProps = title
+}: IconProperties) {
+  const ariaProperties = title
     ? { role: 'img', 'aria-label': title }
     : { 'aria-hidden': ariaHidden ?? true };
   return (
@@ -27,7 +27,7 @@ export default function Icon({
       title={title ?? undefined}
       style={{ display: 'inline-flex', lineHeight: 0 }}
     >
-      <IconComp size={size} color={color} {...(ariaProps as any)} />
+      <IconComp size={size} color={color} {...(ariaProperties as any)} />
     </span>
   );
 }

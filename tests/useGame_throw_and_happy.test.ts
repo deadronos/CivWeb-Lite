@@ -19,8 +19,8 @@ describe('useGame helper coverage', () => {
   });
 
   it('coverUseGameThrowExplicitly returns the thrown message', () => {
-    const msg = coverUseGameThrowExplicitly();
-    expect(msg).toContain('useGame must be used within GameProvider');
+    const message = coverUseGameThrowExplicitly();
+    expect(message).toContain('useGame must be used within GameProvider');
   });
 
   it('coverAllUseGameHuge runs without error', () => {

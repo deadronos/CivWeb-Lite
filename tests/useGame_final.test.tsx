@@ -17,8 +17,8 @@ describe('useGame final coverage', () => {
     expect(() => ensureGameContext(null as any, null as any)).toThrowError(
       'useGame must be used within GameProvider'
     );
-    const msg = coverUseGameThrowExplicitly();
-    expect(msg).toBe('useGame must be used within GameProvider');
+    const message = coverUseGameThrowExplicitly();
+    expect(message).toBe('useGame must be used within GameProvider');
     const t = coverForTestsUseGame(true);
     expect(t).toBe('threw');
   });

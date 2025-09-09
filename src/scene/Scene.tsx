@@ -6,10 +6,10 @@ import CameraControls from './drei/CameraControls';
 import DevStats from './drei/DevStats';
 import HtmlLabel from './drei/HtmlLabel';
 import BillboardLabel from './drei/BillboardLabel';
-import { isDevOrTest } from '../utils/env';
+import { isDevOrTest as isDevelopmentOrTest } from '../utils/env';
 import { useSelection } from '../contexts/SelectionContext';
 import { useHoverTile } from '../contexts/HoverContext';
-import { axialToWorld, tileIdToWorldFromExt, DEFAULT_HEX_SIZE } from './utils/coords';
+import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
 import UnitMarkers from './UnitMarkers';
 import UnitMeshes from './UnitMeshes';
 import ProceduralPreload from './units/ProceduralPreload';
@@ -46,13 +46,13 @@ export function ConnectedScene() {
 
   // Dev/test hook: allow tests to set hovered tile index via custom event
   React.useEffect(() => {
-    if (!isDevOrTest()) return;
+    if (!isDevelopmentOrTest()) return;
     const handler = (e: any) => {
-      const idx = typeof e?.detail?.index === 'number' ? e.detail.index : null;
-      setHoverIndex(idx);
+      const index = typeof e?.detail?.index === 'number' ? e.detail.index : null;
+      setHoverIndex(index);
     };
-    window.addEventListener('civweblite:hoverTileIndex', handler as any);
-    return () => window.removeEventListener('civweblite:hoverTileIndex', handler as any);
+    globalThis.addEventListener('civweblite:hoverTileIndex', handler as any);
+    return () => globalThis.removeEventListener('civweblite:hoverTileIndex', handler as any);
   }, []);
 
   return (
@@ -60,9 +60,9 @@ export function ConnectedScene() {
       <ProceduralPreload />
       {/* Drei wrappers: camera controls and dev stats */}
       <CameraControls />
-      <DevStats enabled={isDevOrTest()} />
+      <DevStats enabled={isDevelopmentOrTest()} />
       {/* Phase 3 sample: dev-only labels */}
-      {isDevOrTest() && (
+      {isDevelopmentOrTest() && (
         <>
           <HtmlLabel position={[0, 1, 0]} data-testid="scene-label">
             Tiles: {positions.length}
@@ -85,7 +85,7 @@ export function ConnectedScene() {
           const biome = (loc as any).biome;
           const world =
             typeof unit.location === 'string'
-              ? tileIdToWorldFromExt(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE)
+              ? tileIdToWorldFromExtension(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE)
               : axialToWorld(q, r, DEFAULT_HEX_SIZE);
           const [x, z] = world as [number, number];
           return (
@@ -94,10 +94,10 @@ export function ConnectedScene() {
             </HtmlLabel>
           );
         })()}
-      {isDevOrTest() && state.contentExt && <UnitMarkers />}
+      {isDevelopmentOrTest() && state.contentExt && <UnitMarkers />}
       {/* Units (procedural by default, GLTF behind flag) */}
       {state.contentExt && <UnitMeshes />}
-      {hoverIndex != null &&
+      {hoverIndex != undefined &&
         tiles[hoverIndex] &&
         (() => {
           const t = tiles[hoverIndex];
@@ -113,17 +113,17 @@ export function ConnectedScene() {
           positions={positions}
           size={DEFAULT_HEX_SIZE}
           onPointerMove={(e) => {
-            const idx = (e as any).instanceId;
-            if (typeof idx === 'number') setHoverIndex(idx);
+            const index = (e as any).instanceId;
+            if (typeof index === 'number') setHoverIndex(index);
           }}
         />
       ) : (
-        positions.map((p, i) => (
+        positions.map((p, index) => (
           <TileMesh
-            key={i}
+            key={index}
             position={p}
             size={DEFAULT_HEX_SIZE}
-            onPointerMove={() => setHoverIndex(i)}
+            onPointerMove={() => setHoverIndex(index)}
           />
         ))
       )}

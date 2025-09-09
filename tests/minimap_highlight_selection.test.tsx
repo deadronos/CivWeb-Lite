@@ -47,6 +47,6 @@ describe('Minimap highlights reachable tiles when a unit is selected', () => {
     );
     const mini = screen.getByLabelText('minimap');
     // data-highlight exists; content may vary depending on INIT world, but should be a string
-    expect(mini.getAttribute('data-highlight')).toBeTypeOf('string');
+    expect(mini.dataset.highlight).toBeTypeOf('string');
   });
 });

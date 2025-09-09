@@ -30,7 +30,7 @@ describe('Scene selected unit label', () => {
         </SelectionProvider>
       </GameProvider>
     );
-    const el = await screen.findByTestId('selected-unit-label');
-    expect(el).toBeDefined();
+    const element = await screen.findByTestId('selected-unit-label');
+    expect(element).toBeDefined();
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { CityPanelProps, ProductionOrder } from '../../game/types/ui';
+import type { CityPanelProps as CityPanelProperties, ProductionOrder } from '../../game/types/ui';
 
 export function CityPanel({
   cityId,
@@ -9,7 +9,7 @@ export function CityPanel({
   onChooseItem,
   onReorderQueue,
   onCancelOrder,
-}: CityPanelProps) {
+}: CityPanelProperties) {
   const choose = (itemId: string, type: ProductionOrder['type']) => {
     onChooseItem({ type, itemId });
   };
@@ -25,10 +25,10 @@ export function CityPanel({
         ))}
       </ul>
       <ol>
-        {productionQueue.map((q, i) => (
-          <li key={i}>
+        {productionQueue.map((q, index) => (
+          <li key={index}>
             {q.type}:{q.itemId} {q.targetTileId ? `@${q.targetTileId}` : ''}
-            <button onClick={() => onCancelOrder(i)}>X</button>
+            <button onClick={() => onCancelOrder(index)}>X</button>
           </li>
         ))}
       </ol>

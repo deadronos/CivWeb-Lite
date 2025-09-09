@@ -11,8 +11,8 @@ import {
 describe('useGame coverage helpers', () => {
   it('ensureGameContext throws when missing', () => {
     // call the explicit throw helper
-    const msg = coverUseGameThrowExplicitly();
-    expect(msg).toContain('useGame must be used within GameProvider');
+    const message = coverUseGameThrowExplicitly();
+    expect(message).toContain('useGame must be used within GameProvider');
     const res = coverForTestsUseGame(true);
     expect(res).toBe('threw');
   });

@@ -13,8 +13,8 @@ describe('useGame helpers and GameProvider mount', () => {
   test('coverUseGameInlinePathsTuple throws when requested', () => {
     try {
       coverUseGameInlinePathsTuple(true as any);
-    } catch (e) {
-      expect((e as Error).message).toContain('useGame must be used');
+    } catch (error) {
+      expect((error as Error).message).toContain('useGame must be used');
     }
   });
 
@@ -24,8 +24,8 @@ describe('useGame helpers and GameProvider mount', () => {
         <div data-testid="child">ok</div>
       </GameProvider>
     );
-    const el = getByTestId('child');
-    expect(el.textContent).toBe('ok');
+    const element = getByTestId('child');
+    expect(element.textContent).toBe('ok');
     // unmount to trigger cleanup paths if any
     unmount();
   });

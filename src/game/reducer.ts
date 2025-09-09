@@ -6,11 +6,11 @@ import { generateWorld } from './world/generate';
 import { globalGameBus } from './events';
 import {
   endTurn as contentEndTurn,
-  beginResearch as extBeginResearch,
-  beginCultureResearch as extBeginCulture,
-  moveUnit as extMoveUnit,
+  beginResearch as extensionBeginResearch,
+  beginCultureResearch as extensionBeginCulture,
+  moveUnit as extensionMoveUnit,
 } from './content/rules';
-import { createEmptyState as createContentExt } from './content/engine';
+import { createEmptyState as createContentExtension } from './content/engine';
 import { UNIT_TYPES } from './content/registry';
 
 function findPlayer(players: PlayerState[], id: string) {
@@ -74,7 +74,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
         // ensure extension state exists
-        if (!draft.contentExt) draft.contentExt = createContentExt();
+        if (!draft.contentExt) draft.contentExt = createContentExtension();
         globalGameBus.emit('turn:start', { turn: draft.turn });
         break;
       }
@@ -93,19 +93,19 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
         draft.players = [] as PlayerState[];
         // small deterministic hash from seed for leader randomization fallback
-        const hash = (str: string) =>
-          Array.from(str).reduce((a, c) => (a + c.charCodeAt(0)) >>> 0, 0);
+        const hash = (string_: string) =>
+          [...string_].reduce((a, c) => (a + c.charCodeAt(0)) >>> 0, 0);
         const chosen = action.payload.selectedLeaders ?? [];
-        for (let i = 0; i < total; i++) {
-          const isHuman = i < humans;
-          const pickId = chosen[i];
+        for (let index = 0; index < total; index++) {
+          const isHuman = index < humans;
+          const pickId = chosen[index];
           let leaderDef: any | undefined;
           if (pickId && pickId !== 'random') {
             leaderDef = (leadersCatalog as any[]).find((l) => l.id === pickId);
           }
           if (!leaderDef) {
-            const idx = (hash(seed) + i) % (leadersCatalog as any[]).length >>> 0;
-            leaderDef = (leadersCatalog as any[])[idx];
+            const index_ = (hash(seed) + index) % (leadersCatalog as any[]).length >>> 0;
+            leaderDef = (leadersCatalog as any[])[index_];
           }
           const mappedLeader = {
             id: leaderDef.id,
@@ -118,7 +118,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             preferredVictory: leaderDef.preferred_victory,
           } as PlayerState['leader'];
           draft.players.push({
-            id: `P${i + 1}`,
+            id: `P${index + 1}`,
             isHuman,
             leader: mappedLeader,
             researchedTechIds: [],
@@ -128,24 +128,24 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           } as PlayerState);
         }
         // Content extension reset
-        draft.contentExt = createContentExt();
-        const ext = draft.contentExt;
+        draft.contentExt = createContentExtension();
+        const extension = draft.contentExt;
         // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal
-        const startPositions = (idx: number): string => {
+        const startPositions = (index: number): string => {
           const pad = 2;
-          const q = idx % 2 === 0 ? pad : Math.max(pad, width - pad - 1);
-          const r = idx < 2 ? pad : Math.max(pad, height - pad - 1);
+          const q = index % 2 === 0 ? pad : Math.max(pad, width - pad - 1);
+          const r = index < 2 ? pad : Math.max(pad, height - pad - 1);
           return `${q},${r}`;
         };
-        for (let i = 0; i < draft.players.length; i++) {
-          const ownerId = draft.players[i].id;
-          const tileId = startPositions(i);
+        for (let index = 0; index < draft.players.length; index++) {
+          const ownerId = draft.players[index].id;
+          const tileId = startPositions(index);
           // ensure tile exists in ext store and mark passable
-          if (!ext.tiles[tileId]) {
-            ext.tiles[tileId] = {
+          if (!extension.tiles[tileId]) {
+            extension.tiles[tileId] = {
               id: tileId,
-              q: parseInt(tileId.split(',')[0]!, 10),
-              r: parseInt(tileId.split(',')[1]!, 10),
+              q: Number.parseInt(tileId.split(',')[0]!, 10),
+              r: Number.parseInt(tileId.split(',')[1]!, 10),
               biome: 'grassland',
               elevation: 0.1,
               features: [],
@@ -157,7 +157,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           }
           // add warrior
           const wId = `u_${ownerId}_warrior`;
-          ext.units[wId] = {
+          extension.units[wId] = {
             id: wId,
             type: 'warrior',
             ownerId,
@@ -173,7 +173,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           } as any;
           // add settler
           const sId = `u_${ownerId}_settler`;
-          ext.units[sId] = {
+          extension.units[sId] = {
             id: sId,
             type: 'settler',
             ownerId,
@@ -198,19 +198,19 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             if (tech) {
               const points = tech.tree === 'science' ? player.sciencePoints : player.culturePoints;
               player.researching.progress += points;
-              if (player.researching.progress >= tech.cost) {
-                player.researchedTechIds.push(tech.id);
-                player.researching = null;
-                globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+        if (player.researching.progress >= tech.cost) {
+          player.researchedTechIds.push(tech.id);
+          player.researching = null;
+          globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
               }
             }
           }
         }
         // Drive spec content extension per-turn: science equals number of cities
         if (draft.contentExt) {
-          const ext = draft.contentExt;
-          ext.playerState.science = Object.keys(ext.cities).length;
-          contentEndTurn(ext);
+          const extension = draft.contentExt;
+          extension.playerState.science = Object.keys(extension.cities).length;
+          contentEndTurn(extension);
         }
         draft.turn += 1;
         globalGameBus.emit('turn:end', { turn: draft.turn });
@@ -222,26 +222,22 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           action.payload && typeof (action.payload as any).enabled === 'boolean'
             ? (action.payload as any).enabled
             : undefined;
-        if (typeof enabled === 'boolean') {
-          draft.autoSim = enabled;
-        } else {
-          draft.autoSim = !draft.autoSim;
-        }
+        draft.autoSim = typeof enabled === 'boolean' ? enabled : !draft.autoSim;
         break;
       }
       case 'EXT_BEGIN_RESEARCH': {
-        if (!draft.contentExt) draft.contentExt = createContentExt();
-        extBeginResearch(draft.contentExt, action.payload.techId);
+        if (!draft.contentExt) draft.contentExt = createContentExtension();
+        extensionBeginResearch(draft.contentExt, action.payload.techId);
         break;
       }
       case 'EXT_BEGIN_CULTURE_RESEARCH': {
-        if (!draft.contentExt) draft.contentExt = createContentExt();
-        extBeginCulture(draft.contentExt, action.payload.civicId);
+        if (!draft.contentExt) draft.contentExt = createContentExtension();
+        extensionBeginCulture(draft.contentExt, action.payload.civicId);
         break;
       }
       case 'EXT_QUEUE_PRODUCTION': {
-        const ext = (draft.contentExt ||= createContentExt());
-        const city = ext.cities[action.payload.cityId];
+        const extension = (draft.contentExt ||= createContentExtension());
+        const city = extension.cities[action.payload.cityId];
         if (city) {
           city.productionQueue.push({
             type: action.payload.order.type,
@@ -252,9 +248,9 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         break;
       }
       case 'EXT_ADD_TILE': {
-        const ext = (draft.contentExt ||= createContentExt());
+        const extension = (draft.contentExt ||= createContentExtension());
         const { id, q, r, biome } = action.payload.tile as any;
-        ext.tiles[id] = {
+        extension.tiles[id] = {
           id,
           q,
           r,
@@ -269,10 +265,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         break;
       }
       case 'EXT_ADD_CITY': {
-        const ext = (draft.contentExt ||= createContentExt());
+        const extension = (draft.contentExt ||= createContentExtension());
         const { cityId, name, ownerId, tileId } = action.payload;
-        if (!ext.tiles[tileId]) {
-          ext.tiles[tileId] = {
+        if (!extension.tiles[tileId]) {
+          extension.tiles[tileId] = {
             id: tileId,
             q: 0,
             r: 0,
@@ -285,7 +281,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             passable: true,
           };
         }
-        ext.cities[cityId] = {
+        extension.cities[cityId] = {
           id: cityId,
           name,
           ownerId,
@@ -296,15 +292,15 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           garrisonUnitIds: [],
           happiness: 0,
         };
-        ext.tiles[tileId].occupantCityId = cityId;
+        extension.tiles[tileId].occupantCityId = cityId;
         break;
       }
       case 'EXT_ADD_UNIT': {
-        const ext = (draft.contentExt ||= createContentExt());
+        const extension = (draft.contentExt ||= createContentExtension());
         const { unitId, type, ownerId, tileId } = action.payload;
         const def = UNIT_TYPES[type];
         if (def) {
-          ext.units[unitId] = {
+          extension.units[unitId] = {
             id: unitId,
             type,
             ownerId,
@@ -318,8 +314,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             state: 'idle',
             abilities: def.abilities ?? [],
           };
-          if (!ext.tiles[tileId]) {
-            ext.tiles[tileId] = {
+          if (!extension.tiles[tileId]) {
+            extension.tiles[tileId] = {
               id: tileId,
               q: 0,
               r: 0,
@@ -336,17 +332,17 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         break;
       }
       case 'EXT_ISSUE_MOVE_PATH': {
-        const ext = (draft.contentExt ||= createContentExt());
-        const u = ext.units[action.payload.unitId];
-        if (u && action.payload.path && action.payload.path.length) {
+        const extension = (draft.contentExt ||= createContentExtension());
+        const u = extension.units[action.payload.unitId];
+  if (u && action.payload.path && action.payload.path.length > 0) {
           const enemyAt = (tileId: string): boolean => {
-            const t = ext.tiles[tileId];
+            const t = extension.tiles[tileId];
             if (!t) return false;
             if (t.occupantCityId) {
-              const c = ext.cities[t.occupantCityId];
+              const c = extension.cities[t.occupantCityId];
               if (c && c.ownerId !== u.ownerId) return true;
             }
-            for (const other of Object.values(ext.units)) {
+            for (const other of Object.values(extension.units)) {
               if (other.id !== u.id && other.location === tileId && other.ownerId !== u.ownerId)
                 return true;
             }
@@ -357,7 +353,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
               break; // require confirmCombat to proceed into enemy tile
             }
             const before = u.location;
-            const ok = extMoveUnit(ext, u.id, tid);
+            const ok = extensionMoveUnit(extension, u.id, tid);
             if (!ok) break;
             if (u.location === before) break; // no progress safeguard
           }
@@ -370,8 +366,9 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         draft.aiPerf.count += 1;
         break;
       }
-      default:
+      default: {
         break;
+      }
     }
     globalGameBus.emit('action:applied', { action });
   });

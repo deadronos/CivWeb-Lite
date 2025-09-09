@@ -6,8 +6,8 @@ describe('hashState BigInt handling', () => {
     const state = {
       id: 1,
       counters: {
-        large: 123456789012345678901234567890n,
-        negative: -9007199254740991n,
+        large: 123_456_789_012_345_678_901_234_567_890n,
+        negative: -9_007_199_254_740_991n,
       },
       list: [1n, 2n, 3n, null],
       nested: {
@@ -18,7 +18,7 @@ describe('hashState BigInt handling', () => {
     // Should not throw and returns a SHA-256 hex string
     const h1 = await hashState(state as any);
     expect(typeof h1).toBe('string');
-    expect(/^[0-9a-f]{64}$/.test(h1)).toBe(true);
+    expect(/^[\da-f]{64}$/.test(h1)).toBe(true);
 
     // Re-hash to ensure determinism
     const h2 = await hashState(state as any);
@@ -34,7 +34,7 @@ describe('hashState BigInt handling', () => {
     // Changing the BigInt value should change the hash
     const stateChanged = {
       ...state,
-      counters: { ...state.counters, large: 9999999999999999999999n },
+      counters: { ...state.counters, large: 9_999_999_999_999_999_999_999n },
     } as any;
     const h4 = await hashState(stateChanged);
     expect(h4).not.toEqual(h1);

@@ -19,7 +19,7 @@ function GameHUDInner() {
     if (!file) return;
     importFromFile(file)
       .then((loaded) => dispatch({ type: 'LOAD_STATE', payload: loaded } as any))
-      .catch((err) => console.error(err));
+      .catch((error) => console.error(error));
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ function GameHUDInner() {
   const toggleAuto = () => dispatch({ type: 'AUTO_SIM_TOGGLE' });
 
   const regenerate = () => {
-    if (window.confirm('Regenerate world with new seed?')) {
+    if (globalThis.confirm('Regenerate world with new seed?')) {
       dispatch({ type: 'INIT', payload: { seed: String(Date.now()) } });
     }
   };
@@ -57,22 +57,22 @@ function GameHUDInner() {
       : null;
 
   // Content extension HUD bits (cities, science, research progress)
-  const ext = state.contentExt;
-  const cityCount = ext ? Object.keys(ext.cities).length : 0;
-  const extResearch = React.useMemo(() => {
-    if (!ext?.playerState.research) return null;
-    const tech = TECHS[ext.playerState.research.techId];
+  const extension = state.contentExt;
+  const cityCount = extension ? Object.keys(extension.cities).length : 0;
+  const extensionResearch = React.useMemo(() => {
+    if (!extension?.playerState.research) return null;
+    const tech = TECHS[extension.playerState.research.techId];
     if (!tech) return null;
-    const pct = Math.floor((ext.playerState.research.progress / tech.cost) * 100);
+    const pct = Math.floor((extension.playerState.research.progress / tech.cost) * 100);
     return `${tech.name} ${pct}%`;
-  }, [ext?.playerState.research]);
-  const extCultureResearch = React.useMemo(() => {
-    if (!ext?.playerState.cultureResearch || !ext?.civics) return null;
-    const civic = ext.civics[ext.playerState.cultureResearch.civicId];
+  }, [extension?.playerState.research]);
+  const extensionCultureResearch = React.useMemo(() => {
+    if (!extension?.playerState.cultureResearch || !extension?.civics) return null;
+    const civic = extension.civics[extension.playerState.cultureResearch.civicId];
     if (!civic) return null;
-    const pct = Math.floor((ext.playerState.cultureResearch.progress / civic.cost) * 100);
+    const pct = Math.floor((extension.playerState.cultureResearch.progress / civic.cost) * 100);
     return `${civic.name} ${pct}%`;
-  }, [ext?.playerState.cultureResearch]);
+  }, [extension?.playerState.cultureResearch]);
 
   // Minimal data-backed catalog view (Units/Buildings)
   const [unitList, setUnitList] = React.useState<{ id: string; name: string; category: string }[]>(
@@ -105,21 +105,21 @@ function GameHUDInner() {
       setLoadFocusPaste(true);
       setShowLoad(true);
     };
-    window.addEventListener('hud:openLoad', handler);
-    window.addEventListener('hud:openLoad:paste', handlerPaste);
+    globalThis.addEventListener('hud:openLoad', handler);
+    globalThis.addEventListener('hud:openLoad:paste', handlerPaste);
     return () => {
-      window.removeEventListener('hud:openLoad', handler);
-      window.removeEventListener('hud:openLoad:paste', handlerPaste);
+      globalThis.removeEventListener('hud:openLoad', handler);
+      globalThis.removeEventListener('hud:openLoad:paste', handlerPaste);
     };
   }, []);
 
-  const playersSummary = state.players.length ? (
+  const playersSummary = state.players.length > 0 ? (
     <div aria-label="game summary" style={{ margin: '6px 0', opacity: 0.85 }}>
       Players:{' '}
       {state.players
         .map((p) => {
           const pv = (p.leader.preferredVictory || []) as string[];
-          const badge = pv.length ? ` [${pv.map((v) => victoryBadge(v)).join('')}]` : '';
+          const badge = pv.length > 0 ? ` [${pv.map((v) => victoryBadge(v)).join('')}]` : '';
           return `${p.id}: ${p.leader.name}${badge}`;
         })
         .join(' · ')}
@@ -155,19 +155,19 @@ function GameHUDInner() {
         />
       </div>
       {techSummary && <div>Research: {techSummary}</div>}
-      {ext && (
+      {extension && (
         <>
           <div style={{ display: 'flex', gap: 12 }}>
             <ExtTechPanelContainer />
             <CivicPanelContainer />
           </div>
           <div>Cities: {cityCount}</div>
-          <div>Science/turn: {ext.playerState.science}</div>
-          {typeof ext.playerState.culture === 'number' && (
-            <div>Culture/turn: {ext.playerState.culture}</div>
+          <div>Science/turn: {extension.playerState.science}</div>
+          {typeof extension.playerState.culture === 'number' && (
+            <div>Culture/turn: {extension.playerState.culture}</div>
           )}
-          {extResearch && <div>Ext Research: {extResearch}</div>}
-          {extCultureResearch && <div>Ext Civic: {extCultureResearch}</div>}
+          {extensionResearch && <div>Ext Research: {extensionResearch}</div>}
+          {extensionCultureResearch && <div>Ext Civic: {extensionCultureResearch}</div>}
           <SpecControls />
         </>
       )}
@@ -184,12 +184,12 @@ function GameHUDInner() {
             aria-label="catalog units"
             style={{ maxHeight: 120, overflow: 'auto', margin: 0, paddingLeft: 16 }}
           >
-            {(ext
+            {(extension
               ? unitList.filter(
                   (u) =>
-                    ext.playerState.availableUnits?.includes(u.id) ||
+                    extension.playerState.availableUnits?.includes(u.id) ||
                     !u.requires ||
-                    ext.playerState.researchedTechs.includes(u.requires)
+                    extension.playerState.researchedTechs.includes(u.requires)
                 )
               : unitList
             ).map((u) => (
@@ -205,13 +205,13 @@ function GameHUDInner() {
             aria-label="catalog buildings"
             style={{ maxHeight: 120, overflow: 'auto', margin: 0, paddingLeft: 16 }}
           >
-            {(ext
+            {(extension
               ? buildingList.filter((b) => {
-                  const req = (b as any).requires ?? null;
+                  const request = (b as any).requires ?? null;
                   return (
-                    !req ||
-                    ext.playerState.researchedTechs.includes(req) ||
-                    (ext.playerState.researchedCivics ?? []).includes(req)
+                    !request ||
+                    extension.playerState.researchedTechs.includes(request) ||
+                    (extension.playerState.researchedCivics ?? []).includes(request)
                   );
                 })
               : buildingList
@@ -243,8 +243,8 @@ function GameHUDInner() {
 const LogList = React.memo(function LogList({ entries }: { entries: { type: string }[] }) {
   return (
     <ul>
-      {entries.map((e, i) => (
-        <li key={i}>{e.type}</li>
+      {entries.map((e, index) => (
+        <li key={index}>{e.type}</li>
       ))}
     </ul>
   );
@@ -254,7 +254,7 @@ export default React.memo(GameHUDInner);
 
 function SpecControls() {
   const { state, dispatch } = useGame();
-  const ext = state.contentExt!;
+  const extension = state.contentExt!;
   const [moveUnitId, setMoveUnitId] = React.useState('');
   const [moveToTileId, setMoveToTileId] = React.useState('');
   const [spawnUnitType, setSpawnUnitType] = React.useState('');
@@ -277,12 +277,12 @@ function SpecControls() {
             setCatalogUnits(
               ulist.map((u) => ({ id: u.id, name: u.name, requires: (u as any).requires ?? null }))
             );
-          if (on && ulist.length && !spawnUnitType) setSpawnUnitType(ulist[0].id);
+          if (on && ulist.length > 0 && !spawnUnitType) setSpawnUnitType(ulist[0].id);
           if (on)
             setCatalogBuildings(
               blist.map((b) => ({ id: b.id, name: b.name, requires: (b as any).requires ?? null }))
             );
-          if (on && blist.length && !queueBuildingId) setQueueBuildingId(blist[0].id);
+          if (on && blist.length > 0 && !queueBuildingId) setQueueBuildingId(blist[0].id);
           if (on && clist)
             setCultureCivics(
               clist.map((c: any) => ({
@@ -301,9 +301,9 @@ function SpecControls() {
   }, []);
 
   const ensureDemoCity = () => {
-    if (!ext) return;
-    const cityIds = Object.keys(ext.cities);
-    if (cityIds.length) return cityIds[0];
+    if (!extension) return;
+    const cityIds = Object.keys(extension.cities);
+    if (cityIds.length > 0) return cityIds[0];
     const tileId = 'hex_demo_city';
     dispatch({
       type: 'EXT_ADD_CITY',
@@ -327,7 +327,7 @@ function SpecControls() {
   const spawnWorker = () => {
     const cid = ensureDemoCity();
     if (!cid) return;
-    const city = ext.cities[cid];
+    const city = extension.cities[cid];
     dispatch({
       type: 'EXT_ADD_UNIT',
       payload: {
@@ -342,7 +342,7 @@ function SpecControls() {
   const spawnFromCatalog = () => {
     const cid = ensureDemoCity();
     if (!cid) return;
-    const city = ext.cities[cid];
+    const city = extension.cities[cid];
     if (!spawnUnitType) return;
     dispatch({
       type: 'EXT_ADD_UNIT',
@@ -385,8 +385,8 @@ function SpecControls() {
     dispatch({ type: 'EXT_BEGIN_CULTURE_RESEARCH', payload: { civicId } });
   };
 
-  const researchLabel = ext.playerState.research
-    ? `Researching ${ext.playerState.research.techId}`
+  const researchLabel = extension.playerState.research
+    ? `Researching ${extension.playerState.research.techId}`
     : 'Start Agriculture';
 
   return (
@@ -394,7 +394,7 @@ function SpecControls() {
       <div style={{ fontWeight: 600 }}>Spec Controls</div>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <button onClick={ensureDemoCity}>Add Demo City</button>
-        <button onClick={startAgriculture} disabled={!!ext.playerState.research}>
+        <button onClick={startAgriculture} disabled={!!extension.playerState.research}>
           {researchLabel}
         </button>
         <button onClick={queueWarrior}>Queue Warrior</button>
@@ -409,9 +409,9 @@ function SpecControls() {
             {catalogUnits
               .filter(
                 (u) =>
-                  ext.playerState.availableUnits?.includes(u.id) ||
+                  extension.playerState.availableUnits?.includes(u.id) ||
                   !u.requires ||
-                  ext.playerState.researchedTechs.includes(u.requires)
+                  extension.playerState.researchedTechs.includes(u.requires)
               )
               .map((u) => (
                 <option key={u.id} value={u.id}>
@@ -452,9 +452,9 @@ function SpecControls() {
               Choose...
             </option>
             {cultureCivics
-              .filter((c) => (ext.playerState.researchedCivics ?? []).every((id) => id !== c.id))
+              .filter((c) => (extension.playerState.researchedCivics ?? []).every((id) => id !== c.id))
               .filter((c) =>
-                c.prereqs.every((p) => (ext.playerState.researchedCivics ?? []).includes(p))
+                c.prereqs.every((p) => (extension.playerState.researchedCivics ?? []).includes(p))
               )
               .map((c) => (
                 <option key={c.id} value={c.id}>
@@ -471,16 +471,16 @@ function SpecControls() {
             onChange={(e) => setQueueBuildingId(e.target.value)}
           >
             {catalogBuildings.map((b) => {
-              const built = (ext.cities[ensureDemoCity()]?.buildings ?? []).includes(b.id);
-              const req = b.requires;
+              const built = (extension.cities[ensureDemoCity()]?.buildings ?? []).includes(b.id);
+              const request = b.requires;
               const canBuild =
-                !req ||
-                ext.playerState.researchedTechs.includes(req) ||
-                (ext.playerState.researchedCivics ?? []).includes(req);
+                !request ||
+                extension.playerState.researchedTechs.includes(request) ||
+                (extension.playerState.researchedCivics ?? []).includes(request);
               return (
                 <option key={b.id} value={b.id} disabled={!canBuild || built}>
                   {b.name}
-                  {built ? ' (built)' : (!canBuild ? ' (locked)' : '')}
+                  {built ? ' (built)' : (canBuild ? '' : ' (locked)')}
                 </option>
               );
             })}
@@ -494,15 +494,20 @@ function SpecControls() {
 
 function victoryBadge(v: string): string {
   switch (v) {
-    case 'science':
+    case 'science': {
       return 'SCI';
-    case 'culture':
+    }
+    case 'culture': {
       return 'CUL';
-    case 'domination':
+    }
+    case 'domination': {
       return 'DOM';
-    case 'diplomacy':
+    }
+    case 'diplomacy': {
       return 'DIP';
-    default:
+    }
+    default: {
       return v.toUpperCase().slice(0, 3);
+    }
   }
 }

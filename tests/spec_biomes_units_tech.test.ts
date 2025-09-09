@@ -114,7 +114,7 @@ describe('Spec: Biomes, Units, Cities, and Technologies', () => {
     state.playerState.science = 1; // 1 per turn
     const ok = beginResearch(state, 'agriculture');
     expect(ok).toBe(true);
-    for (let i = 0; i < 6; i++) endTurn(state);
+    for (let index = 0; index < 6; index++) endTurn(state);
     expect(state.playerState.researchedTechs).toContain('agriculture');
     expect(state.playerState.availableImprovements).toContain('farm');
   });

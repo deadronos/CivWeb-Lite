@@ -74,7 +74,7 @@ export function UnitModelSwitch({
   }
 
   switch (lower) {
-    case 'warrior':
+    case 'warrior': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
@@ -82,7 +82,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'spearman':
+    }
+    case 'spearman': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
@@ -90,7 +91,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'archer':
+    }
+    case 'archer': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.4} phase={phase}>
@@ -98,7 +100,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'settler':
+    }
+    case 'settler': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.3} phase={phase}>
@@ -106,7 +109,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'worker':
+    }
+    case 'worker': {
       return (
         <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.45} phase={phase}>
@@ -114,7 +118,8 @@ export function UnitModelSwitch({
           </Bob>
         </CommonWrap>
       );
-    case 'galley':
+    }
+    case 'galley': {
       return (
         <CommonWrap>
           <group>
@@ -124,7 +129,8 @@ export function UnitModelSwitch({
           </group>
         </CommonWrap>
       );
-    default:
+    }
+    default: {
       return (
         <CommonWrap>
           {/* Minimal placeholder for unknown types */}
@@ -134,5 +140,6 @@ export function UnitModelSwitch({
           </mesh>
         </CommonWrap>
       );
+    }
   }
 }

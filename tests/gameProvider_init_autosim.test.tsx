@@ -32,19 +32,19 @@ describe('GameProvider INIT and autoSim', () => {
   it('handles INIT payload and runs one autoSim loop', async () => {
     // mock requestAnimationFrame to only execute the callback once to avoid infinite loops
     let calls = 0;
-    const raf = vi.fn((cb: FrameRequestCallback) => {
+    const raf = vi.fn((callback: FrameRequestCallback) => {
       calls += 1;
       if (calls === 1) {
         // call synchronously once
-        cb(0);
+        callback(0);
       }
       return calls;
     });
     const caf = vi.fn(() => {});
     // @ts-expect-error assign to global for test environment
-    global.requestAnimationFrame = raf as any;
+    globalThis.requestAnimationFrame = raf as any;
     // @ts-expect-error assign to global for test environment
-    global.cancelAnimationFrame = caf as any;
+    globalThis.cancelAnimationFrame = caf as any;
 
     render(
       <GameProvider>
@@ -66,8 +66,8 @@ describe('GameProvider INIT and autoSim', () => {
 
     // cleanup
     // @ts-expect-error cleanup global test assignments
-    delete global.requestAnimationFrame;
+    delete globalThis.requestAnimationFrame;
     // @ts-expect-error cleanup global test assignments
-    delete global.cancelAnimationFrame;
+    delete globalThis.cancelAnimationFrame;
   });
 });

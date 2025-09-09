@@ -23,7 +23,7 @@ describe('GameProvider', () => {
     );
 
     // initial effect will dispatch INIT; wait a tick
-    await act(async () => Promise.resolve());
+    await act(async () => {});
 
     const turn = screen.getByTestId('turn');
     expect(turn).toBeDefined();

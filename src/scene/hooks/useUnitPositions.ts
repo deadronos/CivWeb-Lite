@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGame } from '../../hooks/useGame';
-import { axialToWorld, tileIdToWorldFromExt } from '../utils/coords';
+import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension } from '../utils/coords';
 
 export type UnitPosition = {
   id: string;
@@ -20,22 +20,22 @@ function toSet(v?: string | string[]) {
   return new Set(Array.isArray(v) ? v : [v]);
 }
 
-export function useUnitPositions(opts: UseUnitPositionsOptions = {}): UnitPosition[] {
-  const y = opts.y ?? 0;
+export function useUnitPositions(options: UseUnitPositionsOptions = {}): UnitPosition[] {
+  const y = options.y ?? 0;
   const { state } = useGame();
-  const ext = state.contentExt;
-  const ownerSet = toSet(opts.ownerId);
-  const typeSet = toSet(opts.unitType);
+  const extension = state.contentExt;
+  const ownerSet = toSet(options.ownerId);
+  const typeSet = toSet(options.unitType);
   return React.useMemo(() => {
-    if (!ext) return [] as UnitPosition[];
+    if (!extension) return [] as UnitPosition[];
     const out: UnitPosition[] = [];
-    for (const u of Object.values(ext.units)) {
+    for (const u of Object.values(extension.units)) {
       if (ownerSet && !ownerSet.has((u as any).ownerId)) continue;
       if (typeSet && !typeSet.has((u as any).type)) continue;
-      if (opts.predicate && !opts.predicate(u)) continue;
+      if (options.predicate && !options.predicate(u)) continue;
       let xz: [number, number] | null = null;
       if (typeof u.location === 'string') {
-        xz = tileIdToWorldFromExt(ext as any, u.location);
+        xz = tileIdToWorldFromExtension(extension as any, u.location);
       } else if (
         u.location &&
         typeof (u.location as any).q === 'number' &&
@@ -48,18 +48,18 @@ export function useUnitPositions(opts: UseUnitPositionsOptions = {}): UnitPositi
     }
     return out;
   }, [
-    ext,
+    extension,
     y,
     ownerSet && [...ownerSet].join(','),
     typeSet && [...typeSet].join(','),
-    opts.predicate,
+    options.predicate,
   ]);
 }
 
 export function useUnitPositionMap(
-  opts: UseUnitPositionsOptions = {}
+  options: UseUnitPositionsOptions = {}
 ): Record<string, UnitPosition> {
-  const list = useUnitPositions(opts);
+  const list = useUnitPositions(options);
   return React.useMemo(() => {
     const map: Record<string, UnitPosition> = {};
     for (const u of list) map[u.id] = u;

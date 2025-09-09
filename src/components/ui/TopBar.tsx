@@ -10,7 +10,7 @@ export type TopBarProps = {
 };
 
 export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste }: TopBarProps) {
-  const getVal = (v: number | { value: number; delta?: number } | undefined) => {
+  const getValue = (v: number | { value: number; delta?: number } | undefined) => {
     if (v === undefined) return 0;
     return typeof v === 'number' ? v : v.value;
   };
@@ -22,12 +22,12 @@ export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste }:
         {/* science */}
         <div className="resource science" aria-label="resource science">
           <Icon icon={MdScience} size={18} title="Science" />
-          <span style={{ marginLeft: 6 }}>{getVal(resources?.science)}</span>
+          <span style={{ marginLeft: 6 }}>{getValue(resources?.science)}</span>
         </div>
         {/* culture */}
         <div className="resource culture" aria-label="resource culture">
           <Icon icon={MdTheaterComedy} size={18} title="Culture" />
-          <span style={{ marginLeft: 6 }}>{getVal(resources?.culture)}</span>
+          <span style={{ marginLeft: 6 }}>{getValue(resources?.culture)}</span>
         </div>
       </div>
       <div>

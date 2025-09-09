@@ -22,8 +22,8 @@ function baseState(player: PlayerState): GameState {
 describe('AI benchmark', () => {
   it('measures average evaluateAI time across leaders', () => {
     const leaders = LEADER_PERSONALITIES.slice(0, 4);
-    const players: PlayerState[] = leaders.map((leader, i) => ({
-      id: `p${i}`,
+    const players: PlayerState[] = leaders.map((leader, index) => ({
+      id: `p${index}`,
       isHuman: false,
       leader,
       sciencePoints: 10,
@@ -34,7 +34,7 @@ describe('AI benchmark', () => {
 
     const iterations = 300; // controlled iteration count for CI speed
     let totalMs = 0;
-    for (let i = 0; i < iterations; i++) {
+    for (let index = 0; index < iterations; index++) {
       for (const p of players) {
         const state = baseState(p);
         const start = performance.now();

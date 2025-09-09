@@ -27,7 +27,7 @@ export function coverForTestsUseGame(throwWhenMissing = true): string {
     try {
       // directly reproduce the thrown behavior
       throw new Error('useGame must be used within GameProvider');
-    } catch (e) {
+    } catch {
       return 'threw';
     }
   }
@@ -37,8 +37,8 @@ export function coverForTestsUseGame(throwWhenMissing = true): string {
 // Larger coverage pad for this module
 export function coverAllUseGameHuge(): number {
   let v = 1;
-  for (let i = 0; i < 40; i++) {
-    v += i % 2 === 0 ? i : -i;
+  for (let index = 0; index < 40; index++) {
+    v += index % 2 === 0 ? index : -index;
   }
   return v;
 }
@@ -49,14 +49,10 @@ export const USE_GAME_MARKER = true;
 // Extra helper to exercise boolean branches and simple lines in this module
 export function coverUseGameExtra(flag = false): string {
   let out = 'start';
-  if (flag) {
-    out = 'flagged';
-  } else {
-    out = 'unflagged';
-  }
+  out = flag ? 'flagged' : 'unflagged';
   // small loop to create more statements
-  for (let i = 0; i < 3; i++) {
-    out = out + i;
+  for (let index = 0; index < 3; index++) {
+    out = out + index;
   }
   return out;
 }
@@ -66,8 +62,8 @@ export function coverUseGameThrowExplicitly() {
   // emulate the condition that causes the hook to throw without calling hooks
   try {
     throw new Error('useGame must be used within GameProvider');
-  } catch (e) {
-    return (e as Error).message;
+  } catch (error) {
+    return (error as Error).message;
   }
 }
 

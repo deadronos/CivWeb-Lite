@@ -11,7 +11,7 @@ export default function UnitMeshes() {
   const { state } = useGame();
   const positions = useUnitPositions({ y: 0.01 });
   if (!state.contentExt) return null;
-  const ext = state.contentExt;
+  const extension = state.contentExt;
   const rangedByType: Record<string, { ranged: boolean; range: number }> = Object.fromEntries(
     (unitsData as any[]).map((u: any) => [
       u.id,
@@ -22,18 +22,18 @@ export default function UnitMeshes() {
     <group>
       {positions.map((u) => {
         // Resolve owner and team color from ext units
-        const unit = ext.units[u.id];
+        const unit = extension.units[u.id];
         const color = unit ? playerColor(state, unit.ownerId) : '#bdc3c7';
         // Determine ranged readiness (show arrow) when enemy is within range for ranged units
         let rangedReady = false;
         const meta = rangedByType[unit?.type ?? ''];
         if (unit && meta?.ranged) {
           const locId = unit.location as string;
-          const selfTile = ext.tiles[locId];
+          const selfTile = extension.tiles[locId];
           if (selfTile) {
-            for (const other of Object.values(ext.units)) {
+            for (const other of Object.values(extension.units)) {
               if (other.ownerId === unit.ownerId) continue;
-              const otherTile = ext.tiles[other.location as string];
+              const otherTile = extension.tiles[other.location as string];
               if (!otherTile) continue;
               const d = distance(
                 { q: selfTile.q, r: selfTile.r },

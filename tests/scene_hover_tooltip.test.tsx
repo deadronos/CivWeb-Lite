@@ -19,9 +19,9 @@ describe('Scene hovered tile tooltip', () => {
     );
 
     // Simulate hovering tile index 0 via custom event used in dev/test
-    window.dispatchEvent(new CustomEvent('civweblite:hoverTileIndex', { detail: { index: 0 } }));
+    globalThis.dispatchEvent(new CustomEvent('civweblite:hoverTileIndex', { detail: { index: 0 } }));
 
-    const el = await screen.findByTestId('hovered-tile-label');
-    expect(el).toBeDefined();
+    const element = await screen.findByTestId('hovered-tile-label');
+    expect(element).toBeDefined();
   });
 });

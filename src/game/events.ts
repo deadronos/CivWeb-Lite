@@ -12,28 +12,28 @@ export interface GameEvents {
 export class GameEventBus<E extends Record<string, any>> {
   private listeners: Map<keyof E & string, Set<Listener<any>>> = new Map();
 
-  on<K extends keyof E & string>(event: K, fn: Listener<E[K]>) {
+  on<K extends keyof E & string>(event: K, function_: Listener<E[K]>) {
     const set = this.listeners.get(event) ?? new Set();
-    set.add(fn as Listener<any>);
+    set.add(function_ as Listener<any>);
     this.listeners.set(event, set);
-    return () => this.off(event, fn);
+    return () => this.off(event, function_);
   }
 
-  off<K extends keyof E & string>(event: K, fn: Listener<E[K]>) {
+  off<K extends keyof E & string>(event: K, function_: Listener<E[K]>) {
     const set = this.listeners.get(event);
     if (!set) return;
-    set.delete(fn as Listener<any>);
+    set.delete(function_ as Listener<any>);
     if (set.size === 0) this.listeners.delete(event);
   }
 
   emit<K extends keyof E & string>(event: K, payload: E[K]) {
     const set = this.listeners.get(event);
     if (!set) return;
-    for (const fn of Array.from(set)) {
+    for (const function_ of set) {
       try {
-        fn(payload);
-      } catch (e) {
-        console.error('Event listener error', e);
+        function_(payload);
+      } catch (error) {
+        console.error('Event listener error', error);
       }
     }
   }

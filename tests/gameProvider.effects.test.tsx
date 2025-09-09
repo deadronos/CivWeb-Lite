@@ -33,8 +33,8 @@ describe('GameProvider effects', () => {
   beforeEach(() => {
     // deterministic RAF mock that runs callbacks once when id assigned
     let queued: FrameRequestCallback | null = null;
-    (globalThis as any).requestAnimationFrame = (cb: FrameRequestCallback) => {
-      queued = cb;
+    (globalThis as any).requestAnimationFrame = (callback: FrameRequestCallback) => {
+      queued = callback;
       // return an id
       return 1;
     };
@@ -44,9 +44,9 @@ describe('GameProvider effects', () => {
     // When asked, run queued callback synchronously
     (globalThis as any).__runQueuedRAF = () => {
       if (queued) {
-        const cb = queued;
+        const callback = queued;
         queued = null;
-        cb(0);
+        callback(0);
       }
     };
   });
@@ -125,8 +125,8 @@ describe('GameProvider effects', () => {
         <UseGameConsumer />
       </GameProvider>
     );
-    const btn = getByText('end');
-    await act(async () => userEvent.click(btn));
+    const button = getByText('end');
+    await act(async () => userEvent.click(button));
     expect(screen.getByTestId('uh-turn').textContent).toBe('1');
   });
 

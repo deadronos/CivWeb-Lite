@@ -3,7 +3,7 @@ import HtmlLabel from './drei/HtmlLabel';
 import { useUnitPositions } from './hooks/useUnitPositions';
 
 export default function UnitMarkers() {
-  const positions = useUnitPositions({ y: 1.0 });
+  const positions = useUnitPositions({ y: 1 });
   return (
     <group>
       {positions.map((u) => (

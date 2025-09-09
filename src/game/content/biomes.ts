@@ -30,9 +30,9 @@ export const BASE_MOVEMENT_COST: Record<Biome, number | 'INF'> = {
   mountain: 'INF',
 };
 
-export function isPassable(tile: Hextile, ctx: MovementContext): boolean {
-  const abilities = ctx.unitAbilities ?? [];
-  const domain = ctx.unitDomain ?? 'land';
+export function isPassable(tile: Hextile, context: MovementContext): boolean {
+  const abilities = context.unitAbilities ?? [];
+  const domain = context.unitDomain ?? 'land';
   if (tile.biome === 'mountain') {
     return abilities.includes('canTraverseMountains');
   }
@@ -42,8 +42,8 @@ export function isPassable(tile: Hextile, ctx: MovementContext): boolean {
   return true;
 }
 
-export function movementCost(tile: Hextile, ctx: MovementContext): number {
-  const domain = ctx.unitDomain ?? 'land';
+export function movementCost(tile: Hextile, context: MovementContext): number {
+  const domain = context.unitDomain ?? 'land';
   // Domain-specific rules for ocean/coast
   if (tile.biome === 'ocean') return domain === 'naval' ? 1 : Infinity;
   if (tile.biome === 'coast') return 1;

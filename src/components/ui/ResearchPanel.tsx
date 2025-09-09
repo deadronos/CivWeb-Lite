@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ResearchPanelProps } from '../../game/types/ui';
+import type { ResearchPanelProps as ResearchPanelProperties } from '../../game/types/ui';
 
 export function ResearchPanel({
   playerId,
@@ -9,7 +9,7 @@ export function ResearchPanel({
   onStartResearch,
   onQueueResearch,
   onAutoRecommend,
-}: ResearchPanelProps) {
+}: ResearchPanelProperties) {
   return (
     <div data-testid="research-panel">
       <h3>Research (Player {playerId})</h3>

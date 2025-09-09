@@ -5,7 +5,7 @@ describe('round-trip state persistence', () => {
   it('stringify -> parse -> hash produces identical hash', async () => {
     const state = {
       x: 1,
-      big: 9007199254740993n,
+      big: 9_007_199_254_740_993n,
       nested: { arr: [1n, 'a', { n: 5n }] },
     } as any;
 

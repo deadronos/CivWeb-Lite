@@ -1,6 +1,6 @@
 import React from 'react';
 
-type TileMeshProps = {
+type TileMeshProperties = {
   position: [number, number, number];
   color?: string;
   onPointerMove?: (e: any) => void;
@@ -14,7 +14,7 @@ export const TileMesh = React.memo(function TileMesh({
   color = '#88c',
   onPointerMove,
   size = 0.5,
-}: TileMeshProps) {
+}: TileMeshProperties) {
   const radius = size;
   const thickness = 0.08; // small height for slight elevation
   return (
