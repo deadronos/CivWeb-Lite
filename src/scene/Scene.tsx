@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react';
-import { useGame } from '../hooks/useGame';
-import TileMesh from './TileMesh';
-import InstancedTiles from './InstancedTiles';
-import CameraControls from './drei/CameraControls';
-import DevStats from './drei/DevStats';
-import HtmlLabel from './drei/HtmlLabel';
-import BillboardLabel from './drei/BillboardLabel';
+import { useGame } from "..\\hooks\\use-game";
+import TileMesh from "./tile-mesh";
+import InstancedTiles from "./instanced-tiles";
+import CameraControls from "./drei\\camera-controls";
+import DevStats from "./drei\\dev-stats";
+import HtmlLabel from "./drei\\html-label";
+import BillboardLabel from "./drei\\billboard-label";
 import { isDevOrTest as isDevelopmentOrTest } from '../utils/env';
-import { useSelection } from '../contexts/SelectionContext';
-import { useHoverTile } from '../contexts/HoverContext';
+import { useSelection } from "..\\contexts\\selection-context";
+import { useHoverTile } from "..\\contexts\\hover-context";
 import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
-import UnitMarkers from './UnitMarkers';
-import UnitMeshes from './UnitMeshes';
-import ProceduralPreload from './units/ProceduralPreload';
+import UnitMarkers from "./unit-markers";
+import UnitMeshes from "./unit-meshes";
+import ProceduralPreload from "./units\\procedural-preload";
 
 // Base Scene used by existing tests; remains minimal and provider-agnostic
 export default function Scene() {
@@ -62,8 +62,8 @@ export function ConnectedScene() {
       <CameraControls />
       <DevStats enabled={isDevelopmentOrTest()} />
       {/* Phase 3 sample: dev-only labels */}
-      {isDevelopmentOrTest() && (
-        <>
+      {isDevelopmentOrTest() &&
+      <>
           <HtmlLabel position={[0, 1, 0]} data-testid="scene-label">
             Tiles: {positions.length}
           </HtmlLabel>
@@ -71,64 +71,64 @@ export function ConnectedScene() {
             CivWeb-Lite
           </BillboardLabel>
         </>
-      )}
+      }
       {selectedUnitId &&
-        state.contentExt?.units[selectedUnitId] &&
-        (() => {
-          const unit = state.contentExt!.units[selectedUnitId!];
-          const loc =
-            typeof unit.location === 'string'
-              ? state.contentExt!.tiles[unit.location]
-              : unit.location;
-          const q = (loc as any).q;
-          const r = (loc as any).r;
-          const biome = (loc as any).biome;
-          const world =
-            typeof unit.location === 'string'
-              ? tileIdToWorldFromExtension(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE)
-              : axialToWorld(q, r, DEFAULT_HEX_SIZE);
-          const [x, z] = world as [number, number];
-          return (
-            <HtmlLabel position={[x, 1.5, z]} data-testid="selected-unit-label">
+      state.contentExt?.units[selectedUnitId] &&
+      (() => {
+        const unit = state.contentExt!.units[selectedUnitId!];
+        const loc =
+        typeof unit.location === 'string' ?
+        state.contentExt!.tiles[unit.location] :
+        unit.location;
+        const q = (loc as any).q;
+        const r = (loc as any).r;
+        const biome = (loc as any).biome;
+        const world =
+        typeof unit.location === 'string' ?
+        tileIdToWorldFromExtension(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE) :
+        axialToWorld(q, r, DEFAULT_HEX_SIZE);
+        const [x, z] = world as [number, number];
+        return (
+          <HtmlLabel position={[x, 1.5, z]} data-testid="selected-unit-label">
               Unit: {unit.type} ({selectedUnitId}) • ({q},{r}) • {biome}
-            </HtmlLabel>
-          );
-        })()}
+            </HtmlLabel>);
+
+      })()}
       {isDevelopmentOrTest() && state.contentExt && <UnitMarkers />}
       {/* Units (procedural by default, GLTF behind flag) */}
       {state.contentExt && <UnitMeshes />}
       {hoverIndex != undefined &&
-        tiles[hoverIndex] &&
-        (() => {
-          const t = tiles[hoverIndex];
-          const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
-          return (
-            <HtmlLabel position={[x, 1.2, z]} data-testid="hovered-tile-label">
+      tiles[hoverIndex] &&
+      (() => {
+        const t = tiles[hoverIndex];
+        const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
+        return (
+          <HtmlLabel position={[x, 1.2, z]} data-testid="hovered-tile-label">
               {t.id} ({t.coord.q},{t.coord.r}) • {t.biome}
-            </HtmlLabel>
-          );
-        })()}
-      {useInstanced ? (
-        <InstancedTiles
-          positions={positions}
-          size={DEFAULT_HEX_SIZE}
-          onPointerMove={(e) => {
-            const index = (e as any).instanceId;
-            if (typeof index === 'number') setHoverIndex(index);
-          }}
-        />
-      ) : (
-        positions.map((p, index) => (
-          <TileMesh
-            key={index}
-            position={p}
-            size={DEFAULT_HEX_SIZE}
-            onPointerMove={() => setHoverIndex(index)}
-          />
-        ))
-      )}
-    </group>
-  );
+            </HtmlLabel>);
+
+      })()}
+      {useInstanced ?
+      <InstancedTiles
+        positions={positions}
+        size={DEFAULT_HEX_SIZE}
+        onPointerMove={(e) => {
+          const index = (e as any).instanceId;
+          if (typeof index === 'number') setHoverIndex(index);
+        }} /> :
+
+
+      positions.map((p, index) =>
+      <TileMesh
+        key={index}
+        position={p}
+        size={DEFAULT_HEX_SIZE}
+        onPointerMove={() => setHoverIndex(index)} />
+
+      )
+      }
+    </group>);
+
 }
 
 // Coverage helper

@@ -1,19 +1,19 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { GameProvider } from './contexts/GameProvider';
-import GameHUD from './components/GameHUD';
-import { ConnectedScene as Scene } from './scene/Scene';
-import TopBarContainer from './components/ui/TopBarContainer';
-import LeftPanelContainer from './components/ui/LeftPanelContainer';
-import MinimapContainer from './components/ui/MinimapContainer';
-import NextTurnControlContainer from './components/ui/NextTurnControlContainer';
-import { CameraProvider } from './hooks/useCamera';
-import { SelectionProvider } from './contexts/SelectionContext';
-import { HoverProvider } from './contexts/HoverContext';
-import MainMenu from './components/ui/MainMenu';
-import { useGame } from './hooks/useGame';
-import CameraControls from './scene/drei/CameraControls';
-import DevStats from './scene/drei/DevStats';
+import { GameProvider } from './contexts/game-provider';
+import GameHUD from './components/game-hud';
+import { ConnectedScene as Scene } from './scene/scene';
+import TopBarContainer from './components/ui/top-bar-container';
+import LeftPanelContainer from './components/ui/left-panel-container';
+import MinimapContainer from './components/ui/minimap-container';
+import NextTurnControlContainer from './components/ui/next-turn-control-container';
+import { CameraProvider } from './hooks/use-camera';
+import { SelectionProvider } from './contexts/selection-context';
+import { HoverProvider } from './contexts/hover-context';
+import MainMenu from './components/ui/main-menu';
+import { useGame } from './hooks/use-game';
+import CameraControls from './scene/drei/camera-controls';
+import DevStats from './scene/drei/dev-stats';
 import { isDevOrTest as isDevelopmentOrTest } from './utils/env';
 
 export default function App() {

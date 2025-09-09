@@ -1,13 +1,13 @@
 import React from 'react';
-import { useGame } from '../../hooks/useGame';
+import { useGame } from "..\\..\\hooks\\use-game";
 import leaders from '../../data/leaders.json';
 const LS_KEY = 'civweblite:newgame';
 
 type MapSizeKey = 'small' | 'standard' | 'large';
-const MAP_SIZES: Record<MapSizeKey, { width: number; height: number; label: string }> = {
+const MAP_SIZES: Record<MapSizeKey, {width: number;height: number;label: string;}> = {
   small: { width: 30, height: 30, label: 'Small (30x30)' },
   standard: { width: 50, height: 50, label: 'Standard (50x50)' },
-  large: { width: 70, height: 70, label: 'Large (70x70)' },
+  large: { width: 70, height: 70, label: 'Large (70x70)' }
 };
 
 type StartConfig = {
@@ -19,15 +19,15 @@ type StartConfig = {
   selectedLeaders?: Array<string | 'random' | undefined>;
 };
 
-export default function MainMenu({ onStart }: { onStart(config: StartConfig): void }) {
+export default function MainMenu({ onStart }: {onStart(config: StartConfig): void;}) {
   const { dispatch } = useGame();
   const [size, setSize] = React.useState<MapSizeKey>('standard');
   const [seed, setSeed] = React.useState<string>('');
   const [players, setPlayers] = React.useState<number>(2);
   const humanPlayers = 1; // MVP: one human
   const [selectedLeaders, setSelectedLeaders] = React.useState<
-    Array<string | 'random' | undefined>
-  >(['random', 'random', 'random', 'random', 'random', 'random']);
+    Array<string | 'random' | undefined>>(
+    ['random', 'random', 'random', 'random', 'random', 'random']);
 
   // hydrate from localStorage
   React.useEffect(() => {
@@ -40,9 +40,9 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
     } catch {
+
       // ignore JSON parse/localStorage errors during hydrate in browsers without storage
-    }
-  }, []);
+    }}, []);
 
   const start = (evt: React.FormEvent) => {
     evt.preventDefault();
@@ -53,15 +53,15 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
       seed: seed || undefined,
       totalPlayers: players,
       humanPlayers,
-      selectedLeaders: selectedLeaders.slice(0, players),
+      selectedLeaders: selectedLeaders.slice(0, players)
     };
     dispatch({ type: 'NEW_GAME', payload } as any);
     onStart(payload);
     try {
       localStorage.setItem(LS_KEY, JSON.stringify({ size, seed, players, selectedLeaders }));
     } catch {
-      /* ignore quota errors or storage issues */
-    }
+
+      /* ignore quota errors or storage issues */}
   };
 
   return (
@@ -71,11 +71,11 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
         <div style={styles.field}>
           <label htmlFor="size">Map Size</label>
           <select id="size" value={size} onChange={(evt) => setSize(evt.target.value as MapSizeKey)}>
-            {Object.entries(MAP_SIZES).map(([key, sizeObj]) => (
-              <option key={key} value={key}>
+            {Object.entries(MAP_SIZES).map(([key, sizeObj]) =>
+            <option key={key} value={key}>
                 {sizeObj.label}
               </option>
-            ))}
+            )}
           </select>
         </div>
         <div style={styles.field}>
@@ -84,8 +84,8 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
             id="seed"
             value={seed}
             onChange={(evt) => setSeed(evt.target.value)}
-            placeholder="random if blank"
-          />
+            placeholder="random if blank" />
+
         </div>
         <div style={styles.field}>
           <label htmlFor="players">Players (total)</label>
@@ -95,45 +95,45 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
             min={1}
             max={6}
             value={players}
-              onChange={(evt) => setPlayers(Number.parseInt(evt.target.value || '2', 10))}
-          />
+            onChange={(evt) => setPlayers(Number.parseInt(evt.target.value || '2', 10))} />
+
         </div>
         <div style={{ marginTop: 12 }}>
           <div style={{ marginBottom: 4, fontWeight: 600 }}>Leaders</div>
-          {Array.from({ length: players }).map((_, index) => (
-            <div
-              key={index}
-              style={{
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 6,
-              }}
-            >
+          {Array.from({ length: players }).map((_, index) =>
+          <div
+            key={index}
+            style={{
+              display: 'flex',
+              gap: 8,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: 6
+            }}>
+
               <label>Player {index + 1}</label>
               <select
-                aria-label={`Leader for player ${index + 1}`}
-                value={selectedLeaders[index] ?? 'random'}
-                onChange={(e) => {
-                  const next = [...selectedLeaders];
-                  next[index] = e.target.value as any;
-                  setSelectedLeaders(next);
-                }}
-              >
+              aria-label={`Leader for player ${index + 1}`}
+              value={selectedLeaders[index] ?? 'random'}
+              onChange={(e) => {
+                const next = [...selectedLeaders];
+                next[index] = e.target.value as any;
+                setSelectedLeaders(next);
+              }}>
+
                 <option value="random">Random</option>
-                {(leaders as any[]).map((leader) => (
-                  <option
-                    key={leader.id}
-                    value={leader.id}
-                    title={`${leader.historical_note || ''} | Victory: ${(leader.preferred_victory || []).join(', ')}`}
-                  >
+                {(leaders as any[]).map((leader) =>
+              <option
+                key={leader.id}
+                value={leader.id}
+                title={`${leader.historical_note || ''} | Victory: ${(leader.preferred_victory || []).join(', ')}`}>
+
                     {leader.name}
                   </option>
-                ))}
+              )}
               </select>
             </div>
-          ))}
+          )}
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
           <button type="submit">Start New Game</button>
@@ -142,8 +142,8 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
             onClick={() => {
               const el = document.querySelector('#load-input');
               if (el && el instanceof HTMLInputElement) el.click();
-            }}
-          >
+            }}>
+
             Load Save…
           </button>
           <input
@@ -151,15 +151,15 @@ export default function MainMenu({ onStart }: { onStart(config: StartConfig): vo
             type="file"
             accept="application/json"
             style={{ display: 'none' }}
-            onChange={onLoadFile}
-          />
+            onChange={onLoadFile} />
+
         </div>
         <p style={{ fontSize: 12, opacity: 0.8, marginTop: 12 }}>
           Tip: You can paste JSON in the in‑game load panel.
         </p>
       </form>
-    </div>
-  );
+    </div>);
+
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -170,7 +170,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1000,
+    zIndex: 1000
   },
   panel: {
     background: 'var(--color-bg, #1e1e1e)',
@@ -178,15 +178,15 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 20,
     borderRadius: 8,
     width: 360,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
   },
   field: {
     display: 'flex',
     gap: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,
-  },
+    marginTop: 8
+  }
 };
 
 async function onLoadFile(event: React.ChangeEvent<HTMLInputElement>) {

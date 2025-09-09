@@ -8,10 +8,10 @@ import {
   GameDispatchContext,
   initialStateForTests,
   coverGameProviderEffects,
-  simulateAdvanceTurn,
-} from '../src/contexts/GameProvider';
+  simulateAdvanceTurn } from
+"..\\src\\contexts\\game-provider";
 import { globalGameBus } from '../src/game/events';
-import { useGame } from '../src/hooks/useGame';
+import { useGame } from "..\\src\\hooks\\use-game";
 
 // Simple TestConsumer to read state and provide a button to toggle autoSim
 function TestConsumer() {
@@ -25,8 +25,8 @@ function TestConsumer() {
         toggle
       </button>
       <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
-    </div>
-  );
+    </div>);
+
 }
 
 describe('GameProvider effects', () => {
@@ -91,15 +91,15 @@ describe('GameProvider effects', () => {
     const s = initialStateForTests();
     // add a fake AI player with a leader so evaluateAI can run without crashing
     s.players = [
-      {
-        id: 'p1',
-        name: 'AI',
-        isHuman: false,
-        leader: { name: 'AI-Leader' },
-        cities: [],
-        research: null,
-      } as any,
-    ];
+    {
+      id: 'p1',
+      name: 'AI',
+      isHuman: false,
+      leader: { name: 'AI-Leader' },
+      cities: [],
+      research: null
+    } as any];
+
     // spy a dispatch
     const actions: any[] = [];
     const dispatch = (a: any) => actions.push(a);
@@ -117,8 +117,8 @@ describe('GameProvider effects', () => {
         <div>
           <div data-testid="uh-turn">{state.turn}</div>
           <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
-        </div>
-      );
+        </div>);
+
     }
     const { getByText } = render(
       <GameProvider>

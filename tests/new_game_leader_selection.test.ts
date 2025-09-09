@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialStateForTests } from '../src/contexts/GameProvider';
+import { initialStateForTests } from "..\\src\\contexts\\game-provider";
 
 describe('NEW_GAME leader selection', () => {
   it('applies specific leader id to players[0]', () => {
@@ -13,8 +13,8 @@ describe('NEW_GAME leader selection', () => {
         height: 10,
         totalPlayers: 2,
         humanPlayers: 1,
-        selectedLeaders: ['pericles', 'random'],
-      },
+        selectedLeaders: ['pericles', 'random']
+      }
     } as any);
     expect(s1.players.length).toBeGreaterThan(0);
     expect(s1.players[0].leader.id).toBe('pericles');

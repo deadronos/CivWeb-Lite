@@ -1,13 +1,3 @@
-import React from 'react';
-import { preloadProceduralUnits } from './procedural/shared';
-
-export default function ProceduralPreload() {
-  React.useEffect(() => {
-    try {
-      preloadProceduralUnits();
-    } catch {
-      // ignore in SSR/tests
-    }
-  }, []);
-  return null;
-}
+// Compatibility shim: re-export canonical kebab-case implementation
+export * from './procedural-preload';
+export { default } from './procedural-preload';

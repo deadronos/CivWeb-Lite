@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import LeftPanel from '../src/components/ui/LeftPanel';
+import LeftPanel from '../src/components/ui/left-panel';
 
 describe('LeftPanel', () => {
   it('lists techs and allows selecting', () => {

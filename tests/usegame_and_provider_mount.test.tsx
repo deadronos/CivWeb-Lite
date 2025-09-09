@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, test, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { ensureGameContext, coverUseGameInlinePathsTuple } from '../src/hooks/useGame';
-import { GameProvider } from '../src/contexts/GameProvider';
+import { ensureGameContext, coverUseGameInlinePathsTuple } from "..\\src\\hooks\\use-game";
+import { GameProvider } from "..\\src\\contexts\\game-provider";
 
 describe('useGame helpers and GameProvider mount', () => {
   test('ensureGameContext returns true with valid args', () => {

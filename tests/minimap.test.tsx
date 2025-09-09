@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { GameProvider } from '../src/contexts/GameProvider';
-import { CameraProvider } from '../src/hooks/useCamera';
-import MinimapContainer from '../src/components/ui/MinimapContainer';
+import { GameProvider } from '../src/contexts/game-provider';
+import { CameraProvider } from '../src/hooks/use-camera';
+import MinimapContainer from '../src/components/ui/minimap-container';
 
 describe('Minimap', () => {
   it('calls camera.centerOn when clicked', () => {
