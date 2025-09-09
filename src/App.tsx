@@ -1,6 +1,5 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stats } from '@react-three/drei';
 import { GameProvider } from './contexts/GameProvider';
 import GameHUD from './components/GameHUD';
 import { ConnectedScene as Scene } from './scene/Scene';
@@ -10,8 +9,12 @@ import MinimapContainer from './components/ui/MinimapContainer';
 import NextTurnControlContainer from './components/ui/NextTurnControlContainer';
 import { CameraProvider } from './hooks/useCamera';
 import { SelectionProvider } from './contexts/SelectionContext';
+import { HoverProvider } from './contexts/HoverContext';
 import MainMenu from './components/ui/MainMenu';
 import { useGame } from './hooks/useGame';
+import CameraControls from './scene/drei/CameraControls';
+import DevStats from './scene/drei/DevStats';
+import { isDevOrTest } from './utils/env';
 
 export default function App() {
   const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
@@ -19,6 +22,7 @@ export default function App() {
   return (
     <GameProvider>
       <SelectionProvider>
+      <HoverProvider>
       <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
         {!started && (
           <MainMenu onStart={() => setStarted(true)} />
@@ -28,8 +32,8 @@ export default function App() {
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 10, 5]} intensity={0.6} />
           <Scene />
-          <OrbitControls />
-          <Stats />
+          <CameraControls />
+          <DevStats enabled={isDevOrTest()} />
         </Canvas>
         <GameHUD />
         <TopBarContainer />
@@ -44,6 +48,7 @@ export default function App() {
           Camera: {cam ? `${cam.q},${cam.r}` : '-'}
         </div>
       </CameraProvider>
+      </HoverProvider>
       </SelectionProvider>
     </GameProvider>
   );
