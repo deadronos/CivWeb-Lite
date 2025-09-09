@@ -9,18 +9,33 @@ import { initialState } from '../src/contexts/GameProvider';
 
 function seedWorld() {
   let s = initialState();
-  s = applyAction(s, { type: 'EXT_ADD_TILE', payload: { tile: { id: 'a', q: 0, r: 0, biome: 'grassland' } } });
-  s = applyAction(s, { type: 'EXT_ADD_TILE', payload: { tile: { id: 'b', q: 1, r: 0, biome: 'grassland' } } });
-  s = applyAction(s, { type: 'EXT_ADD_TILE', payload: { tile: { id: 'c', q: 2, r: 0, biome: 'grassland' } } });
-  s = applyAction(s, { type: 'EXT_ADD_CITY', payload: { cityId: 'home', name: 'H', ownerId: 'P', tileId: 'a' } });
-  s = applyAction(s, { type: 'EXT_ADD_UNIT', payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' } });
+  s = applyAction(s, {
+    type: 'EXT_ADD_TILE',
+    payload: { tile: { id: 'a', q: 0, r: 0, biome: 'grassland' } },
+  });
+  s = applyAction(s, {
+    type: 'EXT_ADD_TILE',
+    payload: { tile: { id: 'b', q: 1, r: 0, biome: 'grassland' } },
+  });
+  s = applyAction(s, {
+    type: 'EXT_ADD_TILE',
+    payload: { tile: { id: 'c', q: 2, r: 0, biome: 'grassland' } },
+  });
+  s = applyAction(s, {
+    type: 'EXT_ADD_CITY',
+    payload: { cityId: 'home', name: 'H', ownerId: 'P', tileId: 'a' },
+  });
+  s = applyAction(s, {
+    type: 'EXT_ADD_UNIT',
+    payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' },
+  });
   return s;
 }
 
 describe('Minimap highlights reachable tiles when a unit is selected', () => {
   it('sets data-highlight when selection present', () => {
-  // prime provider state by calling reducer before render
-  seedWorld();
+    // prime provider state by calling reducer before render
+    seedWorld();
     // Render providers and component. Note: GameProvider initializes its own state,
     // this test is primarily checking wiring exists and does not crash.
     render(

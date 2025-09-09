@@ -1,5 +1,10 @@
 import { describe, test, expect } from 'vitest';
-import { coverForTestsUseGame, coverAllUseGameHuge, coverUseGameExtra, USE_GAME_MARKER } from '../src/hooks/useGame';
+import {
+  coverForTestsUseGame,
+  coverAllUseGameHuge,
+  coverUseGameExtra,
+  USE_GAME_MARKER,
+} from '../src/hooks/useGame';
 
 describe('useGame helper coverage', () => {
   test('coverForTestsUseGame simulates throw path', () => {

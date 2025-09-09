@@ -36,4 +36,3 @@ export function phaseFromId(id?: string): number {
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
   return (h % 1000) / 1000; // 0..1
 }
-

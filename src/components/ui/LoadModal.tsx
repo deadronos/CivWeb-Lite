@@ -2,7 +2,15 @@ import React from 'react';
 import { useGame } from '../../hooks/useGame';
 import { importFromFile, deserializeState } from '../../game/save';
 
-export default function LoadModal({ open, onClose, autoFocusText }: { open: boolean; onClose: () => void; autoFocusText?: boolean }) {
+export default function LoadModal({
+  open,
+  onClose,
+  autoFocusText,
+}: {
+  open: boolean;
+  onClose: () => void;
+  autoFocusText?: boolean;
+}) {
   const { dispatch } = useGame();
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
@@ -44,17 +52,38 @@ export default function LoadModal({ open, onClose, autoFocusText }: { open: bool
       <div style={styles.panel}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ margin: 0 }}>Load Game</h2>
-          <button onClick={onClose} aria-label="close load">✕</button>
+          <button onClick={onClose} aria-label="close load">
+            ✕
+          </button>
         </div>
         <div style={{ marginTop: 8 }}>
           <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Paste JSON</label>
-          <textarea ref={textRef} aria-label="save json" value={text} onChange={e => setText(e.target.value)} rows={8} style={{ width: '100%' }} />
+          <textarea
+            ref={textRef}
+            aria-label="save json"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={8}
+            style={{ width: '100%' }}
+          />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={onPasteLoad}>Load from Text</button>
-            <button onClick={() => document.getElementById('load-file-input')?.click()}>Choose File…</button>
-            <input id="load-file-input" type="file" accept="application/json" style={{ display: 'none' }} onChange={onFileChange} />
+            <button onClick={() => document.getElementById('load-file-input')?.click()}>
+              Choose File…
+            </button>
+            <input
+              id="load-file-input"
+              type="file"
+              accept="application/json"
+              style={{ display: 'none' }}
+              onChange={onFileChange}
+            />
           </div>
-          {error && <div role="alert" style={{ color: 'salmon', marginTop: 8 }}>{error}</div>}
+          {error && (
+            <div role="alert" style={{ color: 'salmon', marginTop: 8 }}>
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -62,6 +91,21 @@ export default function LoadModal({ open, onClose, autoFocusText }: { open: bool
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  backdrop: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000 },
-  panel: { width: 520, background: 'var(--color-bg, #1e1e1e)', color: 'var(--color-fg, #f0f0f0)', padding: 16, borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' },
+  backdrop: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2000,
+  },
+  panel: {
+    width: 520,
+    background: 'var(--color-bg, #1e1e1e)',
+    color: 'var(--color-fg, #f0f0f0)',
+    padding: 16,
+    borderRadius: 8,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+  },
 };

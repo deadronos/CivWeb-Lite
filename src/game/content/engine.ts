@@ -35,7 +35,11 @@ export async function createStateWithLoadedData(): Promise<GameStateExt> {
         description: '',
         cost: t.cost,
         prerequisites: t.prerequisites,
-        unlocks: { units: t.unlocks?.units ?? [], improvements: t.unlocks?.improvements ?? [], abilities: [] },
+        unlocks: {
+          units: t.unlocks?.units ?? [],
+          improvements: t.unlocks?.improvements ?? [],
+          abilities: [],
+        },
       };
     }
     base.techs = techs;
@@ -52,7 +56,12 @@ export async function createStateWithLoadedData(): Promise<GameStateExt> {
         description: '',
         cost: c.culture_cost,
         prerequisites: c.prereqs,
-        unlocks: { units: c.unlocks?.units ?? [], improvements: c.unlocks?.improvements ?? [], abilities: [], buildings: c.unlocks?.buildings ?? [] },
+        unlocks: {
+          units: c.unlocks?.units ?? [],
+          improvements: c.unlocks?.improvements ?? [],
+          abilities: [],
+          buildings: c.unlocks?.buildings ?? [],
+        },
       };
     }
     base.civics = civics;

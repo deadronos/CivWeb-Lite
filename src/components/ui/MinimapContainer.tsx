@@ -16,9 +16,12 @@ export default function MinimapContainer() {
     selectedUnitId = null;
   }
   const camera = useCamera();
-  const onPickCoord = React.useCallback((coord: { q: number; r: number }) => {
-    camera.centerOn(coord);
-  }, [camera]);
+  const onPickCoord = React.useCallback(
+    (coord: { q: number; r: number }) => {
+      camera.centerOn(coord);
+    },
+    [camera]
+  );
   const ext = state.contentExt;
   const highlighted = React.useMemo(() => {
     if (!ext || !selectedUnitId) return [] as string[];

@@ -47,7 +47,13 @@ export function getCone(r = 0.1, h = 0.3, radial = 8): THREE.ConeGeometry {
   return g as THREE.ConeGeometry;
 }
 
-export function getTorus(r = 0.25, tube = 0.02, radial = 8, tubular = 12, arc = Math.PI): THREE.TorusGeometry {
+export function getTorus(
+  r = 0.25,
+  tube = 0.02,
+  radial = 8,
+  tubular = 12,
+  arc = Math.PI
+): THREE.TorusGeometry {
   const k = key('torus', [r, tube, radial, tubular, arc.toFixed(3)]);
   let g = geoCache.get(k) as THREE.TorusGeometry | undefined;
   if (!g) {
@@ -68,4 +74,3 @@ export function preloadProceduralUnits() {
   getCone(0.08, 0.18, 8); // spear tip
   getTorus(0.22, 0.015, 8, 14, Math.PI * 0.9); // bow arc
 }
-

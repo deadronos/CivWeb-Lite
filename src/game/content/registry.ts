@@ -38,13 +38,20 @@ export interface BuildingDef {
   name: string;
   cost: number;
   requires: string | null;
-  yields?: { food?: number; production?: number; gold?: number; science?: number; culture?: number; faith?: number };
+  yields?: {
+    food?: number;
+    production?: number;
+    gold?: number;
+    science?: number;
+    culture?: number;
+    faith?: number;
+  };
   effects?: string[];
 }
 
 // Build registries from JSON data at module load time to keep synchronous APIs
 export const UNIT_TYPES: Record<string, UnitTypeDef> = Object.fromEntries(
-  (unitsData as any[]).map(u => {
+  (unitsData as any[]).map((u) => {
     const domain: 'land' | 'naval' = u.category === 'naval' ? 'naval' : 'land';
     const attack = typeof u.strength === 'number' ? u.strength : 0;
     const defense = Math.max(0, Math.round((u.strength ?? 0) * 0.7));
@@ -58,9 +65,9 @@ export const UNIT_TYPES: Record<string, UnitTypeDef> = Object.fromEntries(
           anim: (u as any).visual.anim,
           gltf: (u as any).visual.gltf,
         }
-      : ((u as any).model
-          ? { model: (u as any).model }
-          : undefined);
+      : (u as any).model
+        ? { model: (u as any).model }
+        : undefined;
 
     return [
       u.id,

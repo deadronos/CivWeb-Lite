@@ -10,7 +10,10 @@ import { ConnectedScene as Scene } from '../src/scene/Scene';
 const Adder: React.FC<{ unitId: string }> = ({ unitId }) => {
   const { dispatch } = useGame();
   React.useEffect(() => {
-    dispatch({ type: 'EXT_ADD_UNIT', payload: { unitId, type: 'warrior', ownerId: 'p1', tileId: 'hex_0_0' } });
+    dispatch({
+      type: 'EXT_ADD_UNIT',
+      payload: { unitId, type: 'warrior', ownerId: 'p1', tileId: 'hex_0_0' },
+    });
   }, [dispatch, unitId]);
   return null;
 };

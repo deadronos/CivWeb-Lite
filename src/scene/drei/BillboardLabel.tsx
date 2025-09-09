@@ -14,4 +14,3 @@ export default function BillboardLabel({ enabled = true, children, ...rest }: Pr
     </Billboard>
   );
 }
-

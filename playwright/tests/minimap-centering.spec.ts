@@ -13,4 +13,3 @@ test('minimap click updates camera position status', async ({ page }) => {
   await mini.click({ position: { x: box.width / 2, y: box.height / 2 } });
   await expect(cam).not.toHaveText(before ?? '');
 });
-

@@ -12,4 +12,3 @@ export default function CameraControls({ enabled = true, ...rest }: Props) {
     <OrbitControls enablePan enableRotate enableZoom {...rest} />
   );
 }
-

@@ -13,7 +13,7 @@ export default function CivicPanel({ civics, currentCivicId, onSelect }: CivicPa
     <aside className="hud-leftpanel" aria-label="civic panel">
       <h2 className="panel-title">Civics</h2>
       <ul className="tech-list">
-        {civics.map(c => (
+        {civics.map((c) => (
           <li key={c.id}>
             <button
               className={`tech-item ${currentCivicId === c.id ? 'active' : ''}`}
@@ -30,4 +30,3 @@ export default function CivicPanel({ civics, currentCivicId, onSelect }: CivicPa
     </aside>
   );
 }
-

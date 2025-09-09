@@ -2,7 +2,13 @@ import { movementCost, isPassable } from './biomes';
 import type { City, GameStateExt, Hextile, Unit } from './types';
 import { IMPROVEMENTS, UNIT_TYPES, BUILDINGS } from './registry';
 
-export type TileYield = { food: number; production: number; gold: number; science?: number; culture?: number };
+export type TileYield = {
+  food: number;
+  production: number;
+  gold: number;
+  science?: number;
+  culture?: number;
+};
 
 export function getTileBaseYield(tile: Hextile): TileYield {
   switch (tile.biome) {
@@ -184,7 +190,7 @@ export function beginResearch(state: GameStateExt, techId: string) {
   // ensure prerequisites
   const tech = state.techs[techId];
   if (!tech) return false;
-  if (!tech.prerequisites.every(p => state.playerState.researchedTechs.includes(p))) return false;
+  if (!tech.prerequisites.every((p) => state.playerState.researchedTechs.includes(p))) return false;
   state.playerState.research = { techId, progress: 0 };
   return true;
 }
@@ -207,8 +213,7 @@ export function tickResearch(state: GameStateExt) {
     }
     if (tech.unlocks.units) {
       for (const u of tech.unlocks.units) {
-        if (!state.playerState.availableUnits.includes(u))
-          state.playerState.availableUnits.push(u);
+        if (!state.playerState.availableUnits.includes(u)) state.playerState.availableUnits.push(u);
       }
     }
     state.playerState.research = null;
@@ -219,7 +224,7 @@ export function beginCultureResearch(state: GameStateExt, civicId: string) {
   const civic = state.civics?.[civicId];
   if (!civic) return false;
   const researched = state.playerState.researchedCivics ?? [];
-  if (!civic.prerequisites.every(p => researched.includes(p))) return false;
+  if (!civic.prerequisites.every((p) => researched.includes(p))) return false;
   state.playerState.cultureResearch = { civicId, progress: 0 };
   return true;
 }
@@ -242,8 +247,7 @@ export function tickCultureResearch(state: GameStateExt) {
     }
     if (civic.unlocks.units) {
       for (const u of civic.unlocks.units) {
-        if (!state.playerState.availableUnits.includes(u))
-          state.playerState.availableUnits.push(u);
+        if (!state.playerState.availableUnits.includes(u)) state.playerState.availableUnits.push(u);
       }
     }
     state.playerState.cultureResearch = null;

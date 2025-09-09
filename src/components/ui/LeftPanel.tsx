@@ -13,7 +13,7 @@ export default function LeftPanel({ techs, currentTechId, onSelect }: LeftPanelP
     <aside className="hud-leftpanel" aria-label="research panel">
       <h2 className="panel-title">Research</h2>
       <ul className="tech-list">
-        {techs.map(t => (
+        {techs.map((t) => (
           <li key={t.id}>
             <button
               className={`tech-item ${currentTechId === t.id ? 'active' : ''}`}
@@ -30,4 +30,3 @@ export default function LeftPanel({ techs, currentTechId, onSelect }: LeftPanelP
     </aside>
   );
 }
-

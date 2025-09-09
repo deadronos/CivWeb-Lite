@@ -32,4 +32,3 @@ export function preloadGLTF(url: string) {
     // ignore in tests
   }
 }
-

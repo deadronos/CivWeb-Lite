@@ -11,6 +11,7 @@
     "validate:data": "node scripts/validate-content.mjs",
     "test:watch": "vitest",
     "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,html}\"",
     "bench:world": "tsx scripts/benchWorld.ts",
     "bench:ai": "tsx scripts/ai-benchmark.ts",
     "bench:turn": "tsx scripts/turn-benchmark.ts",

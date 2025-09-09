@@ -7,8 +7,8 @@ describe('UnitSelectionOverlay scaffold', () => {
     render(
       <UnitSelectionOverlay
         selectedUnitId="u1"
-        computedRangeTiles={["t1","t2"]}
-        computedPath={["t1","t2"]}
+        computedRangeTiles={['t1', 't2']}
+        computedPath={['t1', 't2']}
         onPreviewPath={() => {}}
         onIssueMove={() => {}}
         onCancel={() => {}}

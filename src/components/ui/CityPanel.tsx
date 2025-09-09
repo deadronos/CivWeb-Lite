@@ -1,7 +1,15 @@
 import React from 'react';
 import type { CityPanelProps, ProductionOrder } from '../../game/types/ui';
 
-export function CityPanel({ cityId, productionQueue, availableItems, productionPerTurn, onChooseItem, onReorderQueue, onCancelOrder }: CityPanelProps) {
+export function CityPanel({
+  cityId,
+  productionQueue,
+  availableItems,
+  productionPerTurn,
+  onChooseItem,
+  onReorderQueue,
+  onCancelOrder,
+}: CityPanelProps) {
   const choose = (itemId: string, type: ProductionOrder['type']) => {
     onChooseItem({ type, itemId });
   };
@@ -10,7 +18,7 @@ export function CityPanel({ cityId, productionQueue, availableItems, productionP
       <h3>City: {cityId}</h3>
       <div>Production/turn: {productionPerTurn}</div>
       <ul>
-        {availableItems.map(it => (
+        {availableItems.map((it) => (
           <li key={it.id}>
             <button onClick={() => choose(it.id, it.type)}>{it.label}</button>
           </li>
@@ -24,7 +32,9 @@ export function CityPanel({ cityId, productionQueue, availableItems, productionP
           </li>
         ))}
       </ol>
-      <button onClick={() => onReorderQueue([...productionQueue])} style={{ display: 'none' }}>reorder</button>
+      <button onClick={() => onReorderQueue([...productionQueue])} style={{ display: 'none' }}>
+        reorder
+      </button>
     </div>
   );
 }

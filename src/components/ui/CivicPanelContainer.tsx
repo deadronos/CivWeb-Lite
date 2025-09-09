@@ -11,10 +11,10 @@ export default function CivicPanelContainer() {
   const available = React.useMemo(() => {
     const list = Object.values(civics);
     return list
-      .filter(c => !researched.includes(c.id))
-      .filter(c => c.prerequisites.every(p => researched.includes(p)))
+      .filter((c) => !researched.includes(c.id))
+      .filter((c) => c.prerequisites.every((p) => researched.includes(p)))
       .slice(0, 6)
-      .map(c => ({ id: c.id, name: c.name, cost: c.cost }));
+      .map((c) => ({ id: c.id, name: c.name, cost: c.cost }));
   }, [civics, researched]);
 
   const currentCivicId = ext?.playerState.cultureResearch?.civicId ?? null;
@@ -25,4 +25,3 @@ export default function CivicPanelContainer() {
   if (!ext) return null;
   return <CivicPanel civics={available} currentCivicId={currentCivicId} onSelect={onSelect} />;
 }
-

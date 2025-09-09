@@ -16,4 +16,3 @@ describe('ContextPanel', () => {
     expect(onDo).toHaveBeenCalled();
   });
 });
-

@@ -18,14 +18,20 @@ describe('Unit movement issueMove path', () => {
       { type: 'EXT_ADD_TILE', payload: { tile: { id: 'b', q: 1, r: 0, biome: 'grassland' } } },
       { type: 'EXT_ADD_TILE', payload: { tile: { id: 'c', q: 2, r: 0, biome: 'grassland' } } },
       { type: 'EXT_ADD_CITY', payload: { cityId: 'city1', name: 'X', ownerId: 'P', tileId: 'a' } },
-      { type: 'EXT_ADD_UNIT', payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' } },
+      {
+        type: 'EXT_ADD_UNIT',
+        payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' },
+      },
     ]);
     const u = s.contentExt!.units['u1'];
     expect(u.location).toBe('a');
     // Try to move to c via b, warrior base movement >= 2 per registry
-    s = applyAction(s, { type: 'EXT_ISSUE_MOVE_PATH', payload: { unitId: 'u1', path: ['b','c'] } });
+    s = applyAction(s, {
+      type: 'EXT_ISSUE_MOVE_PATH',
+      payload: { unitId: 'u1', path: ['b', 'c'] },
+    });
     const u2 = s.contentExt!.units['u1'];
-    expect(['b','c']).toContain(u2.location);
+    expect(['b', 'c']).toContain(u2.location);
     // movementRemaining should be <= base movement - steps taken (each grassland step cost 1)
     expect(u2.movementRemaining).toBeGreaterThanOrEqual(0);
   });

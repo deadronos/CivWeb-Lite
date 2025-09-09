@@ -1,18 +1,138 @@
 [
-  { "id": "agriculture", "tree": "science", "name": "Agriculture", "cost": 15, "prerequisites": [], "effects": [], "unlocks": { "improvements": ["farm"] } },
-  { "id": "pottery", "tree": "science", "name": "Pottery", "cost": 20, "prerequisites": [], "effects": [], "unlocks": { "buildings": ["granary"] } },
-  { "id": "mining", "tree": "science", "name": "Mining", "cost": 25, "prerequisites": [], "effects": [], "unlocks": { "improvements": ["mine"] } },
-  { "id": "animal-husbandry", "tree": "science", "name": "Animal Husbandry", "cost": 25, "prerequisites": [], "effects": [], "unlocks": { "units": ["scout"] } },
-  { "id": "bronze-working", "tree": "science", "name": "Bronze Working", "cost": 35, "prerequisites": ["mining"], "effects": [], "unlocks": { "units": ["spearman", "swordsman"], "buildings": ["barracks"] } },
-  { "id": "writing", "tree": "science", "name": "Writing", "cost": 40, "prerequisites": ["pottery"], "effects": [], "unlocks": { "buildings": ["library"] } },
-  { "id": "archery", "tree": "science", "name": "Archery", "cost": 30, "prerequisites": [], "effects": [], "unlocks": { "units": ["archer"] } },
-  { "id": "wheel", "tree": "science", "name": "The Wheel", "cost": 35, "prerequisites": ["mining"], "effects": [], "unlocks": { "buildings": ["water-mill"] } },
-  { "id": "sailing", "tree": "science", "name": "Sailing", "cost": 30, "prerequisites": [], "effects": [], "unlocks": { "units": ["galley"] } },
+  {
+    "id": "agriculture",
+    "tree": "science",
+    "name": "Agriculture",
+    "cost": 15,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": { "improvements": ["farm"] }
+  },
+  {
+    "id": "pottery",
+    "tree": "science",
+    "name": "Pottery",
+    "cost": 20,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": { "buildings": ["granary"] }
+  },
+  {
+    "id": "mining",
+    "tree": "science",
+    "name": "Mining",
+    "cost": 25,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": { "improvements": ["mine"] }
+  },
+  {
+    "id": "animal-husbandry",
+    "tree": "science",
+    "name": "Animal Husbandry",
+    "cost": 25,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": { "units": ["scout"] }
+  },
+  {
+    "id": "bronze-working",
+    "tree": "science",
+    "name": "Bronze Working",
+    "cost": 35,
+    "prerequisites": ["mining"],
+    "effects": [],
+    "unlocks": { "units": ["spearman", "swordsman"], "buildings": ["barracks"] }
+  },
+  {
+    "id": "writing",
+    "tree": "science",
+    "name": "Writing",
+    "cost": 40,
+    "prerequisites": ["pottery"],
+    "effects": [],
+    "unlocks": { "buildings": ["library"] }
+  },
+  {
+    "id": "archery",
+    "tree": "science",
+    "name": "Archery",
+    "cost": 30,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": { "units": ["archer"] }
+  },
+  {
+    "id": "wheel",
+    "tree": "science",
+    "name": "The Wheel",
+    "cost": 35,
+    "prerequisites": ["mining"],
+    "effects": [],
+    "unlocks": { "buildings": ["water-mill"] }
+  },
+  {
+    "id": "sailing",
+    "tree": "science",
+    "name": "Sailing",
+    "cost": 30,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": { "units": ["galley"] }
+  },
 
-  { "id": "folklore", "tree": "culture", "name": "Folklore", "cost": 20, "prerequisites": [], "effects": [], "unlocks": {} },
-  { "id": "code-of-laws", "tree": "culture", "name": "Code of Laws", "cost": 25, "prerequisites": ["folklore"], "effects": [], "unlocks": {} },
-  { "id": "craftsmanship", "tree": "culture", "name": "Craftsmanship", "cost": 30, "prerequisites": ["code-of-laws"], "effects": [], "unlocks": {} },
-  { "id": "foreign-trade", "tree": "culture", "name": "Foreign Trade", "cost": 30, "prerequisites": ["code-of-laws"], "effects": [], "unlocks": {} },
-  { "id": "state-workforce", "tree": "culture", "name": "State Workforce", "cost": 35, "prerequisites": ["craftsmanship"], "effects": [], "unlocks": {} },
-  { "id": "early-empire", "tree": "culture", "name": "Early Empire", "cost": 35, "prerequisites": ["foreign-trade"], "effects": [], "unlocks": {} }
+  {
+    "id": "folklore",
+    "tree": "culture",
+    "name": "Folklore",
+    "cost": 20,
+    "prerequisites": [],
+    "effects": [],
+    "unlocks": {}
+  },
+  {
+    "id": "code-of-laws",
+    "tree": "culture",
+    "name": "Code of Laws",
+    "cost": 25,
+    "prerequisites": ["folklore"],
+    "effects": [],
+    "unlocks": {}
+  },
+  {
+    "id": "craftsmanship",
+    "tree": "culture",
+    "name": "Craftsmanship",
+    "cost": 30,
+    "prerequisites": ["code-of-laws"],
+    "effects": [],
+    "unlocks": {}
+  },
+  {
+    "id": "foreign-trade",
+    "tree": "culture",
+    "name": "Foreign Trade",
+    "cost": 30,
+    "prerequisites": ["code-of-laws"],
+    "effects": [],
+    "unlocks": {}
+  },
+  {
+    "id": "state-workforce",
+    "tree": "culture",
+    "name": "State Workforce",
+    "cost": 35,
+    "prerequisites": ["craftsmanship"],
+    "effects": [],
+    "unlocks": {}
+  },
+  {
+    "id": "early-empire",
+    "tree": "culture",
+    "name": "Early Empire",
+    "cost": 35,
+    "prerequisites": ["foreign-trade"],
+    "effects": [],
+    "unlocks": {}
+  }
 ]

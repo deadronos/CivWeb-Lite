@@ -80,7 +80,7 @@ async function runBenchmark() {
   console.log(JSON.stringify(results, null, 2));
 }
 
-runBenchmark().catch(err => {
+runBenchmark().catch((err) => {
   console.error('Benchmark failed', err);
   throw err;
 });

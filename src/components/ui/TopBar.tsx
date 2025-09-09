@@ -20,19 +20,23 @@ export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste }:
       <div aria-label="turn">Turn: {turn}</div>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
         {/* science */}
-          <div className="resource science" aria-label="resource science">
-            <Icon icon={MdScience} size={18} title="Science" />
-            <span style={{ marginLeft: 6 }}>{getVal(resources?.science)}</span>
-          </div>
+        <div className="resource science" aria-label="resource science">
+          <Icon icon={MdScience} size={18} title="Science" />
+          <span style={{ marginLeft: 6 }}>{getVal(resources?.science)}</span>
+        </div>
         {/* culture */}
-          <div className="resource culture" aria-label="resource culture">
-            <Icon icon={MdTheaterComedy} size={18} title="Culture" />
-            <span style={{ marginLeft: 6 }}>{getVal(resources?.culture)}</span>
-          </div>
+        <div className="resource culture" aria-label="resource culture">
+          <Icon icon={MdTheaterComedy} size={18} title="Culture" />
+          <span style={{ marginLeft: 6 }}>{getVal(resources?.culture)}</span>
+        </div>
       </div>
       <div>
-        <button aria-label="topbar load" onClick={onOpenLoad}>Load…</button>
-        <button aria-label="topbar load paste" onClick={onOpenLoadPaste}>Paste JSON…</button>
+        <button aria-label="topbar load" onClick={onOpenLoad}>
+          Load…
+        </button>
+        <button aria-label="topbar load paste" onClick={onOpenLoadPaste}>
+          Paste JSON…
+        </button>
       </div>
     </div>
   );

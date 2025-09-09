@@ -21,4 +21,3 @@ export function resolveGLTF(labelOrPath?: string): string | null {
   if (looksLikePath(key)) return key;
   return MAP[key.toLowerCase()] ?? null;
 }
-

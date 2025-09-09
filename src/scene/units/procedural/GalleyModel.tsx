@@ -10,10 +10,18 @@ export function GalleyModel({ teamColor = '#2980b9' }: { teamColor?: string }) {
         <meshStandardMaterial color={teamColor} />
       </mesh>
       {/* Prow/Stern hints */}
-      <mesh position={[0.45, 0, 0]} rotation={[0, 0, Math.PI / 12]} geometry={getBox(0.2, 0.08, 0.32)}>
+      <mesh
+        position={[0.45, 0, 0]}
+        rotation={[0, 0, Math.PI / 12]}
+        geometry={getBox(0.2, 0.08, 0.32)}
+      >
         <meshStandardMaterial color={teamColor} />
       </mesh>
-      <mesh position={[-0.45, 0, 0]} rotation={[0, 0, -Math.PI / 12]} geometry={getBox(0.2, 0.08, 0.32)}>
+      <mesh
+        position={[-0.45, 0, 0]}
+        rotation={[0, 0, -Math.PI / 12]}
+        geometry={getBox(0.2, 0.08, 0.32)}
+      >
         <meshStandardMaterial color={teamColor} />
       </mesh>
       {/* Mast */}

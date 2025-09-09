@@ -1,8 +1,42 @@
 [
-  { "id": "granary", "name": "Granary", "cost": 60, "requires": "pottery", "yields": { "food": 1 }, "effects": ["increase-city-growth"] },
-  { "id": "monument", "name": "Monument", "cost": 60, "requires": "code-of-laws", "yields": { "culture": 1 }, "effects": [] },
-  { "id": "barracks", "name": "Barracks", "cost": 80, "requires": "bronze-working", "yields": { "production": 1 }, "effects": ["train-melee-better"] },
-  { "id": "library", "name": "Library", "cost": 80, "requires": "writing", "yields": { "science": 2 }, "effects": [] },
-  { "id": "water-mill", "name": "Water Mill", "cost": 80, "requires": "wheel", "yields": { "food": 1, "production": 1 }, "effects": [] }
+  {
+    "id": "granary",
+    "name": "Granary",
+    "cost": 60,
+    "requires": "pottery",
+    "yields": { "food": 1 },
+    "effects": ["increase-city-growth"]
+  },
+  {
+    "id": "monument",
+    "name": "Monument",
+    "cost": 60,
+    "requires": "code-of-laws",
+    "yields": { "culture": 1 },
+    "effects": []
+  },
+  {
+    "id": "barracks",
+    "name": "Barracks",
+    "cost": 80,
+    "requires": "bronze-working",
+    "yields": { "production": 1 },
+    "effects": ["train-melee-better"]
+  },
+  {
+    "id": "library",
+    "name": "Library",
+    "cost": 80,
+    "requires": "writing",
+    "yields": { "science": 2 },
+    "effects": []
+  },
+  {
+    "id": "water-mill",
+    "name": "Water Mill",
+    "cost": 80,
+    "requires": "wheel",
+    "yields": { "food": 1, "production": 1 },
+    "effects": []
+  }
 ]
-

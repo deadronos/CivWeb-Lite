@@ -10,7 +10,13 @@ const defaultAPI: CameraAPI = {
 
 const CameraContext = createContext<CameraAPI>(defaultAPI);
 
-export function CameraProvider({ api, children }: { api?: Partial<CameraAPI>; children: React.ReactNode }) {
+export function CameraProvider({
+  api,
+  children,
+}: {
+  api?: Partial<CameraAPI>;
+  children: React.ReactNode;
+}) {
   const merged = { ...defaultAPI, ...(api ?? {}) } as CameraAPI;
   return <CameraContext.Provider value={merged}>{children}</CameraContext.Provider>;
 }
@@ -18,4 +24,3 @@ export function CameraProvider({ api, children }: { api?: Partial<CameraAPI>; ch
 export function useCamera(): CameraAPI {
   return useContext(CameraContext);
 }
-

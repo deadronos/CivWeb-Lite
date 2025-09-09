@@ -2,7 +2,17 @@ import { GameState } from './types';
 
 export type GameAction =
   | { type: 'INIT'; payload?: { seed?: string; width?: number; height?: number } }
-  | { type: 'NEW_GAME'; payload: { seed?: string; width?: number; height?: number; totalPlayers: number; humanPlayers?: number; selectedLeaders?: Array<string | 'random' | undefined> } }
+  | {
+      type: 'NEW_GAME';
+      payload: {
+        seed?: string;
+        width?: number;
+        height?: number;
+        totalPlayers: number;
+        humanPlayers?: number;
+        selectedLeaders?: Array<string | 'random' | undefined>;
+      };
+    }
   | { type: 'END_TURN' }
   | { type: 'SET_RESEARCH'; playerId: string; payload: { techId: string } }
   | { type: 'ADVANCE_RESEARCH'; playerId: string; payload?: { points?: number } }
@@ -13,11 +23,26 @@ export type GameAction =
   // Extension actions (biomes/units/cities/tech)
   | { type: 'EXT_BEGIN_RESEARCH'; payload: { techId: string } }
   | { type: 'EXT_BEGIN_CULTURE_RESEARCH'; payload: { civicId: string } }
-  | { type: 'EXT_QUEUE_PRODUCTION'; payload: { cityId: string; order: { type: 'unit' | 'improvement' | 'building'; item: string; turns: number } } }
+  | {
+      type: 'EXT_QUEUE_PRODUCTION';
+      payload: {
+        cityId: string;
+        order: { type: 'unit' | 'improvement' | 'building'; item: string; turns: number };
+      };
+    }
   | { type: 'EXT_ADD_TILE'; payload: { tile: { id: string; q: number; r: number; biome: string } } }
-  | { type: 'EXT_ADD_CITY'; payload: { cityId: string; name: string; ownerId: string; tileId: string } }
-  | { type: 'EXT_ADD_UNIT'; payload: { unitId: string; type: string; ownerId: string; tileId: string } }
-    | { type: 'EXT_ISSUE_MOVE_PATH'; payload: { unitId: string; path: string[]; confirmCombat?: boolean } }
+  | {
+      type: 'EXT_ADD_CITY';
+      payload: { cityId: string; name: string; ownerId: string; tileId: string };
+    }
+  | {
+      type: 'EXT_ADD_UNIT';
+      payload: { unitId: string; type: string; ownerId: string; tileId: string };
+    }
+  | {
+      type: 'EXT_ISSUE_MOVE_PATH';
+      payload: { unitId: string; path: string[]; confirmCombat?: boolean };
+    };
 // Runtime helper used for lightweight runtime checks and to improve coverage in tests.
 export const GAME_ACTION_TYPES = [
   'INIT',

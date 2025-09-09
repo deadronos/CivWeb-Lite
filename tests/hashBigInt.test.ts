@@ -25,12 +25,17 @@ describe('hashState BigInt handling', () => {
     expect(h1).toEqual(h2);
 
     // Replacing BigInt with its textual '...n' representation should produce the same canonical serialization
-    const stateAsText = JSON.parse(JSON.stringify(state, (_k, v) => typeof v === 'bigint' ? v.toString() + 'n' : v));
-  const h3 = await hashState(stateAsText as any);
-  expect(h3).toEqual(h1);
+    const stateAsText = JSON.parse(
+      JSON.stringify(state, (_k, v) => (typeof v === 'bigint' ? v.toString() + 'n' : v))
+    );
+    const h3 = await hashState(stateAsText as any);
+    expect(h3).toEqual(h1);
 
     // Changing the BigInt value should change the hash
-    const stateChanged = { ...state, counters: { ...state.counters, large: 9999999999999999999999n } } as any;
+    const stateChanged = {
+      ...state,
+      counters: { ...state.counters, large: 9999999999999999999999n },
+    } as any;
     const h4 = await hashState(stateChanged);
     expect(h4).not.toEqual(h1);
   });

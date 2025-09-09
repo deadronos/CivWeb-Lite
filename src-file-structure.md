@@ -37,7 +37,7 @@ src/
 
 ### Why this structure?
 
-*   **Separation of Concerns:** It clearly separates UI (`components`), state (`contexts`), core logic (`game-logic`), and visual scenes (`scenes`).
-*   **Scalability:** When you add a new feature, like a diplomacy system, you can add a new file in `game-logic/systems/` and its corresponding UI in `components/game/`.
-*   **Reusability:** Generic UI elements in `components/ui/` can be used anywhere, keeping your visual style consistent.
-*   **Maintainability:** It's easier to find and modify code when it's organized by its domain or purpose.
+- **Separation of Concerns:** It clearly separates UI (`components`), state (`contexts`), core logic (`game-logic`), and visual scenes (`scenes`).
+- **Scalability:** When you add a new feature, like a diplomacy system, you can add a new file in `game-logic/systems/` and its corresponding UI in `components/game/`.
+- **Reusability:** Generic UI elements in `components/ui/` can be used anywhere, keeping your visual style consistent.
+- **Maintainability:** It's easier to find and modify code when it's organized by its domain or purpose.

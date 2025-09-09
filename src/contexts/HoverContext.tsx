@@ -35,4 +35,3 @@ export function useHoverTile(): {
   const world = coord ? axialToWorld(coord.q, coord.r) : null;
   return { index: hoverIndex, id, coord, biome, world, setHoverIndex };
 }
-

@@ -10,7 +10,13 @@ type InstancedTilesProps = {
 };
 
 // Lightweight instanced tiles component (not yet wired into Scene)
-export function InstancedTiles({ positions, color = '#7ac', colors, size = 0.5, onPointerMove }: InstancedTilesProps) {
+export function InstancedTiles({
+  positions,
+  color = '#7ac',
+  colors,
+  size = 0.5,
+  onPointerMove,
+}: InstancedTilesProps) {
   const count = positions.length;
   const ref = useRef<InstancedMesh>(null);
   // Geometry/material memoization keeps re-renders cheap
@@ -69,12 +75,18 @@ export function InstancedTiles({ positions, color = '#7ac', colors, size = 0.5, 
   // Build a simple hex cylinder geometry: cylinderGeometry(radius, radius, thickness, radialSegments)
   // We'll let the mesh create geometry from JSX children; provide proper args below.
   return (
-    <instancedMesh ref={ref} args={[undefined as any, undefined as any, count]} onPointerMove={onPointerMove as any}>
+    <instancedMesh
+      ref={ref}
+      args={[undefined as any, undefined as any, count]}
+      onPointerMove={onPointerMove as any}
+    >
       <cylinderGeometry args={[0.5, 0.5, 0.08, 6]} />
-      <meshStandardMaterial color={materialColor} vertexColors={(colors && colors.length === count) ? true : false} />
+      <meshStandardMaterial
+        color={materialColor}
+        vertexColors={colors && colors.length === count ? true : false}
+      />
     </instancedMesh>
   );
 }
 
 export default React.memo(InstancedTiles);
-

@@ -13,13 +13,12 @@ describe('Deterministic replay harness', () => {
       { type: 'END_TURN' } as const,
     ];
     const rep = record(...(actions as any));
-  const r1 = await runReplay(s0, rep);
-  const r2 = await runReplay(s0, rep);
-  expect(r1.hash).toEqual(r2.hash);
+    const r1 = await runReplay(s0, rep);
+    const r2 = await runReplay(s0, rep);
+    expect(r1.hash).toEqual(r2.hash);
     // direct application should match too
     let sDirect = s0;
     for (const a of actions) sDirect = applyAction(sDirect, a as any);
     expect(r1.hash).toEqual(await hashState(sDirect));
   });
 });
-

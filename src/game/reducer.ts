@@ -4,12 +4,17 @@ import { GameAction } from './actions';
 import { produceNextState } from './state';
 import { generateWorld } from './world/generate';
 import { globalGameBus } from './events';
-import { endTurn as contentEndTurn, beginResearch as extBeginResearch, beginCultureResearch as extBeginCulture, moveUnit as extMoveUnit } from './content/rules';
+import {
+  endTurn as contentEndTurn,
+  beginResearch as extBeginResearch,
+  beginCultureResearch as extBeginCulture,
+  moveUnit as extMoveUnit,
+} from './content/rules';
 import { createEmptyState as createContentExt } from './content/engine';
 import { UNIT_TYPES } from './content/registry';
 
 function findPlayer(players: PlayerState[], id: string) {
-  return players.find(p => p.id === id);
+  return players.find((p) => p.id === id);
 }
 
 export function applyAction(state: GameState, action: GameAction): GameState {
@@ -17,7 +22,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
     globalGameBus.emit('action:applied', { action });
     return Object.freeze(action.payload);
   }
-  return produceNextState(state, draft => {
+  return produceNextState(state, (draft) => {
     switch (action.type) {
       case 'LOG_EVENT': {
         // append log entry with cap (50)
@@ -33,9 +38,11 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const techId = (action as any).payload?.techId as string | undefined;
         if (!playerId || !techId) break;
         const player = findPlayer(draft.players, playerId);
-        const tech = draft.techCatalog.find(t => t.id === techId);
+        const tech = draft.techCatalog.find((t) => t.id === techId);
         if (!player || !tech) break;
-        const hasPrereqs = (tech.prerequisites || []).every((p: string) => player.researchedTechIds?.includes(p));
+        const hasPrereqs = (tech.prerequisites || []).every((p: string) =>
+          player.researchedTechIds?.includes(p)
+        );
         if (!hasPrereqs) break;
         player.researching = { techId, progress: 0 } as any;
         break;
@@ -46,9 +53,9 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         if (!playerId) break;
         const player = findPlayer(draft.players, playerId);
         if (!player || !player.researching) break;
-        const tech = draft.techCatalog.find(t => t.id === player.researching!.techId);
+        const tech = draft.techCatalog.find((t) => t.id === player.researching!.techId);
         if (!tech) break;
-        const add = typeof pts === 'number' ? pts : player.sciencePoints ?? 0;
+        const add = typeof pts === 'number' ? pts : (player.sciencePoints ?? 0);
         player.researching.progress = (player.researching.progress ?? 0) + add;
         if (player.researching.progress >= tech.cost) {
           if (!player.researchedTechIds) player.researchedTechIds = [] as any;
@@ -86,17 +93,18 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
         draft.players = [] as PlayerState[];
         // small deterministic hash from seed for leader randomization fallback
-        const hash = (str: string) => Array.from(str).reduce((a, c) => (a + c.charCodeAt(0)) >>> 0, 0);
+        const hash = (str: string) =>
+          Array.from(str).reduce((a, c) => (a + c.charCodeAt(0)) >>> 0, 0);
         const chosen = action.payload.selectedLeaders ?? [];
         for (let i = 0; i < total; i++) {
           const isHuman = i < humans;
           const pickId = chosen[i];
           let leaderDef: any | undefined;
           if (pickId && pickId !== 'random') {
-            leaderDef = (leadersCatalog as any[]).find(l => l.id === pickId);
+            leaderDef = (leadersCatalog as any[]).find((l) => l.id === pickId);
           }
           if (!leaderDef) {
-            const idx = ((hash(seed) + i) % (leadersCatalog as any[]).length) >>> 0;
+            const idx = (hash(seed) + i) % (leadersCatalog as any[]).length >>> 0;
             leaderDef = (leadersCatalog as any[])[idx];
           }
           const mappedLeader = {
@@ -186,7 +194,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       case 'END_TURN': {
         for (const player of draft.players) {
           if (player.researching) {
-            const tech = draft.techCatalog.find(t => t.id === player.researching!.techId);
+            const tech = draft.techCatalog.find((t) => t.id === player.researching!.techId);
             if (tech) {
               const points = tech.tree === 'science' ? player.sciencePoints : player.culturePoints;
               player.researching.progress += points;
@@ -210,7 +218,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       }
       case 'AUTO_SIM_TOGGLE': {
         // payload may be { enabled?: boolean } or absent -> toggle
-        const enabled = action.payload && typeof (action.payload as any).enabled === 'boolean' ? (action.payload as any).enabled : undefined;
+        const enabled =
+          action.payload && typeof (action.payload as any).enabled === 'boolean'
+            ? (action.payload as any).enabled
+            : undefined;
         if (typeof enabled === 'boolean') {
           draft.autoSim = enabled;
         } else {
@@ -232,7 +243,11 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const ext = (draft.contentExt ||= createContentExt());
         const city = ext.cities[action.payload.cityId];
         if (city) {
-          city.productionQueue.push({ type: action.payload.order.type, item: action.payload.order.item, turnsRemaining: action.payload.order.turns });
+          city.productionQueue.push({
+            type: action.payload.order.type,
+            item: action.payload.order.item,
+            turnsRemaining: action.payload.order.turns,
+          });
         }
         break;
       }
@@ -320,7 +335,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         }
         break;
       }
-            case 'EXT_ISSUE_MOVE_PATH': {
+      case 'EXT_ISSUE_MOVE_PATH': {
         const ext = (draft.contentExt ||= createContentExt());
         const u = ext.units[action.payload.unitId];
         if (u && action.payload.path && action.payload.path.length) {
@@ -332,7 +347,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
               if (c && c.ownerId !== u.ownerId) return true;
             }
             for (const other of Object.values(ext.units)) {
-              if (other.id !== u.id && other.location === tileId && other.ownerId !== u.ownerId) return true;
+              if (other.id !== u.id && other.location === tileId && other.ownerId !== u.ownerId)
+                return true;
             }
             return false;
           };
@@ -345,7 +361,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             if (!ok) break;
             if (u.location === before) break; // no progress safeguard
           }
-        }        break;
+        }
+        break;
       }
       case 'RECORD_AI_PERF': {
         if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };

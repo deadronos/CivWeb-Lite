@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { initialStateForTests, simulateAdvanceTurn, coverGameProviderEffects, coverRemainingGameProviderPaths, coverGameProviderForcePaths, triggerAutoSimOnce } from '../src/contexts/GameProvider';
+import {
+  initialStateForTests,
+  simulateAdvanceTurn,
+  coverGameProviderEffects,
+  coverRemainingGameProviderPaths,
+  coverGameProviderForcePaths,
+  triggerAutoSimOnce,
+} from '../src/contexts/GameProvider';
 
 describe('GameProvider coverage helpers', () => {
   it('initialStateForTests returns a valid state and helpers run', () => {
@@ -24,6 +31,6 @@ describe('GameProvider coverage helpers', () => {
 
     // simulate advance turn directly (should dispatch END_TURN)
     simulateAdvanceTurn(s, dispatch);
-    expect(dispatched.some(d => d.type === 'END_TURN')).toBe(true);
+    expect(dispatched.some((d) => d.type === 'END_TURN')).toBe(true);
   });
 });

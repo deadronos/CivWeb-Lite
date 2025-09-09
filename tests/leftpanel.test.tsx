@@ -18,4 +18,3 @@ describe('LeftPanel', () => {
     expect(onSelect).toHaveBeenCalledWith('t1');
   });
 });
-

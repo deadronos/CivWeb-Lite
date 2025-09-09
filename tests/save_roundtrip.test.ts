@@ -1,4 +1,9 @@
-import { serializeState, deserializeState, VersionMismatchError, ValidationError } from '../src/game/save';
+import {
+  serializeState,
+  deserializeState,
+  VersionMismatchError,
+  ValidationError,
+} from '../src/game/save';
 import { initialStateForTests } from '../src/contexts/GameProvider';
 
 describe('save/load roundtrip', () => {

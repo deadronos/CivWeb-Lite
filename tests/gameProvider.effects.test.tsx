@@ -2,7 +2,14 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { GameProvider, GameStateContext, GameDispatchContext, initialStateForTests, coverGameProviderEffects, simulateAdvanceTurn } from '../src/contexts/GameProvider';
+import {
+  GameProvider,
+  GameStateContext,
+  GameDispatchContext,
+  initialStateForTests,
+  coverGameProviderEffects,
+  simulateAdvanceTurn,
+} from '../src/contexts/GameProvider';
 import { globalGameBus } from '../src/game/events';
 import { useGame } from '../src/hooks/useGame';
 
@@ -14,7 +21,9 @@ function TestConsumer() {
   return (
     <div>
       <div data-testid="turn">{state.turn}</div>
-      <button onClick={() => dispatch({ type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } })}>toggle</button>
+      <button onClick={() => dispatch({ type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } })}>
+        toggle
+      </button>
       <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
     </div>
   );
@@ -81,7 +90,16 @@ describe('GameProvider effects', () => {
   test('coverGameProviderEffects covers non-RAF branch and simulateAdvanceTurn dispatches END_TURN', () => {
     const s = initialStateForTests();
     // add a fake AI player with a leader so evaluateAI can run without crashing
-    s.players = [{ id: 'p1', name: 'AI', isHuman: false, leader: { name: 'AI-Leader' }, cities: [], research: null } as any];
+    s.players = [
+      {
+        id: 'p1',
+        name: 'AI',
+        isHuman: false,
+        leader: { name: 'AI-Leader' },
+        cities: [],
+        research: null,
+      } as any,
+    ];
     // spy a dispatch
     const actions: any[] = [];
     const dispatch = (a: any) => actions.push(a);
@@ -89,7 +107,7 @@ describe('GameProvider effects', () => {
     coverGameProviderEffects(s, dispatch);
     // simulateAdvanceTurn should emit and then dispatch END_TURN
     simulateAdvanceTurn(s, dispatch);
-    expect(actions.some(a => a.type === 'END_TURN')).toBe(true);
+    expect(actions.some((a) => a.type === 'END_TURN')).toBe(true);
   });
 
   test('useGame hook works inside provider and END_TURN updates turn', async () => {

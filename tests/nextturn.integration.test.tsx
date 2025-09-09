@@ -5,7 +5,7 @@ import NextTurnControlContainer from '../src/components/ui/NextTurnControlContai
 
 describe('NextTurnControl integration', () => {
   it('advances turn via container + provider', () => {
-  render(
+    render(
       <GameProvider>
         <TopBarContainer />
         <NextTurnControlContainer />
@@ -20,4 +20,3 @@ describe('NextTurnControl integration', () => {
     expect(screen.getByLabelText('turn').textContent).toContain('2');
   });
 });
-

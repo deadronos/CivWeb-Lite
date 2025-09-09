@@ -10,7 +10,10 @@ export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
 }
 
 // extracted check into a helper so tests can exercise the exact thrown branch
-export function ensureGameContext(state: GameState | null | undefined, dispatch: Dispatch | null | undefined) {
+export function ensureGameContext(
+  state: GameState | null | undefined,
+  dispatch: Dispatch | null | undefined
+) {
   if (!state || !dispatch) {
     throw new Error('useGame must be used within GameProvider');
   }

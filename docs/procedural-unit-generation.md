@@ -37,6 +37,7 @@ The fundamental idea is to construct units by combining and grouping primitive 3
   - `gltf`: optional GLTF label or path. When `VITE_ENABLE_GLTF=true`, the renderer will try to resolve this via `src/scene/units/gltfRegistry.ts` and load that URL. If absent or resolution fails, it falls back to the procedural `model`.
 
 Example:
+
 ```
 {
   "id": "archer",
@@ -94,17 +95,17 @@ In this codebase, see the live components under `src/scene/units/procedural/` (e
 
 ### Pros
 
-*   **Development Speed:** Drastically reduces asset creation time. No external 3D modeling software is required.
-*   **Flexibility:** Unit designs can be tweaked and iterated on by changing a few lines of code.
-*   **Minimal File Size:** The game loads faster as there are no large model files to download.
-*   **Unique Style:** Enforces a clean, minimalist aesthetic that can be very stylish.
+- **Development Speed:** Drastically reduces asset creation time. No external 3D modeling software is required.
+- **Flexibility:** Unit designs can be tweaked and iterated on by changing a few lines of code.
+- **Minimal File Size:** The game loads faster as there are no large model files to download.
+- **Unique Style:** Enforces a clean, minimalist aesthetic that can be very stylish.
 
 ### Cons
 
-*   **Visual Fidelity:** You are limited to simple, geometric shapes. Complex, organic, or realistic models are not feasible.
-*   **Animation Complexity:** **This is the biggest challenge.**
-    *   Animating pre-made GLTF models with internal skeletons is straightforward (you play named animation clips).
-    *   Animating a procedural model requires you to manually calculate the position and rotation of each individual part (`<mesh>`) for every frame of the animation. This involves complex trigonometry and is significantly more difficult than playing a pre-baked animation.
+- **Visual Fidelity:** You are limited to simple, geometric shapes. Complex, organic, or realistic models are not feasible.
+- **Animation Complexity:** **This is the biggest challenge.**
+  - Animating pre-made GLTF models with internal skeletons is straightforward (you play named animation clips).
+  - Animating a procedural model requires you to manually calculate the position and rotation of each individual part (`<mesh>`) for every frame of the animation. This involves complex trigonometry and is significantly more difficult than playing a pre-baked animation.
 
 ## Recommended Workflow
 

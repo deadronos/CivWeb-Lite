@@ -16,7 +16,9 @@ describe('useGame targeted helpers', () => {
   });
 
   it('ensureGameContext throws when missing and returns true when present', () => {
-    expect(() => ensureGameContext(null as any, null as any)).toThrow('useGame must be used within GameProvider');
+    expect(() => ensureGameContext(null as any, null as any)).toThrow(
+      'useGame must be used within GameProvider'
+    );
     expect(ensureGameContext({} as any, (() => {}) as any)).toBeTruthy();
   });
 });

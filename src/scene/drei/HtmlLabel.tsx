@@ -12,4 +12,3 @@ export default function HtmlLabel({ children, className = 'label', ...rest }: Pr
     </Html>
   );
 }
-

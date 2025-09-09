@@ -20,7 +20,7 @@ function stableStringify(value: unknown): string {
     if (t === 'object') {
       if (seen.has(val)) return '[Circular]';
       seen.add(val);
-      if (Array.isArray(val)) return val.map(v => stringify(v));
+      if (Array.isArray(val)) return val.map((v) => stringify(v));
       const keys = Object.keys(val).sort();
       const obj: Record<string, any> = {};
       for (const k of keys) {
@@ -83,7 +83,9 @@ export async function hashState(state: GameState): Promise<string> {
   if (subtle && typeof subtle.digest === 'function') {
     const buf = await subtle.digest('SHA-256', data);
     // convert buffer to hex
-    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    const hex = Array.from(new Uint8Array(buf))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
     return hex;
   }
   // Node static import fallback
@@ -95,7 +97,10 @@ export type Replay = {
   startSeed?: string;
 };
 
-export async function runReplay(initial: GameState, replay: Replay): Promise<{ final: GameState; hash: string }> {
+export async function runReplay(
+  initial: GameState,
+  replay: Replay
+): Promise<{ final: GameState; hash: string }> {
   let state = initial;
   for (const act of replay.actions) {
     state = applyAction(state, act);
@@ -106,4 +111,3 @@ export async function runReplay(initial: GameState, replay: Replay): Promise<{ f
 export function record(...actions: GameAction[]): Replay {
   return { actions };
 }
-

@@ -15,4 +15,3 @@ describe('TopBarContainer', () => {
     expect(screen.getByLabelText('resource culture')).toBeInTheDocument();
   });
 });
-

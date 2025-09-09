@@ -36,17 +36,29 @@ export function useUnitPositions(opts: UseUnitPositionsOptions = {}): UnitPositi
       let xz: [number, number] | null = null;
       if (typeof u.location === 'string') {
         xz = tileIdToWorldFromExt(ext as any, u.location);
-      } else if (u.location && typeof (u.location as any).q === 'number' && typeof (u.location as any).r === 'number') {
+      } else if (
+        u.location &&
+        typeof (u.location as any).q === 'number' &&
+        typeof (u.location as any).r === 'number'
+      ) {
         xz = axialToWorld((u.location as any).q, (u.location as any).r);
       }
       const [x, z] = (xz ?? [0, 0]) as [number, number];
       out.push({ id: u.id, type: (u as any).type, position: [x, y, z] });
     }
     return out;
-  }, [ext, y, ownerSet && [...ownerSet].join(','), typeSet && [...typeSet].join(','), opts.predicate]);
+  }, [
+    ext,
+    y,
+    ownerSet && [...ownerSet].join(','),
+    typeSet && [...typeSet].join(','),
+    opts.predicate,
+  ]);
 }
 
-export function useUnitPositionMap(opts: UseUnitPositionsOptions = {}): Record<string, UnitPosition> {
+export function useUnitPositionMap(
+  opts: UseUnitPositionsOptions = {}
+): Record<string, UnitPosition> {
   const list = useUnitPositions(opts);
   return React.useMemo(() => {
     const map: Record<string, UnitPosition> = {};

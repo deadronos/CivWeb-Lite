@@ -1,5 +1,9 @@
 import { describe, test, expect, vi } from 'vitest';
-import { simulateAdvanceTurn, initialStateForTests, coverGameProviderEffects } from '../src/contexts/GameProvider';
+import {
+  simulateAdvanceTurn,
+  initialStateForTests,
+  coverGameProviderEffects,
+} from '../src/contexts/GameProvider';
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider extra behaviors', () => {
@@ -21,7 +25,7 @@ describe('GameProvider extra behaviors', () => {
     // should have emitted turn:start
     expect(spyEmit).toHaveBeenCalled();
     // END_TURN should be dispatched
-    expect(dispatched.find(d => d.type === 'END_TURN')).toBeTruthy();
+    expect(dispatched.find((d) => d.type === 'END_TURN')).toBeTruthy();
     spyEmit.mockRestore();
   });
 

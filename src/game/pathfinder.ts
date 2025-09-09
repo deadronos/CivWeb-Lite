@@ -1,11 +1,11 @@
-
 export type CombatPreview = {
   tileId: string;
   attackerUnitId: string;
-  defender: { kind: 'unit'|'city'; id: string; ownerId: string } | null;
+  defender: { kind: 'unit' | 'city'; id: string; ownerId: string } | null;
   requiresConfirm: boolean;
   expectedOutcome: 'unknown';
-};import type { GameStateExt, Hextile, Unit } from './content/types';
+};
+import type { GameStateExt, Hextile, Unit } from './content/types';
 import { neighbors as hexNeighbors } from './world/hex';
 import { movementCost, isPassable } from './content/biomes';
 import { UNIT_TYPES } from './content/registry';
@@ -108,13 +108,26 @@ export function computePath(
       }
     }
     if (def) {
-      combat = { tileId: tid, attackerUnitId: unit.id, defender: def, requiresConfirm: true, expectedOutcome: 'unknown' };
+      combat = {
+        tileId: tid,
+        attackerUnitId: unit.id,
+        defender: def,
+        requiresConfirm: true,
+        expectedOutcome: 'unknown',
+      };
       break;
     }
   }
-  return { path: out, totalCost: dist.get(goal.id) ?? Infinity, ...(combat ? { combatPreview: combat } : {}) };
+  return {
+    path: out,
+    totalCost: dist.get(goal.id) ?? Infinity,
+    ...(combat ? { combatPreview: combat } : {}),
+  };
 }
-export function computeMovementRange(state: GameStateExt, unitId: string): { reachable: string[]; cost: Record<string, number> } {
+export function computeMovementRange(
+  state: GameStateExt,
+  unitId: string
+): { reachable: string[]; cost: Record<string, number> } {
   const unit = state.units[unitId];
   const start = unit ? state.tiles[unit.location] : undefined;
   if (!unit || !start) return { reachable: [], cost: {} };
@@ -143,7 +156,9 @@ export function computeMovementRange(state: GameStateExt, unitId: string): { rea
       if (!nid) continue;
       const nt = state.tiles[nid];
       if (!passableFor(state, unit, nt)) continue;
-      const step = Math.ceil(movementCost(nt, { unitAbilities: unit.abilities, unitDomain: def.domain }));
+      const step = Math.ceil(
+        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: def.domain })
+      );
       const alt = ccost + step;
       if (alt < (dist.get(nid) ?? Infinity)) {
         dist.set(nid, alt);

@@ -22,4 +22,3 @@ export default function ResourceBadge({ name, value, delta }: ResourceBadgeProps
     </div>
   );
 }
-

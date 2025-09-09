@@ -41,7 +41,11 @@ describe('tech system', () => {
       researching: null,
     };
     let state = baseState(player);
-    state = applyAction(state, { type: 'SET_RESEARCH', playerId: 'p1', payload: { techId: 'writing' } });
+    state = applyAction(state, {
+      type: 'SET_RESEARCH',
+      playerId: 'p1',
+      payload: { techId: 'writing' },
+    });
     expect(state.players[0].researching?.techId).toBe('writing');
     state = applyAction(state, { type: 'END_TURN' });
     expect(state.players[0].researchedTechIds).toContain('writing');
@@ -58,7 +62,7 @@ describe('tech system', () => {
       researching: null,
     };
     let event: { playerId: string; techId: string } | undefined;
-    const off = globalGameBus.on('tech:unlocked', e => {
+    const off = globalGameBus.on('tech:unlocked', (e) => {
       event = e;
     });
     let state = baseState(player);
@@ -83,7 +87,11 @@ describe('tech system', () => {
       researching: null,
     };
     let state = baseState(player);
-    state = applyAction(state, { type: 'SET_RESEARCH', playerId: 'p1', payload: { techId: 'writing' } });
+    state = applyAction(state, {
+      type: 'SET_RESEARCH',
+      playerId: 'p1',
+      payload: { techId: 'writing' },
+    });
     expect(state.players[0].researching).toBeNull();
   });
 });

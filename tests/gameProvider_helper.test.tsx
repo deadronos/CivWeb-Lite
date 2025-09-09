@@ -24,6 +24,6 @@ describe('simulateAdvanceTurn helper', () => {
     const dispatched: any[] = [];
     const dispatch = (a: any) => dispatched.push(a);
     simulateAdvanceTurn(state, dispatch as any);
-    expect(dispatched.some(d => d.type === 'END_TURN')).toBe(true);
+    expect(dispatched.some((d) => d.type === 'END_TURN')).toBe(true);
   });
 });

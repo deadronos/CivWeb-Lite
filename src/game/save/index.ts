@@ -23,7 +23,9 @@ export function serializeState(state: GameState): string {
 export function deserializeState(json: string): GameState {
   const data = JSON.parse(json);
   if (typeof data.schemaVersion !== 'number' || data.schemaVersion !== SCHEMA_VERSION) {
-    throw new VersionMismatchError(`Expected schemaVersion ${SCHEMA_VERSION} but received ${data.schemaVersion}`);
+    throw new VersionMismatchError(
+      `Expected schemaVersion ${SCHEMA_VERSION} but received ${data.schemaVersion}`
+    );
   }
   const validateFn = ensureValidator();
   const valid = validateFn(data as any);

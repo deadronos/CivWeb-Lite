@@ -28,7 +28,7 @@ export default function Minimap({ width, height, onPickCoord, highlightedTileIds
       aria-label="minimap"
       onClick={onClick}
       style={{ width: 120, height: 120, background: 'var(--color-minimap, #222)' }}
-     data-highlight={(highlightedTileIds||[]).join(',')} />
+      data-highlight={(highlightedTileIds || []).join(',')}
+    />
   );
 }
-

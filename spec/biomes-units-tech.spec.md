@@ -156,8 +156,8 @@ Example:
   "ownerId": "player_1",
   "location": "hex_13_5",
   "population": 3,
-  "productionQueue": [{"type":"unit","item":"warrior","turnsRemaining":2}],
-  "tilesWorked": ["hex_13_5","hex_12_5"],
+  "productionQueue": [{ "type": "unit", "item": "warrior", "turnsRemaining": 2 }],
+  "tilesWorked": ["hex_13_5", "hex_12_5"],
   "garrisonUnitIds": [],
   "happiness": 10
 }
@@ -171,7 +171,7 @@ Example:
 - tile yields by biome (no improvements): plains {food:2, prod:1}, grassland {food:2, prod:1}, forest {food:1, prod:2}, desert {food:0, prod:1}, hills {food:0, prod:2}, mountain {food:0, prod:0}
 - improvements modify yields: farm +1 food, mine +2 production, road +0.1 gold
 
-- Growth: simplified rule: if netFood >= population * 2 then population increases by 1 that turn.
+- Growth: simplified rule: if netFood >= population \* 2 then population increases by 1 that turn.
 - Production: city consumes production per-turn to reduce turnsRemaining for head of productionQueue. When an order completes, it spawns a unit or adds an improvement to the city tile.
 
 ## Technologies
@@ -204,7 +204,6 @@ Example:
 - When research completes, apply unlocks to the player's available options.
 - Technologies control which items can be produced in cities and which improvements/buildings are available.
 
-
 ## API / GameState extensions
 
 Extend existing GameState (informal):
@@ -232,7 +231,7 @@ test('city produces unit after correct turns', () => {
   // setup game with one city with production 1 and queue warrior cost 2
   // tick two turns
   // assert unit spawned and production queue advanced
-})
+});
 ```
 
 ### Edge cases

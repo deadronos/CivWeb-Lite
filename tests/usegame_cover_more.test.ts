@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { coverForTestsUseGame, coverUseGameThrowExplicitly, coverAllUseGameHuge, coverUseGameInlinePaths, coverUseGameInlinePathsTuple, coverUseGameExtra } from '../src/hooks/useGame';
+import {
+  coverForTestsUseGame,
+  coverUseGameThrowExplicitly,
+  coverAllUseGameHuge,
+  coverUseGameInlinePaths,
+  coverUseGameInlinePathsTuple,
+  coverUseGameExtra,
+} from '../src/hooks/useGame';
 
 describe('useGame coverage helpers', () => {
   it('ensureGameContext throws when missing', () => {

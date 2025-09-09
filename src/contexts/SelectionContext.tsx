@@ -7,8 +7,16 @@ export type SelectionState = {
 
 const SelectionContext = React.createContext<SelectionState | null>(null);
 
-export function SelectionProvider({ children, initialSelectedUnitId = null }: { children: React.ReactNode; initialSelectedUnitId?: string | null }) {
-  const [selectedUnitId, setSelectedUnitId] = React.useState<string | null>(initialSelectedUnitId ?? null);
+export function SelectionProvider({
+  children,
+  initialSelectedUnitId = null,
+}: {
+  children: React.ReactNode;
+  initialSelectedUnitId?: string | null;
+}) {
+  const [selectedUnitId, setSelectedUnitId] = React.useState<string | null>(
+    initialSelectedUnitId ?? null
+  );
   const value = React.useMemo(() => ({ selectedUnitId, setSelectedUnitId }), [selectedUnitId]);
   return <SelectionContext.Provider value={value}>{children}</SelectionContext.Provider>;
 }

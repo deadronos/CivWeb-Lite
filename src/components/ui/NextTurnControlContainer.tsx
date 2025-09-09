@@ -7,4 +7,3 @@ export default function NextTurnControlContainer() {
   const onNextTurn = React.useCallback(() => dispatch({ type: 'END_TURN' }), [dispatch]);
   return <NextTurnControl onNextTurn={onNextTurn} />;
 }
-

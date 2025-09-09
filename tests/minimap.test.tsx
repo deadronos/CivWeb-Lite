@@ -19,4 +19,3 @@ describe('Minimap', () => {
     expect(centerOn).toHaveBeenCalled();
   });
 });
-

@@ -33,4 +33,3 @@ test('a11y: axe-core scan', async ({ page }) => {
   // Integration presence check - do not fail build on baseline issues yet
   expect(Array.isArray(results.violations)).toBe(true);
 });
-

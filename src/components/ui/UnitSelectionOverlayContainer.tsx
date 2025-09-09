@@ -3,7 +3,11 @@ import { useGame } from '../../hooks/useGame';
 import { UnitSelectionOverlay } from './UnitSelectionOverlay';
 import { computePath, computeMovementRange } from '../../game/pathfinder';
 
-export function UnitSelectionOverlayContainer({ selectedUnitId }: { selectedUnitId: string | null }) {
+export function UnitSelectionOverlayContainer({
+  selectedUnitId,
+}: {
+  selectedUnitId: string | null;
+}) {
   const { state, dispatch } = useGame();
   const ext = state.contentExt;
   const [path, setPath] = useState<string[] | undefined>(undefined);

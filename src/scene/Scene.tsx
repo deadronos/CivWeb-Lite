@@ -72,42 +72,59 @@ export function ConnectedScene() {
           </BillboardLabel>
         </>
       )}
-      {selectedUnitId && state.contentExt?.units[selectedUnitId] && (() => {
-        const unit = state.contentExt!.units[selectedUnitId!];
-        const loc = typeof unit.location === 'string' ? state.contentExt!.tiles[unit.location] : unit.location;
-        const q = (loc as any).q;
-        const r = (loc as any).r;
-        const biome = (loc as any).biome;
-  const world = typeof unit.location === 'string' ? tileIdToWorldFromExt(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE) : axialToWorld(q, r, DEFAULT_HEX_SIZE);
-        const [x, z] = world as [number, number];
-        return (
-          <HtmlLabel position={[x, 1.5, z]} data-testid="selected-unit-label">
-            Unit: {unit.type} ({selectedUnitId}) • ({q},{r}) • {biome}
-          </HtmlLabel>
-        );
-      })()}
-      {isDevOrTest() && state.contentExt && (
-        <UnitMarkers />
-      )}
+      {selectedUnitId &&
+        state.contentExt?.units[selectedUnitId] &&
+        (() => {
+          const unit = state.contentExt!.units[selectedUnitId!];
+          const loc =
+            typeof unit.location === 'string'
+              ? state.contentExt!.tiles[unit.location]
+              : unit.location;
+          const q = (loc as any).q;
+          const r = (loc as any).r;
+          const biome = (loc as any).biome;
+          const world =
+            typeof unit.location === 'string'
+              ? tileIdToWorldFromExt(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE)
+              : axialToWorld(q, r, DEFAULT_HEX_SIZE);
+          const [x, z] = world as [number, number];
+          return (
+            <HtmlLabel position={[x, 1.5, z]} data-testid="selected-unit-label">
+              Unit: {unit.type} ({selectedUnitId}) • ({q},{r}) • {biome}
+            </HtmlLabel>
+          );
+        })()}
+      {isDevOrTest() && state.contentExt && <UnitMarkers />}
       {/* Units (procedural by default, GLTF behind flag) */}
       {state.contentExt && <UnitMeshes />}
-      {hoverIndex != null && tiles[hoverIndex] && (() => {
-        const t = tiles[hoverIndex];
-  const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
-        return (
-          <HtmlLabel position={[x, 1.2, z]} data-testid="hovered-tile-label">
-            {t.id} ({t.coord.q},{t.coord.r}) • {t.biome}
-          </HtmlLabel>
-        );
-      })()}
+      {hoverIndex != null &&
+        tiles[hoverIndex] &&
+        (() => {
+          const t = tiles[hoverIndex];
+          const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
+          return (
+            <HtmlLabel position={[x, 1.2, z]} data-testid="hovered-tile-label">
+              {t.id} ({t.coord.q},{t.coord.r}) • {t.biome}
+            </HtmlLabel>
+          );
+        })()}
       {useInstanced ? (
-        <InstancedTiles positions={positions} size={DEFAULT_HEX_SIZE} onPointerMove={(e) => {
-          const idx = (e as any).instanceId;
-          if (typeof idx === 'number') setHoverIndex(idx);
-        }} />
+        <InstancedTiles
+          positions={positions}
+          size={DEFAULT_HEX_SIZE}
+          onPointerMove={(e) => {
+            const idx = (e as any).instanceId;
+            if (typeof idx === 'number') setHoverIndex(idx);
+          }}
+        />
       ) : (
         positions.map((p, i) => (
-          <TileMesh key={i} position={p} size={DEFAULT_HEX_SIZE} onPointerMove={() => setHoverIndex(i)} />
+          <TileMesh
+            key={i}
+            position={p}
+            size={DEFAULT_HEX_SIZE}
+            onPointerMove={() => setHoverIndex(i)}
+          />
         ))
       )}
     </group>

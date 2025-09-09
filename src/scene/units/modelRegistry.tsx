@@ -21,4 +21,3 @@ export function getModelComponent(label?: string): any | null {
   if (!label) return null;
   return components[label] ?? null;
 }
-

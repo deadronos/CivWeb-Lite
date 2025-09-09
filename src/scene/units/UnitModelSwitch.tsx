@@ -28,7 +28,18 @@ export type UnitModelProps = {
 import { Bob, phaseFromId } from './Bob';
 import { resolveGLTF } from './gltfRegistry';
 
-export function UnitModelSwitch({ type, teamColor = '#bdc3c7', position, scale, id, rangedReady, model, offsetY, anim, gltf }: UnitModelProps) {
+export function UnitModelSwitch({
+  type,
+  teamColor = '#bdc3c7',
+  position,
+  scale,
+  id,
+  rangedReady,
+  model,
+  offsetY,
+  anim,
+  gltf,
+}: UnitModelProps) {
   const lower = type.toLowerCase();
   const label = (model || '').toLowerCase();
   if (gltfEnabled()) {
@@ -37,7 +48,10 @@ export function UnitModelSwitch({ type, teamColor = '#bdc3c7', position, scale, 
   }
 
   const CommonWrap: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <group position={[position?.[0] ?? 0, (position?.[1] ?? 0) + (offsetY ?? 0), position?.[2] ?? 0]} scale={scale ?? 1}>
+    <group
+      position={[position?.[0] ?? 0, (position?.[1] ?? 0) + (offsetY ?? 0), position?.[2] ?? 0]}
+      scale={scale ?? 1}
+    >
       {children}
     </group>
   );
@@ -50,7 +64,10 @@ export function UnitModelSwitch({ type, teamColor = '#bdc3c7', position, scale, 
       <CommonWrap>
         <Bob amplitude={anim?.bobAmp ?? 0.04} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
           {/* Archer supports showArrow; other models ignore prop */}
-          <Labeled teamColor={teamColor} {...(lower === 'archer' ? { showArrow: !!rangedReady } : {})} />
+          <Labeled
+            teamColor={teamColor}
+            {...(lower === 'archer' ? { showArrow: !!rangedReady } : {})}
+          />
         </Bob>
       </CommonWrap>
     );

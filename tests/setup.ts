@@ -14,17 +14,20 @@ vi.mock('@react-three/fiber', () => ({
 
 vi.mock('@react-three/drei', () => ({
   OrbitControls: () => React.createElement('div', { 'data-testid': 'orbit' }),
-  Html: (props: any) => React.createElement('div', { 'data-testid': props['data-testid'] ?? 'html' }, props.children),
+  Html: (props: any) =>
+    React.createElement('div', { 'data-testid': props['data-testid'] ?? 'html' }, props.children),
   Stats: () => React.createElement('div', { 'data-testid': 'stats' }),
   useGLTF: () => ({ scene: {} }),
-  Billboard: ({ children }: any) => React.createElement('div', { 'data-testid': 'billboard' }, children),
+  Billboard: ({ children }: any) =>
+    React.createElement('div', { 'data-testid': 'billboard' }, children),
   Text: ({ children }: any) => React.createElement('span', { 'data-testid': 'text' }, children),
 }));
 
 // Mock react-icons to avoid Vite resolving subpath imports in tests
 vi.mock('react-icons/md', () => ({
   MdScience: (props: any) => React.createElement('i', { 'data-testid': 'md-science', ...props }),
-  MdTheaterComedy: (props: any) => React.createElement('i', { 'data-testid': 'md-theater', ...props }),
+  MdTheaterComedy: (props: any) =>
+    React.createElement('i', { 'data-testid': 'md-theater', ...props }),
 }));
 
 export {};

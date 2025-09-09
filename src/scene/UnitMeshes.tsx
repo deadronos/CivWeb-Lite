@@ -13,11 +13,14 @@ export default function UnitMeshes() {
   if (!state.contentExt) return null;
   const ext = state.contentExt;
   const rangedByType: Record<string, { ranged: boolean; range: number }> = Object.fromEntries(
-    (unitsData as any[]).map((u: any) => [u.id, { ranged: !!u.ranged, range: typeof u.range === 'number' ? u.range : 2 }])
+    (unitsData as any[]).map((u: any) => [
+      u.id,
+      { ranged: !!u.ranged, range: typeof u.range === 'number' ? u.range : 2 },
+    ])
   );
   return (
     <group>
-      {positions.map(u => {
+      {positions.map((u) => {
         // Resolve owner and team color from ext units
         const unit = ext.units[u.id];
         const color = unit ? playerColor(state, unit.ownerId) : '#bdc3c7';
@@ -32,7 +35,10 @@ export default function UnitMeshes() {
               if (other.ownerId === unit.ownerId) continue;
               const otherTile = ext.tiles[other.location as string];
               if (!otherTile) continue;
-              const d = distance({ q: selfTile.q, r: selfTile.r }, { q: otherTile.q, r: otherTile.r });
+              const d = distance(
+                { q: selfTile.q, r: selfTile.r },
+                { q: otherTile.q, r: otherTile.r }
+              );
               if (d > 0 && d <= (meta.range || 2)) {
                 rangedReady = true;
                 break;

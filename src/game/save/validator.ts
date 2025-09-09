@@ -8,7 +8,7 @@ declare const require: any;
 export function ensureValidator(): (data: unknown) => boolean {
   if (_validate) return _validate;
   // Lazy require AJV to avoid module-evaluation side-effects during import
-   
+
   const Ajv = require('ajv');
   const AjvCtor = Ajv && Ajv.default ? Ajv.default : Ajv;
   _ajv = new AjvCtor({ allErrors: true, strict: false });

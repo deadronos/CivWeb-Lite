@@ -12,14 +12,14 @@ This file is intended to provide context and instructions for the Gemini AI. It 
 
 **Key Information:**
 
-*   **Framework:** React, TypeScript, Vite
-*   **Styling:** CSS
-*   **State Management:** React Context
-*   **File Structure:** See `src-file-structure.md` for the recommended project structure.
+- **Framework:** React, TypeScript, Vite
+- **Styling:** CSS
+- **State Management:** React Context
+- **File Structure:** See `src-file-structure.md` for the recommended project structure.
 
 **Instructions for Gemini:**
 
-*   Analyze the existing code before making changes.
-*   Follow the established coding style and conventions.
-*   Use the provided tools and libraries.
-*   Ask for clarification if a request is ambiguous.
+- Analyze the existing code before making changes.
+- Follow the established coding style and conventions.
+- Use the provided tools and libraries.
+- Ask for clarification if a request is ambiguous.

@@ -35,4 +35,3 @@ Example entry:
 - Add new procedural models under `src/scene/units/procedural/` and export `MODEL_LABEL`.
 - Register new labels in `src/scene/units/modelRegistry.tsx`.
 - Add/override GLTF URLs in `src/scene/units/gltfRegistry.ts`.
-

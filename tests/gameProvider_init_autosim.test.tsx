@@ -9,9 +9,21 @@ function TestConsumer() {
   return (
     <div>
       <span data-testid="turn">{state.turn}</span>
-      <span data-testid="map">{state.map.width}x{state.map.height}</span>
-      <button data-testid="init" onClick={() => dispatch({ type: 'INIT', payload: { seed: 'x', width: 5, height: 6 } })}>init</button>
-      <button data-testid="autosim" onClick={() => dispatch({ type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } })}>autosim</button>
+      <span data-testid="map">
+        {state.map.width}x{state.map.height}
+      </span>
+      <button
+        data-testid="init"
+        onClick={() => dispatch({ type: 'INIT', payload: { seed: 'x', width: 5, height: 6 } })}
+      >
+        init
+      </button>
+      <button
+        data-testid="autosim"
+        onClick={() => dispatch({ type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } })}
+      >
+        autosim
+      </button>
     </div>
   );
 }
@@ -29,10 +41,10 @@ describe('GameProvider INIT and autoSim', () => {
       return calls;
     });
     const caf = vi.fn(() => {});
-  // @ts-expect-error assign to global for test environment
-  global.requestAnimationFrame = raf as any;
-  // @ts-expect-error assign to global for test environment
-  global.cancelAnimationFrame = caf as any;
+    // @ts-expect-error assign to global for test environment
+    global.requestAnimationFrame = raf as any;
+    // @ts-expect-error assign to global for test environment
+    global.cancelAnimationFrame = caf as any;
 
     render(
       <GameProvider>
@@ -48,12 +60,14 @@ describe('GameProvider INIT and autoSim', () => {
     fireEvent.click(autosim);
 
     // after autoSim toggled on, the mocked RAF should have executed once and advanced the turn
-    await waitFor(() => expect(Number(screen.getByTestId('turn').textContent)).toBeGreaterThanOrEqual(1));
+    await waitFor(() =>
+      expect(Number(screen.getByTestId('turn').textContent)).toBeGreaterThanOrEqual(1)
+    );
 
     // cleanup
-  // @ts-expect-error cleanup global test assignments
-  delete global.requestAnimationFrame;
-  // @ts-expect-error cleanup global test assignments
-  delete global.cancelAnimationFrame;
+    // @ts-expect-error cleanup global test assignments
+    delete global.requestAnimationFrame;
+    // @ts-expect-error cleanup global test assignments
+    delete global.cancelAnimationFrame;
   });
 });

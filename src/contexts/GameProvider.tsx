@@ -41,21 +41,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const subs = [
-      globalGameBus.on('turn:start', p =>
-        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:start' } } })
+      globalGameBus.on('turn:start', (p) =>
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:start' } },
+        })
       ),
-      globalGameBus.on('turn:end', p =>
-        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:end' } } })
+      globalGameBus.on('turn:end', (p) =>
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:end' } },
+        })
       ),
-      globalGameBus.on('tech:unlocked', p =>
-        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: state.turn, type: 'tech:unlocked', payload: p } } })
+      globalGameBus.on('tech:unlocked', (p) =>
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: {
+            entry: { timestamp: Date.now(), turn: state.turn, type: 'tech:unlocked', payload: p },
+          },
+        })
       ),
       globalGameBus.on('action:applied', ({ action }) => {
         if (action.type === 'LOG_EVENT' || action.type === 'RECORD_AI_PERF') return;
-        dispatch({ type: 'LOG_EVENT', payload: { entry: { timestamp: Date.now(), turn: state.turn, type: action.type } } });
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: { entry: { timestamp: Date.now(), turn: state.turn, type: action.type } },
+        });
       }),
     ];
-    return () => subs.forEach(u => u());
+    return () => subs.forEach((u) => u());
   }, [dispatch, state.turn]);
 
   useEffect(() => {
@@ -84,7 +98,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
     return () => {
       try {
-        if (typeof cancelAnimationFrame === 'function' && typeof id !== 'undefined') cancelAnimationFrame(id);
+        if (typeof cancelAnimationFrame === 'function' && typeof id !== 'undefined')
+          cancelAnimationFrame(id);
       } catch (e) {
         // ignore
       }
@@ -105,9 +120,9 @@ export const GAME_PROVIDER_MARKER = true;
 export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
   const start = performance.now();
   globalGameBus.emit('turn:start', { turn: s.turn });
-  const aiPlayers = s.players.filter(p => !p.isHuman);
+  const aiPlayers = s.players.filter((p) => !p.isHuman);
   const aiStart = performance.now();
-  aiPlayers.forEach(p => {
+  aiPlayers.forEach((p) => {
     const acts = evaluateAI(p, s);
     acts.forEach(dispatch);
   });
@@ -115,7 +130,9 @@ export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
   dispatch({ type: 'RECORD_AI_PERF', payload: { duration: aiDuration } });
   dispatch({ type: 'END_TURN' });
   const duration = performance.now() - start;
-  console.debug(`turn ${s.turn + 1} took ${duration.toFixed(2)}ms (AI avg ${aiDuration.toFixed(2)}ms)`);
+  console.debug(
+    `turn ${s.turn + 1} took ${duration.toFixed(2)}ms (AI avg ${aiDuration.toFixed(2)}ms)`
+  );
 }
 
 // Export initialState for tests
@@ -206,7 +223,7 @@ export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) 
     }
   } else {
     // multiple players path
-    s.players.forEach(p => {
+    s.players.forEach((p) => {
       if (!p.isHuman) {
         const acts = evaluateAI(p, s);
         acts.forEach(dispatch);
@@ -216,41 +233,95 @@ export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) 
 }
 
 // Alternate helper to force the no-players branch or the multi-players branch
-export function coverGameProviderForcePaths(s: GameState, dispatch: Dispatch, mode: 'none' | 'single' | 'multi') {
+export function coverGameProviderForcePaths(
+  s: GameState,
+  dispatch: Dispatch,
+  mode: 'none' | 'single' | 'multi'
+) {
   if (mode === 'none') {
     s.players = [] as PlayerState[];
     dispatch({ type: 'LOG', payload: 'forced-none' } as any);
   } else if (mode === 'single') {
-  s.players = [{ id: 'p1', isHuman: true, leader: { id: 'Lh', name: 'H', aggression: 0.5, scienceFocus: 0.5, cultureFocus: 0.5, expansionism: 0.5 }, researchedTechIds: [], researching: null, sciencePoints: 0, culturePoints: 0 } as PlayerState];
+    s.players = [
+      {
+        id: 'p1',
+        isHuman: true,
+        leader: {
+          id: 'Lh',
+          name: 'H',
+          aggression: 0.5,
+          scienceFocus: 0.5,
+          cultureFocus: 0.5,
+          expansionism: 0.5,
+        },
+        researchedTechIds: [],
+        researching: null,
+        sciencePoints: 0,
+        culturePoints: 0,
+      } as PlayerState,
+    ];
     // single human -> nothing to dispatch
   } else {
-  s.players = [{ id: 'p1', isHuman: false, leader: { id: 'L1', name: 'L', aggression: 0.5, scienceFocus: 0.5, cultureFocus: 0.5, expansionism: 0.5 }, researchedTechIds: [], researching: null, sciencePoints: 0, culturePoints: 0 }, { id: 'p2', isHuman: false, leader: { id: 'L2', name: 'L2', aggression: 0.4, scienceFocus: 0.4, cultureFocus: 0.4, expansionism: 0.4 }, researchedTechIds: [], researching: null, sciencePoints: 0, culturePoints: 0 }] as PlayerState[];
+    s.players = [
+      {
+        id: 'p1',
+        isHuman: false,
+        leader: {
+          id: 'L1',
+          name: 'L',
+          aggression: 0.5,
+          scienceFocus: 0.5,
+          cultureFocus: 0.5,
+          expansionism: 0.5,
+        },
+        researchedTechIds: [],
+        researching: null,
+        sciencePoints: 0,
+        culturePoints: 0,
+      },
+      {
+        id: 'p2',
+        isHuman: false,
+        leader: {
+          id: 'L2',
+          name: 'L2',
+          aggression: 0.4,
+          scienceFocus: 0.4,
+          cultureFocus: 0.4,
+          expansionism: 0.4,
+        },
+        researchedTechIds: [],
+        researching: null,
+        sciencePoints: 0,
+        culturePoints: 0,
+      },
+    ] as PlayerState[];
     // multiple AI -> call simulateAdvanceTurn
     simulateAdvanceTurn(s, dispatch);
   }
 }
 
-  // Test-only helper to touch module-level and branching logic that coverage
-  // reports as missed. This function is safe and used only by tests.
-  export function coverGameProviderUncovered() {
-    let x = 0;
-    // simulate initialization branching
-    if (!Array.isArray([])) x = 1;
-    else x = 2;
+// Test-only helper to touch module-level and branching logic that coverage
+// reports as missed. This function is safe and used only by tests.
+export function coverGameProviderUncovered() {
+  let x = 0;
+  // simulate initialization branching
+  if (!Array.isArray([])) x = 1;
+  else x = 2;
 
-    // players-dependent branching
-    const players: any[] = [];
-    if (players.length === 0) x += 0;
-    else if (players.length === 1) x += 1;
-    else x += 2;
+  // players-dependent branching
+  const players: any[] = [];
+  if (players.length === 0) x += 0;
+  else if (players.length === 1) x += 1;
+  else x += 2;
 
-    // small loop to exercise paths
-    for (let i = 0; i < 5; i++) {
-      if (i % 2 === 0) x += i;
-      else x -= 1;
-    }
-    return x;
+  // small loop to exercise paths
+  for (let i = 0; i < 5; i++) {
+    if (i % 2 === 0) x += i;
+    else x -= 1;
   }
+  return x;
+}
 
 // Helper to deterministically exercise the autoSim loop body without scheduling RAF
 export function triggerAutoSimOnce(s: GameState, dispatch: Dispatch) {
@@ -268,7 +339,12 @@ export const uiHandlers = Object.freeze({
   selectUnit(unitId: string) {
     console.debug('[ui] selectUnit', unitId);
   },
-  previewPath(payload: { unitId: string; targetTileId: string; computedPath?: string[]; totalCost?: number }) {
+  previewPath(payload: {
+    unitId: string;
+    targetTileId: string;
+    computedPath?: string[];
+    totalCost?: number;
+  }) {
     console.debug('[ui] previewPath', payload);
   },
   issueMove(payload: { unitId: string; path: string[]; confirmCombat?: boolean }) {
@@ -280,10 +356,20 @@ export const uiHandlers = Object.freeze({
   openCityPanel(payload: { cityId: string }) {
     console.debug('[ui] openCityPanel', payload);
   },
-  chooseProductionItem(payload: { cityId: string; order: { type: 'unit'|'improvement'|'building'; itemId: string; targetTileId?: string } }) {
+  chooseProductionItem(payload: {
+    cityId: string;
+    order: { type: 'unit' | 'improvement' | 'building'; itemId: string; targetTileId?: string };
+  }) {
     console.debug('[ui] chooseProductionItem', payload);
   },
-  reorderProductionQueue(payload: { cityId: string; newQueue: Array<{ type: 'unit'|'improvement'|'building'; itemId: string; targetTileId?: string }> }) {
+  reorderProductionQueue(payload: {
+    cityId: string;
+    newQueue: Array<{
+      type: 'unit' | 'improvement' | 'building';
+      itemId: string;
+      targetTileId?: string;
+    }>;
+  }) {
     console.debug('[ui] reorderProductionQueue', payload);
   },
   cancelOrder(payload: { cityId: string; orderIndex: number }) {
@@ -298,7 +384,10 @@ export const uiHandlers = Object.freeze({
   queueResearch(payload: { playerId: string; techId: string }) {
     console.debug('[ui] queueResearch', payload);
   },
-  switchResearchPolicy(payload: { playerId: string; policy: 'preserveProgress'|'discardProgress' }) {
+  switchResearchPolicy(payload: {
+    playerId: string;
+    policy: 'preserveProgress' | 'discardProgress';
+  }) {
     console.debug('[ui] switchResearchPolicy', payload);
   },
 });

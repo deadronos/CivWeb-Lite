@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { coverForTestsUseGame, coverAllUseGameHuge, coverUseGameExtra, coverUseGameThrowExplicitly, coverUseGameInlinePaths } from '../src/hooks/useGame';
+import {
+  coverForTestsUseGame,
+  coverAllUseGameHuge,
+  coverUseGameExtra,
+  coverUseGameThrowExplicitly,
+  coverUseGameInlinePaths,
+} from '../src/hooks/useGame';
 
 describe('useGame coverage helpers', () => {
   it('cover thrown path helper returns threw', () => {

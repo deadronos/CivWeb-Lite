@@ -14,7 +14,11 @@ export type StickFigureOptions = {
   };
 };
 
-export function StickFigure({ teamColor = '#bdc3c7', height = 1.6, accessories = {} }: StickFigureOptions) {
+export function StickFigure({
+  teamColor = '#bdc3c7',
+  height = 1.6,
+  accessories = {},
+}: StickFigureOptions) {
   const scale = height / 1.6;
   const headY = 1.2 * scale;
   const torsoY = 0.6 * scale;
@@ -33,18 +37,34 @@ export function StickFigure({ teamColor = '#bdc3c7', height = 1.6, accessories =
       </mesh>
 
       {/* Arms */}
-      <mesh position={[0.25 * scale, torsoY + 0.1 * scale, 0]} rotation={[0, 0, Math.PI / 18]} geometry={getCylinder(0.04 * scale, 0.04 * scale, 0.6 * scale, 8)}>
+      <mesh
+        position={[0.25 * scale, torsoY + 0.1 * scale, 0]}
+        rotation={[0, 0, Math.PI / 18]}
+        geometry={getCylinder(0.04 * scale, 0.04 * scale, 0.6 * scale, 8)}
+      >
         <meshStandardMaterial color="#d0c6c1" />
       </mesh>
-      <mesh position={[-0.25 * scale, torsoY + 0.1 * scale, 0]} rotation={[0, 0, -Math.PI / 18]} geometry={getCylinder(0.04 * scale, 0.04 * scale, 0.6 * scale, 8)}>
+      <mesh
+        position={[-0.25 * scale, torsoY + 0.1 * scale, 0]}
+        rotation={[0, 0, -Math.PI / 18]}
+        geometry={getCylinder(0.04 * scale, 0.04 * scale, 0.6 * scale, 8)}
+      >
         <meshStandardMaterial color="#d0c6c1" />
       </mesh>
 
       {/* Legs */}
-      <mesh position={[0.12 * scale, legY, 0]} rotation={[0, 0, Math.PI / 48]} geometry={getCylinder(0.05 * scale, 0.05 * scale, 0.7 * scale, 8)}>
+      <mesh
+        position={[0.12 * scale, legY, 0]}
+        rotation={[0, 0, Math.PI / 48]}
+        geometry={getCylinder(0.05 * scale, 0.05 * scale, 0.7 * scale, 8)}
+      >
         <meshStandardMaterial color="#7f8c8d" />
       </mesh>
-      <mesh position={[-0.12 * scale, legY, 0]} rotation={[0, 0, -Math.PI / 48]} geometry={getCylinder(0.05 * scale, 0.05 * scale, 0.7 * scale, 8)}>
+      <mesh
+        position={[-0.12 * scale, legY, 0]}
+        rotation={[0, 0, -Math.PI / 48]}
+        geometry={getCylinder(0.05 * scale, 0.05 * scale, 0.7 * scale, 8)}
+      >
         <meshStandardMaterial color="#7f8c8d" />
       </mesh>
 
@@ -90,15 +110,26 @@ export function StickFigure({ teamColor = '#bdc3c7', height = 1.6, accessories =
           <mesh geometry={getTorus(0.22 * scale, 0.015 * scale, 8, 14, Math.PI * 0.9)}>
             <meshStandardMaterial color="#8b5a2b" />
           </mesh>
-          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]} geometry={getCylinder(0.005 * scale, 0.005 * scale, 0.42 * scale, 6)}>
+          <mesh
+            rotation={[Math.PI / 2, 0, 0]}
+            position={[0, 0, 0]}
+            geometry={getCylinder(0.005 * scale, 0.005 * scale, 0.42 * scale, 6)}
+          >
             <meshStandardMaterial color="#ecf0f1" />
           </mesh>
           {accessories.arrow && (
             <group>
-              <mesh position={[0, 0.05 * scale, 0]} rotation={[Math.PI / 2, 0, 0]} geometry={getCylinder(0.006 * scale, 0.006 * scale, 0.32 * scale, 6)}>
+              <mesh
+                position={[0, 0.05 * scale, 0]}
+                rotation={[Math.PI / 2, 0, 0]}
+                geometry={getCylinder(0.006 * scale, 0.006 * scale, 0.32 * scale, 6)}
+              >
                 <meshStandardMaterial color="#7f8c8d" />
               </mesh>
-              <mesh position={[0, 0.22 * scale, 0]} geometry={getCone(0.02 * scale, 0.06 * scale, 8)}>
+              <mesh
+                position={[0, 0.22 * scale, 0]}
+                geometry={getCone(0.02 * scale, 0.06 * scale, 8)}
+              >
                 <meshStandardMaterial color="#95a5a6" />
               </mesh>
             </group>

@@ -2,11 +2,21 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
 import { GameProvider } from '../src/contexts/GameProvider';
-import { useGame, ensureGameContext, coverUseGameThrowExplicitly, coverForTestsUseGame, coverUseGameInlinePaths, coverAllUseGameHuge, coverUseGameExtra } from '../src/hooks/useGame';
+import {
+  useGame,
+  ensureGameContext,
+  coverUseGameThrowExplicitly,
+  coverForTestsUseGame,
+  coverUseGameInlinePaths,
+  coverAllUseGameHuge,
+  coverUseGameExtra,
+} from '../src/hooks/useGame';
 
 describe('useGame final coverage', () => {
   test('ensureGameContext throws when missing', () => {
-    expect(() => ensureGameContext(null as any, null as any)).toThrowError('useGame must be used within GameProvider');
+    expect(() => ensureGameContext(null as any, null as any)).toThrowError(
+      'useGame must be used within GameProvider'
+    );
     const msg = coverUseGameThrowExplicitly();
     expect(msg).toBe('useGame must be used within GameProvider');
     const t = coverForTestsUseGame(true);

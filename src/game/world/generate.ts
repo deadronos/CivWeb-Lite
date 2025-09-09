@@ -7,8 +7,7 @@ function pickBiome(elevation: number, moisture: number): BiomeType {
     if (
       elevation >= rule.elevation[0] &&
       elevation < rule.elevation[1] &&
-      (!rule.moisture ||
-        (moisture >= rule.moisture[0] && moisture < rule.moisture[1]))
+      (!rule.moisture || (moisture >= rule.moisture[0] && moisture < rule.moisture[1]))
     ) {
       return rule.type;
     }
@@ -19,7 +18,7 @@ function pickBiome(elevation: number, moisture: number): BiomeType {
 export function generateWorld(
   seed: string | RNGState,
   width = DEFAULT_MAP_SIZE.width,
-  height = DEFAULT_MAP_SIZE.height,
+  height = DEFAULT_MAP_SIZE.height
 ): { tiles: Tile[]; state: RNGState } {
   let rng = typeof seed === 'string' ? seedFrom(seed) : seed;
   const tiles: Tile[] = [];

@@ -73,7 +73,12 @@ export interface Civic {
   description?: string;
   cost: number; // culture turns required
   prerequisites: string[];
-  unlocks: { units?: string[]; improvements?: string[]; abilities?: string[]; buildings?: string[] };
+  unlocks: {
+    units?: string[];
+    improvements?: string[];
+    abilities?: string[];
+    buildings?: string[];
+  };
 }
 
 export interface GameStateExt {

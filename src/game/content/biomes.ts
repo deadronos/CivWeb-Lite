@@ -56,4 +56,3 @@ export function movementCost(tile: Hextile, ctx: MovementContext): number {
   }
   return cost;
 }
-

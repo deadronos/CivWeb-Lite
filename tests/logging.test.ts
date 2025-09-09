@@ -25,4 +25,3 @@ describe('logging helpers', () => {
     expect(s.log[4].type).toBe('e54');
   });
 });
-

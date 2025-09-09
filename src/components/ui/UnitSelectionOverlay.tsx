@@ -2,7 +2,8 @@ import React from 'react';
 import type { UnitSelectionOverlayProps } from '../../game/types/ui';
 
 export function UnitSelectionOverlay(props: UnitSelectionOverlayProps) {
-  const { selectedUnitId, computedRangeTiles, computedPath, onPreviewPath, onIssueMove, onCancel } = props;
+  const { selectedUnitId, computedRangeTiles, computedPath, onPreviewPath, onIssueMove, onCancel } =
+    props;
   if (!selectedUnitId) return null;
   return (
     <div data-testid="unit-selection-overlay">

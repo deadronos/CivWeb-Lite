@@ -22,33 +22,31 @@ export default function App() {
   return (
     <GameProvider>
       <SelectionProvider>
-      <HoverProvider>
-      <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
-        {!started && (
-          <MainMenu onStart={() => setStarted(true)} />
-        )}
-        <LoadListener onLoaded={() => setStarted(true)} />
-        <Canvas camera={{ position: [8, 12, 12], fov: 50 }}>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 10, 5]} intensity={0.6} />
-          <Scene />
-          <CameraControls />
-          <DevStats enabled={isDevOrTest()} />
-        </Canvas>
-        <GameHUD />
-        <TopBarContainer />
-        <LeftPanelContainer />
-        <MinimapContainer />
-        <NextTurnControlContainer />
-        <div
-          className="hud-cam-status"
-          aria-label="camera position"
-          style={{ position: 'fixed', right: 12, bottom: 192, color: 'var(--color-fg)' }}
-        >
-          Camera: {cam ? `${cam.q},${cam.r}` : '-'}
-        </div>
-      </CameraProvider>
-      </HoverProvider>
+        <HoverProvider>
+          <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
+            {!started && <MainMenu onStart={() => setStarted(true)} />}
+            <LoadListener onLoaded={() => setStarted(true)} />
+            <Canvas camera={{ position: [8, 12, 12], fov: 50 }}>
+              <ambientLight intensity={0.6} />
+              <directionalLight position={[5, 10, 5]} intensity={0.6} />
+              <Scene />
+              <CameraControls />
+              <DevStats enabled={isDevOrTest()} />
+            </Canvas>
+            <GameHUD />
+            <TopBarContainer />
+            <LeftPanelContainer />
+            <MinimapContainer />
+            <NextTurnControlContainer />
+            <div
+              className="hud-cam-status"
+              aria-label="camera position"
+              style={{ position: 'fixed', right: 12, bottom: 192, color: 'var(--color-fg)' }}
+            >
+              Camera: {cam ? `${cam.q},${cam.r}` : '-'}
+            </div>
+          </CameraProvider>
+        </HoverProvider>
       </SelectionProvider>
     </GameProvider>
   );

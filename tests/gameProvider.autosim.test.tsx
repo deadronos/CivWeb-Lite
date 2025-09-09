@@ -21,7 +21,7 @@ describe('GameProvider autoSim loop', () => {
     const { container } = render(
       <GameProvider>
         <div data-testid="child">ok</div>
-      </GameProvider>,
+      </GameProvider>
     );
     // run queued RAF callbacks once
     // call all queued callbacks
@@ -31,12 +31,12 @@ describe('GameProvider autoSim loop', () => {
     }
 
     // cleanup
-  // cleanup
-  container.remove();
+    // cleanup
+    container.remove();
     // restore
-  // restore
-  (globalThis as any).requestAnimationFrame = originalRAF;
-  (globalThis as any).cancelAnimationFrame = originalCancel;
+    // restore
+    (globalThis as any).requestAnimationFrame = originalRAF;
+    (globalThis as any).cancelAnimationFrame = originalCancel;
 
     // exercise big helper to increase coverage
     const v = coverAllGameProviderHuge();

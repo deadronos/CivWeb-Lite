@@ -23,7 +23,7 @@ This guidance covers:
 - Technologies (Science tree): [List of technologies in Civ6](https://civilization.fandom.com/wiki/List_of_technologies_in_Civ6)
 - Civics (Culture tree): [List of civics in Civ6](https://civilization.fandom.com/wiki/List_of_civics_in_Civ6)
 - Buildings (city improvements): [List of buildings in Civ6](https://civilization.fandom.com/wiki/List_of_buildings_in_Civ6)
-- Leaders and personalities: [Leaders (Civ6)](https://civilization.fandom.com/wiki/Leaders_(Civ6))
+- Leaders and personalities: [Leaders (Civ6)](<https://civilization.fandom.com/wiki/Leaders_(Civ6)>)
 
 ## Design principles
 
@@ -133,4 +133,5 @@ Below are compact examples that capture the essential fields. These are suggesti
 - Copyright: inspired by Civilization VI (Firaxis). This repo must not copy proprietary assets (art, text from game) or licensed mechanics verbatim. Use these links and high-level structures as inspiration only.
 
 ---
+
 Document created: 2025-09-09
