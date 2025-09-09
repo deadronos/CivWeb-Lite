@@ -1,3 +1,5 @@
+export * from './scene';
+export { default } from './scene';
 import React, { useMemo } from 'react';
 import { useGame } from '../hooks/useGame';
 import TileMesh from './TileMesh';

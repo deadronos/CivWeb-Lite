@@ -1,3 +1,5 @@
+export * from './bob';
+export { default } from './bob';
 import React from 'react';
 import { useFrame } from '@react-three/fiber';
 
