@@ -19,6 +19,7 @@
   "dependencies": {
     "@react-three/drei": "*",
     "@react-three/fiber": "*",
+    "react-icons": "^4.11.0",
     "ajv": "^8.17.1",
     "react": "*",
     "react-dom": "*",
