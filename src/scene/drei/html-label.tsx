@@ -23,45 +23,43 @@ export default function HtmlLabel({ children, className: cssClass = 'label', 'da
   const domLikePrefixes = ['data-', 'aria-'];
   const domLikeKeys = new Set(['id', 'role', 'className', 'tabIndex', 'testid', 'testId', 'testID', 'data-testid']);
 
-  const cleanedProps: Record<string, unknown> = {};
-  const domPropsFromRest: Record<string, unknown> = {};
+  const cleanedProperties: Record<string, unknown> = {};
+  const domPropertiesFromRest: Record<string, unknown> = {};
 
-  Object.entries(rest).forEach(([k, v]) => {
+  for (const [k, v] of Object.entries(rest)) {
     if (domLikeKeys.has(k) || domLikePrefixes.some(p => k.startsWith(p))) {
-      domPropsFromRest[k] = v;
+      domPropertiesFromRest[k] = v;
     } else {
-      cleanedProps[k] = v;
+      cleanedProperties[k] = v;
     }
-  });
+  }
 
   // htmlProperties are the cleaned props we forward to <Html />. We still
   // explicitly allow common Drei/Html props such as center/position/style/occlude
   // by picking them from cleanedProps so we don't accidentally forward event
   // handlers or other app-level props.
   const htmlProperties = {
-    center: (cleanedProps as any).center,
-    position: (cleanedProps as any).position,
-    style: (cleanedProps as any).style,
-    occlude: (cleanedProps as any).occlude,
+    center: (cleanedProperties as any).center,
+    position: (cleanedProperties as any).position,
+    style: (cleanedProperties as any).style,
+    occlude: (cleanedProperties as any).occlude,
   };
 
   // Compose DOM properties to apply to the inner <div>
   const domProperties = {
-    'data-testid': dataTestId ?? testid ?? (domPropsFromRest['data-testid'] as string | undefined) ?? (domPropsFromRest['dataTestId'] as string | undefined),
+    'data-testid': dataTestId ?? testid ?? (domPropertiesFromRest['data-testid'] as string | undefined) ?? (domPropertiesFromRest['dataTestId'] as string | undefined),
     className: cssClass,
     // Spread any other DOM-like props we captured (id, role, aria-*, etc.)
-    ...domPropsFromRest,
+    ...domPropertiesFromRest,
   };
 
   // In development, log incoming keys so we can discover any unexpected prop
   // names that still reach this wrapper at runtime (e.g., testid variants).
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  if (globalThis.window !== undefined && process.env.NODE_ENV === 'development') {
     // Use a microtask to avoid logging during render in React strict mode twice
     Promise.resolve().then(() => {
-      // eslint-disable-next-line no-console
       console.log('HtmlLabel received props:', Object.keys(rest));
-      // eslint-disable-next-line no-console
-      console.log('HtmlLabel dom-like keys captured:', Object.keys(domPropsFromRest));
+      console.log('HtmlLabel dom-like keys captured:', Object.keys(domPropertiesFromRest));
     });
   }
 
