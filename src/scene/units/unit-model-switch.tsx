@@ -33,7 +33,7 @@ export type UnitModelProps = UnitModelProperties;
 // Note: GLTF paths are resolved via `gltfRegistry`. If you need a static map later,
 // add it to `gltfRegistry` or export a dedicated mapping module.
 
-import { Bob, phaseFromId } from './Bob';
+import { Bob, phaseFromId } from './bob';
 import { resolveGLTF } from './gltfRegistry';
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({

@@ -2,7 +2,7 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GameProvider } from './contexts/GameProvider';
 import GameHUD from './components/GameHUD';
-import { ConnectedScene as Scene } from './scene/Scene';
+import { ConnectedScene as Scene } from './scene/scene';
 import TopBarContainer from './components/ui/TopBarContainer';
 import LeftPanelContainer from './components/ui/LeftPanelContainer';
 import MinimapContainer from './components/ui/MinimapContainer';

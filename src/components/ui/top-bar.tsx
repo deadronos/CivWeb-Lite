@@ -1,5 +1,5 @@
 import React from 'react';
-import Icon from './Icon';
+import Icon from './icon';
 import { MdScience, MdTheaterComedy } from 'react-icons/md';
 
 export type TopBarProps = {

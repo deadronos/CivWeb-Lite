@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import App from './app';
 import './styles.css';
 
 // Safely bootstrap the app. In test environments (or when the DOM isn't

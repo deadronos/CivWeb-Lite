@@ -1,5 +1,5 @@
 import React from 'react';
-import Minimap from './Minimap';
+import Minimap from './minimap';
 import { useGame } from '../../hooks/useGame';
 import { useSelection } from '../../contexts/SelectionContext';
 import { computeMovementRange } from '../../game/pathfinder';
