@@ -67,12 +67,20 @@ module.exports = [
       'security/detect-object-injection': 'off',
       // Gradually enable a conservative subset of unicorn rules at 'warn' level.
       // We avoid spreading the full recommended set to prevent rule resolution errors.
-      'unicorn/prefer-includes': 'warn',
+  'unicorn/prefer-includes': 'warn',
       'unicorn/no-array-for-each': 'warn',
       'unicorn/no-nested-ternary': 'warn',
       'unicorn/no-useless-undefined': 'warn',
       'unicorn/prefer-array-index-of': 'warn',
       'unicorn/prefer-array-some': 'warn',
+  'unicorn/prefer-string-slice': 'warn',
+  'unicorn/prefer-optional-catch-binding': 'warn',
+  'unicorn/prefer-array-find': 'warn',
+  // Next safe batch of unicorn rules enabled at 'warn'
+  'unicorn/prefer-array-flat': 'warn',
+  'unicorn/prefer-array-flat-map': 'warn',
+  'unicorn/prefer-string-replace-all': 'warn',
+  'unicorn/prefer-set-has': 'warn',
       'unicorn/prefer-at': 'warn',
       'unicorn/expiring-todo-comments': 'warn',
       'unicorn/no-empty-file': 'warn',
