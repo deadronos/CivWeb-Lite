@@ -40,12 +40,7 @@ const LEGACY_ALLOWLIST = new Set([
   'scene/units/modelRegistry.tsx',
   'scene/units/ProceduralPreload.tsx',
   // Additional legacy shims still present; keep in allowlist until they're removed/renamed
-  // removed shims: LeftPanel, MinimapContainer, NextTurnControlContainer, TopBar, TopBarContainer
-  'components/ui/LeftPanel.tsx',
-  'components/ui/MinimapContainer.tsx',
-  'components/ui/NextTurnControlContainer.tsx',
-  'components/ui/TopBar.tsx',
-  'components/ui/TopBarContainer.tsx',
+  // LeftPanel, MinimapContainer, NextTurnControlContainer, TopBar, TopBarContainer shims removed in safe batches — canonical kebab-case files are used
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // GameProvider, SelectionContext, HoverContext PascalCase shims have been untracked; keep kebab-case files

@@ -148,7 +148,7 @@ module.exports = [
   // removed shim: 'src/components/ui/ContextPanel.tsx',
       'src/components/ui/Icon.tsx',
       'src/components/ui/Minimap.tsx',
-      'src/components/ui/TopBarContainer.tsx',
+    // TopBar/LeftPanel shims removed in safe batches; canonical kebab-case files are tracked instead
       'src/components/ui/UnitSelectionOverlay.tsx',
       'src/components/ui/UnitSelectionOverlayContainer.tsx',
   // HoverContext/GameProvider/SelectionContext PascalCase shims removed from index; canonical kebab-case files are tracked
