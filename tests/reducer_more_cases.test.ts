@@ -6,7 +6,7 @@ import { globalGameBus } from '../src/game/events';
 test('INIT sets seed/map and emits turn:start', () => {
   const s = initialStateForTests();
   s.seed = 'abc';
-  let started: any = null;
+  let started: any;
   const off = globalGameBus.on('turn:start', (p) => started = p);
   const next = applyAction(s, {
     type: 'INIT',
@@ -26,7 +26,7 @@ test('SET_RESEARCH and ADVANCE_RESEARCH complete tech and emit event', () => {
     sciencePoints: 0,
     culturePoints: 0,
     researchedTechIds: [] as string[],
-    researching: null as any
+    researching: undefined as any
   } as any;
   s.players = [player];
 
@@ -38,7 +38,7 @@ test('SET_RESEARCH and ADVANCE_RESEARCH complete tech and emit event', () => {
   } as any);
   expect(afterSet.players[0].researching).toBeTruthy();
 
-  let unlocked: any = null;
+  let unlocked: any;
   const off = globalGameBus.on('tech:unlocked', (p) => unlocked = p);
 
   // advance research by points equal to cost

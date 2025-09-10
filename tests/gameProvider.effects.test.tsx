@@ -32,20 +32,20 @@ function TestConsumer() {
 describe('GameProvider effects', () => {
   beforeEach(() => {
     // deterministic RAF mock that runs callbacks once when id assigned
-    let queued: FrameRequestCallback | null = null;
+  let queued: FrameRequestCallback | null | undefined;
     (globalThis as any).requestAnimationFrame = (callback: FrameRequestCallback) => {
       queued = callback;
       // return an id
       return 1;
     };
     (globalThis as any).cancelAnimationFrame = () => {
-      queued = null;
+  queued = undefined;
     };
     // When asked, run queued callback synchronously
     (globalThis as any).__runQueuedRAF = () => {
       if (queued) {
         const callback = queued;
-        queued = null;
+  queued = undefined;
         callback(0);
       }
     };
@@ -97,7 +97,7 @@ describe('GameProvider effects', () => {
       isHuman: false,
       leader: { name: 'AI-Leader' },
       cities: [],
-      research: null
+      research: undefined
     } as any];
 
     // spy a dispatch
