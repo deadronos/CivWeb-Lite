@@ -128,9 +128,9 @@ async function loadGLTFOnce(url: string): Promise<{ geometry: BufferGeometry; ma
     if (!(geometry as any).attributes || !(geometry as any).attributes.normal) {
       geometry.computeVertexNormals();
     }
-  } catch (err) {
+  } catch (error) {
     // Swallow; computeVertexNormals may fail on malformed geometry but we still return what we have
-    console.warn('[biome-assets] computeVertexNormals failed', err);
+    console.warn('[biome-assets] computeVertexNormals failed', error);
   }
   const chosen = meshes[0]?.parent?.name || meshes[0]?.name || '(merged)';
   // Ensure materials are render-ready: prefer double-sided for thin tile meshes and trigger update

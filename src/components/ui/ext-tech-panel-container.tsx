@@ -16,11 +16,10 @@ export default function ExtensionTechPanelContainer() {
     map((t) => ({ id: t.id, name: t.name, cost: t.cost }));
   }, [extension?.techs, researched]);
 
-  const currentTechId = extension?.playerState.research?.techId ?? null;
+  const currentTechId = extension?.playerState.research?.techId;
   const onSelect = (techId: string) => {
     dispatch({ type: 'EXT_BEGIN_RESEARCH', payload: { techId } });
   };
-
-  if (!extension) return null;
+  if (!extension) return;
   return <LeftPanel techs={available} currentTechId={currentTechId} onSelect={onSelect} />;
 }

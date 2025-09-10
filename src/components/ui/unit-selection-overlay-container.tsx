@@ -16,7 +16,7 @@ export function UnitSelectionOverlayContainer({
     return computeMovementRange(extension, selectedUnitId);
   }, [extension, selectedUnitId]);
 
-  if (!selectedUnitId || !extension) return null;
+  if (!selectedUnitId || !extension) return;
 
   return (
     <UnitSelectionOverlay
@@ -25,8 +25,8 @@ export function UnitSelectionOverlayContainer({
       computedPath={path}
       onPreviewPath={(targetTileId) => {
         if (!extension) return;
-        const res = computePath(extension, selectedUnitId, targetTileId);
-        if ('path' in res && res.path) setPath(res.path);else
+        const result = computePath(extension, selectedUnitId, targetTileId);
+        if ('path' in result && result.path) setPath(result.path);else
         setPath(undefined);
       }}
       onIssueMove={(payload) => dispatch({ type: 'EXT_ISSUE_MOVE_PATH', payload })}
