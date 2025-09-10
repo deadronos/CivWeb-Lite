@@ -141,7 +141,6 @@ module.exports = [
   {
     files: [
       'src/App.tsx',
-      'src/components/GameHUD.tsx',
       'src/components/common/LazySpinner.tsx',
       'src/components/overhaul/LeftCivicPanel.tsx',
       'src/components/overhaul/RightProductionPanel.tsx',
@@ -149,10 +148,10 @@ module.exports = [
       'src/components/ui/Icon.tsx',
       'src/components/ui/Minimap.tsx',
     // TopBar/LeftPanel shims removed in safe batches; canonical kebab-case files are tracked instead
-      'src/components/ui/UnitSelectionOverlay.tsx',
-      'src/components/ui/UnitSelectionOverlayContainer.tsx',
+  // TopBar/LeftPanel shims removed in safe batches; canonical kebab-case files are tracked instead
+  // removed PascalCase shim entries: game-hud, unit-selection-overlay-container
   // HoverContext/GameProvider/SelectionContext PascalCase shims removed from index; canonical kebab-case files are tracked
-      'src/game/tech/techCatalog.ts',
+  'src/game/tech/tech-catalog.ts',
   // 'src/hooks/useCamera.tsx', (removed shim)
   // 'src/hooks/useGame.ts', (removed shim)
       'src/scene/InstancedTiles.tsx',

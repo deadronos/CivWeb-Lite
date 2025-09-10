@@ -10,7 +10,6 @@ const SRC_DIR = path.join(process.cwd(), 'src');
 // Mirror the temporary allowlist from eslint.config.cjs. Reduce over time.
 const LEGACY_ALLOWLIST = new Set([
   'App.tsx',
-  'components/GameHUD.tsx',
   'components/common/LazySpinner.tsx',
   'components/overhaul/LeftCivicPanel.tsx',
   'components/overhaul/RightProductionPanel.tsx',
@@ -18,11 +17,10 @@ const LEGACY_ALLOWLIST = new Set([
   'components/ui/Icon.tsx',
   'components/ui/Minimap.tsx',
   // LeftPanel, container and TopBar shims removed — canonical kebab-case files are used
-  'components/ui/UnitSelectionOverlay.tsx',
-  'components/ui/UnitSelectionOverlayContainer.tsx',
+  // removed PascalCase shim entries: GameHUD, UnitSelectionOverlayContainer
   'contexts/HoverContext.tsx',
   // GameProvider and SelectionContext shims removed; canonical kebab-case context files are used
-  'game/tech/techCatalog.ts',
+  'game/tech/tech-catalog.ts',
   'hooks/useCamera.tsx',
   'hooks/useGame.ts',
   'scene/InstancedTiles.tsx',
