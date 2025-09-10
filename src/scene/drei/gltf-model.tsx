@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case -- defer filename renames to a single coordinated PR that updates imports */
+ 
 // Filename is PascalCase to mirror the exported React component name. A repo-wide
 // filename rename will be done in a dedicated refactor to avoid touching many imports.
 import React from 'react';

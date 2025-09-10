@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case -- deferred filename rename to dedicated renaming PR */
+ 
 import React from 'react';
 import { getBox, getCone, getCylinder, getSphere, getTorus } from './shared';
 

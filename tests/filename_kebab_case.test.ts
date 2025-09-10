@@ -16,17 +16,12 @@ const LEGACY_ALLOWLIST = new Set([
   'components/overhaul/RightProductionPanel.tsx',
   'components/ui/ContextPanel.tsx',
   'components/ui/Icon.tsx',
-  'components/ui/LeftPanel.tsx',
   'components/ui/Minimap.tsx',
-  'components/ui/MinimapContainer.tsx',
-  'components/ui/NextTurnControlContainer.tsx',
-  'components/ui/TopBar.tsx',
-  'components/ui/TopBarContainer.tsx',
+  // LeftPanel, container and TopBar shims removed — canonical kebab-case files are used
   'components/ui/UnitSelectionOverlay.tsx',
   'components/ui/UnitSelectionOverlayContainer.tsx',
-  'contexts/GameProvider.tsx',
   'contexts/HoverContext.tsx',
-  'contexts/SelectionContext.tsx',
+  // GameProvider and SelectionContext shims removed; canonical kebab-case context files are used
   'game/tech/techCatalog.ts',
   'hooks/useCamera.tsx',
   'hooks/useGame.ts',
@@ -44,13 +39,24 @@ const LEGACY_ALLOWLIST = new Set([
   'scene/units/gltfRegistry.ts',
   'scene/units/modelRegistry.tsx',
   'scene/units/ProceduralPreload.tsx',
+  // Additional legacy shims still present; keep in allowlist until they're removed/renamed
+  // removed shims: LeftPanel, MinimapContainer, NextTurnControlContainer, TopBar, TopBarContainer
+  'components/ui/LeftPanel.tsx',
+  'components/ui/MinimapContainer.tsx',
+  'components/ui/NextTurnControlContainer.tsx',
+  'components/ui/TopBar.tsx',
+  'components/ui/TopBarContainer.tsx',
+  // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
+  // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
+  'contexts/GameProvider.tsx',
+  'contexts/SelectionContext.tsx', // still present on disk (case-duplicate); re-allowlisting temporarily
 ]);
 
 function isKebabCase(name: string) {
   // accept dot-separated suffixes; only check the base file name
   // Kebab-case: lowercase letters, digits, and hyphens
   const base = path.basename(name);
-  return /^[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z]+$/.test(base);
+  return /^[\da-z]+(?:-[\da-z]+)*\.[a-z]+$/.test(base);
 }
 
 function listFiles(root: string): string[] {
@@ -67,9 +73,9 @@ function listFiles(root: string): string[] {
 
 describe('kebab-case filenames under src/', () => {
   const files = listFiles(SRC_DIR).map((f) => path.relative(SRC_DIR, f).replaceAll('\\', '/'));
-  const offenders = files.filter((rel) => {
-    if (LEGACY_ALLOWLIST.has(rel)) return false;
-    const base = path.basename(rel);
+  const offenders = files.filter((relativePath) => {
+    if (LEGACY_ALLOWLIST.has(relativePath)) return false;
+    const base = path.basename(relativePath);
     // allow non-code assets freely (e.g., .json, .md, .css already kebab).
     if (!/\.(ts|tsx|js|jsx)$/.test(base)) return false;
     return !isKebabCase(base);

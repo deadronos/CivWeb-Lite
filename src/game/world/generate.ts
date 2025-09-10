@@ -14,10 +14,9 @@ function cosineFractal(
 ): number {
   let sum = 0;
   let ampSum = 0;
-  for (let i = 0; i < amps.length; i++) {
-    const a = amps[i];
-    const px = freqsX[i] * x * 2 * Math.PI + phases[i]; // periodic in x
-    const py = freqsY[i] * y * 2 * Math.PI + phases[(i + 1) % phases.length];
+  for (const [index, a] of amps.entries()) {
+    const px = freqsX[index] * x * 2 * Math.PI + phases[index]; // periodic in x
+    const py = freqsY[index] * y * 2 * Math.PI + phases[(index + 1) % phases.length];
     sum += a * (Math.cos(px + py) * 0.5 + 0.5);
     ampSum += a;
   }
@@ -35,12 +34,12 @@ function chooseBiome(e: number, m: number, lat: number): BiomeType {
   if (e > 0.86) return BiomeType.Mountain;
 
   // Temperature proxy from latitude (0 at poles, 1 at equator)
-  const temp = 1 - Math.abs(2 * lat - 1); // 0..1, hot near equator
+  const temporary = 1 - Math.abs(2 * lat - 1); // 0..1, hot near equator
 
   // Rough biome decision table
-  if (temp < 0.2) return m > 0.6 ? BiomeType.Tundra : BiomeType.Ice; // very cold
-  if (temp < 0.35) return m > 0.5 ? BiomeType.Tundra : BiomeType.Grassland;
-  if (temp > 0.8 && m < 0.35) return BiomeType.Desert;
+  if (temporary < 0.2) return m > 0.6 ? BiomeType.Tundra : BiomeType.Ice; // very cold
+  if (temporary < 0.35) return m > 0.5 ? BiomeType.Tundra : BiomeType.Grassland;
+  if (temporary > 0.8 && m < 0.35) return BiomeType.Desert;
   if (m > 0.65) return BiomeType.Forest;
   return BiomeType.Grassland;
 }
@@ -58,13 +57,13 @@ export function generateWorld(
   const freqsY: number[] = [];
   const amps: number[] = [];
   const layers = 4;
-  for (let i = 0; i < layers; i++) {
+  for (let index = 0; index < layers; index++) {
     const p = next(rng); rng = p.state; phases.push(p.value * Math.PI * 2);
-    const fx = 1 + i; // 1,2,3,4 cycles across width (wrap safe)
-    const fy = 1 + Math.floor(i / 2); // slower vertical variation
+    const fx = 1 + index; // 1,2,3,4 cycles across width (wrap safe)
+    const fy = 1 + Math.floor(index / 2); // slower vertical variation
     freqsX.push(fx);
     freqsY.push(fy);
-    amps.push(1 / (i + 1)); // diminishing amplitude
+    amps.push(1 / (index + 1)); // diminishing amplitude
   }
 
   // Separate moisture field
@@ -72,13 +71,13 @@ export function generateWorld(
   const freqsXM: number[] = [];
   const freqsYM: number[] = [];
   const ampsM: number[] = [];
-  for (let i = 0; i < layers; i++) {
+  for (let index = 0; index < layers; index++) {
     const p = next(rng); rng = p.state; phasesM.push(p.value * Math.PI * 2);
-    const fx = 1 + ((i + 1) % 3);
-    const fy = 1 + Math.floor((i + 2) / 2);
+    const fx = 1 + ((index + 1) % 3);
+    const fy = 1 + Math.floor((index + 2) / 2);
     freqsXM.push(fx);
     freqsYM.push(fy);
-    ampsM.push(1 / (i + 1));
+    ampsM.push(1 / (index + 1));
   }
 
   const tiles: Tile[] = [];
@@ -102,11 +101,7 @@ export function generateWorld(
 
       // Hard polar caps override
       let biome: BiomeType;
-      if (inPolar) {
-        biome = BiomeType.Ice;
-      } else {
-        biome = chooseBiome(elevation, moisture, lat);
-      }
+      biome = inPolar ? BiomeType.Ice : chooseBiome(elevation, moisture, lat);
 
       tiles.push({
         id: `${q},${r}`,

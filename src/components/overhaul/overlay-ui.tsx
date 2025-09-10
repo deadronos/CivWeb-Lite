@@ -4,7 +4,7 @@ import { useGame } from '../../hooks/use-game';
 const LeftCivicPanel = React.lazy(() => import('./LeftCivicPanel'));
 const RightProductionPanel = React.lazy(() => import('./RightProductionPanel'));
 
-type PanelProps = { open: boolean; onClose: () => void };
+type PanelProperties = { open: boolean; onClose: () => void };
 
 export default function OverlayUI() {
   const [showRight, setShowRight] = React.useState(false);

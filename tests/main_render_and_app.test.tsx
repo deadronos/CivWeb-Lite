@@ -41,7 +41,7 @@ test('render App default with mocked three deps', async () => {
       scene: {},
       size: { width: 800, height: 600 },
     }),
-    useFrame: (_cb: any) => undefined,
+    useFrame: (_callback: any) => {},
   }));
   vi.doMock('@react-three/drei', () => ({
     OrbitControls: () => <div data-testid="orbit" />,
@@ -73,7 +73,7 @@ test('render App default with mocked three deps', async () => {
     ),
   }));
   // import App after mocks
-  const App = (await import('../src/App')).default;
+  const { default: App } = await import('../src/App');
   render(<App />);
   expect(screen.getByTestId('canvas')).toBeDefined();
   await screen.findByTestId('scene');

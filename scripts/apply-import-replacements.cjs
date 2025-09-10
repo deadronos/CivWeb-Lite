@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const previewPath = path.resolve(__dirname, '..', '.codemod', 'preview-renames.json');
 if (!fs.existsSync(previewPath)) {
@@ -7,14 +7,14 @@ if (!fs.existsSync(previewPath)) {
   process.exit(1);
 }
 
-const mappings = JSON.parse(fs.readFileSync(previewPath, 'utf8'));
+const mappings = JSON.parse(fs.readFileSync(previewPath));
 
 // Build simple mapping from old without extension to new without extension
-const map = mappings.reduce((acc, m) => {
+const map = mappings.reduce((accumulator, m) => {
   const from = m.from.replace(/\\.tsx?$|\\.ts$/, '');
   const to = m.to.replace(/\\.tsx?$|\\.ts$/, '');
-  acc[from] = to;
-  return acc;
+  accumulator[from] = to;
+  return accumulator;
 }, {});
 
 // Files to scan
@@ -43,7 +43,7 @@ for (const file of files) {
   for (const from in map) {
     const to = map[from];
     // Replace occurrences like 'src/contexts/GameProvider' or "/src/contexts/GameProvider"
-    const re = new RegExp(from.replace(/\\//g, '\\/'), 'g');
+    const re = new RegExp(from.replace(/\\//g, String.raw`\/`), 'g');
     if (re.test(txt)) {
       txt = txt.replace(re, to);
     }

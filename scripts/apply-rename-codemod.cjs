@@ -14,8 +14,8 @@ What it does:
 This script is conservative but still non-reversible: commit or stash before running.
 */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '..');
 const previewFile = path.join(repoRoot, '.codemod', 'preview-renames.json');
@@ -24,13 +24,13 @@ if (!fs.existsSync(previewFile)) {
   process.exit(1);
 }
 
-const mapping = JSON.parse(fs.readFileSync(previewFile, 'utf8'));
+const mapping = JSON.parse(fs.readFileSync(previewFile));
 if (!Array.isArray(mapping) || mapping.length === 0) {
   console.log('No rename candidates found, exiting.');
   process.exit(0);
 }
 
-const extsToTry = ['', '.ts', '.tsx', '.js', '.jsx', '.json'];
+const extensionsToTry = ['', '.ts', '.tsx', '.js', '.jsx', '.json'];
 const indexSuffixes = ['/index.ts', '/index.tsx', '/index.js', '/index.jsx'];
 
 function walk(dir) {
@@ -49,11 +49,11 @@ function walk(dir) {
 }
 
 function normalizeRel(p) {
-  return p.replace(/\\/g, '/');
+  return p.replaceAll('\\', '/');
 }
 
 function findMappingForAbs(absPath) {
-  const rel = path.relative(repoRoot, absPath).replace(/\\/g, '/');
+  const rel = path.relative(repoRoot, absPath).replaceAll('\\', '/');
   return mapping.find((m) => m.from === rel || m.to === rel);
 }
 
@@ -62,8 +62,8 @@ function tryResolveImport(fromFile, importPath) {
   if (!importPath.startsWith('.')) return null;
   const base = path.resolve(path.dirname(fromFile), importPath);
   // if importPath already includes extension, test directly
-  for (const ext of extsToTry) {
-    const candidate = base + ext;
+  for (const extension of extensionsToTry) {
+    const candidate = base + extension;
     if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) return candidate;
   }
   // try index files
@@ -75,7 +75,7 @@ function tryResolveImport(fromFile, importPath) {
 }
 
 function computeImportPath(fromFile, targetAbs, preserveExtension, originalImport) {
-  const rel = path.relative(path.dirname(fromFile), targetAbs).replace(/\\/g, '/');
+  const rel = path.relative(path.dirname(fromFile), targetAbs).replaceAll('\\', '/');
   let out = rel.startsWith('.') ? rel : './' + rel;
   if (!preserveExtension) {
     // remove extension if present
@@ -108,8 +108,8 @@ for (const [oldAbsNorm, newAbsNorm] of oldToNew.entries()) {
   try {
     fs.renameSync(oldAbs, newAbs);
     console.log('Renamed:', path.relative(repoRoot, oldAbs), '→', path.relative(repoRoot, newAbs));
-  } catch (err) {
-    console.error('Failed to rename', oldAbs, err);
+  } catch (error) {
+    console.error('Failed to rename', oldAbs, error);
     process.exit(1);
   }
 }
@@ -122,9 +122,9 @@ for (const file of allFiles) {
   let content = fs.readFileSync(file, 'utf8');
   let changed = false;
   // regex to find import from '...'
-  const importRegex = /(?:from\s+|import\s+\(|require\(|import\s+['"])['"]([^'"\n]+)['"]/g;
+  const importRegex = /(?:from\s+|import\s+\(|require\(|import\s+["'])["']([^\n"']+)["']/g;
   // We'll do a replace with function
-  content = content.replace(/(from\s+|import\s+|require\(|import\s+)(['"])([^'"\n]+)(['"])(\))?/g, (full, prefix, q1, impPath, q2, closingParen) => {
+  content = content.replaceAll(/(from\s+|import\s+|require\()(["'])([^\n"']+)(["'])(\))?/g, (full, prefix, q1, impPath, q2, closingParen) => {
     try {
       // only handle local relative imports
       if (!impPath.startsWith('.')) return full;
@@ -134,15 +134,15 @@ for (const file of allFiles) {
       const normResolved = path.normalize(resolved);
       if (oldToNew.has(normResolved)) {
         const newTarget = oldToNew.get(normResolved);
-        const preserveExtension = /\.[tj]sx?$/.test(impPath) || /\.json$/.test(impPath);
+        const preserveExtension = /\.[jt]sx?$/.test(impPath) || /\.json$/.test(impPath);
         const newImport = computeImportPath(file, newTarget, preserveExtension, impPath);
         changed = true;
         console.log('Updating import in', path.relative(repoRoot, file), impPath, '→', newImport);
         return prefix + q1 + newImport + q2 + (closingParen || '');
       }
       return full;
-    } catch (err) {
-      console.error('Error processing import', impPath, 'in', file, err);
+    } catch (error) {
+      console.error('Error processing import', impPath, 'in', file, error);
       return full;
     }
   });

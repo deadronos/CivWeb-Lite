@@ -3,21 +3,21 @@
 // This script scans the `src/` directory and outputs a mapping of PascalCase filenames
 // to kebab-case equivalents. It does NOT modify files — it's a safe preview.
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 function toKebab(name) {
   // preserve extension
-  const ext = path.extname(name);
-  const base = path.basename(name, ext);
+  const extension = path.extname(name);
+  const base = path.basename(name, extension);
   // If already kebab-case (contains -) or all lower, return null
   if (base.includes('-') || base === base.toLowerCase()) return null;
   // Convert PascalCase or camelCase to kebab-case
   const kebab = base
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+    .replaceAll(/([\da-z])([A-Z])/g, '$1-$2')
+    .replaceAll(/([A-Z])([A-Z][a-z])/g, '$1-$2')
     .toLowerCase();
-  return kebab + ext;
+  return kebab + extension;
 }
 
 function walk(dir) {
@@ -38,19 +38,19 @@ function walk(dir) {
 
 function main() {
   const root = path.join(__dirname, '..');
-  const src = path.join(root, 'src');
-  if (!fs.existsSync(src)) {
+  const source = path.join(root, 'src');
+  if (!fs.existsSync(source)) {
     console.error('src/ not found. Run this from repo root.');
     process.exit(1);
   }
-  const all = walk(src);
+  const all = walk(source);
   const mapping = [];
   for (const f of all) {
-    const rel = path.relative(root, f).replace(/\\/g, '/');
+    const rel = path.relative(root, f).replaceAll('\\', '/');
     const name = path.basename(f);
     const kebab = toKebab(name);
     if (kebab) {
-      mapping.push({ from: rel, to: path.join(path.dirname(rel), kebab).replace(/\\/g, '/') });
+      mapping.push({ from: rel, to: path.join(path.dirname(rel), kebab).replaceAll('\\', '/') });
     }
   }
   const outDir = path.join(root, '.codemod');

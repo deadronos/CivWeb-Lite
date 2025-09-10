@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case -- defer renaming files to a dedicated PR */
+ 
 // Filename remains PascalCase to match exported component names; bulk renames will be
 // done in a separate refactor PR to avoid noisy import changes across the repo.
 import React from 'react';
@@ -34,7 +34,7 @@ export type UnitModelProps = UnitModelProperties;
 
 import { Bob, phaseFromId } from './bob';
 // Lazy GLTF pipeline: only pull code when flag is enabled
-const LazyGLTFModel = React.lazy(() => import('..\\drei\\gltf-model').then(m => ({ default: m.default })));
+const LazyGLTFModel = React.lazy(() => import(String.raw`..\drei\gltf-model`).then(m => ({ default: m.default })));
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,

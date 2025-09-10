@@ -65,7 +65,7 @@ export default function CameraControls({
 
   useEffect(() => {
     if (!enabled) return;
-    const el = gl.domElement as HTMLCanvasElement;
+    const element = gl.domElement as HTMLCanvasElement;
     const onDown = (e: MouseEvent) => {
       if (e.button === 0) {
         dragging.current = true;
@@ -93,19 +93,19 @@ export default function CameraControls({
       if (k === 'q') { pitch.current = Math.min(maxPitch, Math.max(minPitch, pitch.current + (down ? 0.03 : 0))); }
       if (k === 'e') { pitch.current = Math.min(maxPitch, Math.max(minPitch, pitch.current - (down ? 0.03 : 0))); }
     };
-    el.addEventListener('mousedown', onDown);
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('mousemove', onMove);
-    el.addEventListener('wheel', onWheel, { passive: true });
-    window.addEventListener('keydown', onKey(true));
-    window.addEventListener('keyup', onKey(false));
+    element.addEventListener('mousedown', onDown);
+    globalThis.addEventListener('mouseup', onUp);
+    globalThis.addEventListener('mousemove', onMove);
+    element.addEventListener('wheel', onWheel, { passive: true });
+    globalThis.addEventListener('keydown', onKey(true));
+    globalThis.addEventListener('keyup', onKey(false));
     return () => {
-      el.removeEventListener('mousedown', onDown);
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('mousemove', onMove);
-      el.removeEventListener('wheel', onWheel as any);
-      window.removeEventListener('keydown', onKey(true));
-      window.removeEventListener('keyup', onKey(false));
+      element.removeEventListener('mousedown', onDown);
+      globalThis.removeEventListener('mouseup', onUp);
+      globalThis.removeEventListener('mousemove', onMove);
+      element.removeEventListener('wheel', onWheel as any);
+      globalThis.removeEventListener('keydown', onKey(true));
+      globalThis.removeEventListener('keyup', onKey(false));
     };
   }, [enabled, gl.domElement, rotateSpeed, zoomSpeed, minDistance, maxDistance, minPitch, maxPitch]);
 

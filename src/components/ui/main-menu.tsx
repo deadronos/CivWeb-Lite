@@ -37,7 +37,7 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return;
       const cfg = JSON.parse(raw);
-      if (cfg.size && typeof cfg.size === 'string') setSize(cfg.size as MapSizeKey);
+      if (cfg.size > 0 && typeof cfg.size === 'string') setSize(cfg.size as MapSizeKey);
       if (typeof cfg.seed === 'string') setSeed(cfg.seed);
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
@@ -46,8 +46,8 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
       // ignore JSON parse/localStorage errors during hydrate in browsers without storage
     }}, []);
 
-  const start = (evt: React.FormEvent) => {
-    evt.preventDefault();
+  const start = (event: React.FormEvent) => {
+    event.preventDefault();
     const { width, height } = MAP_SIZES[size];
     const payload: StartConfig = {
       width,
@@ -79,10 +79,10 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
         <h1 style={{ marginTop: 0 }}>CivWeb‑Lite</h1>
         <div style={styles.field}>
           <label htmlFor="size">Map Size</label>
-          <select id="size" value={size} onChange={(evt) => setSize(evt.target.value as MapSizeKey)}>
-            {Object.entries(MAP_SIZES).map(([key, sizeObj]) =>
+          <select id="size" value={size} onChange={(event) => setSize(event.target.value as MapSizeKey)}>
+            {Object.entries(MAP_SIZES).map(([key, sizeObject]) =>
             <option key={key} value={key}>
-                {sizeObj.label}
+                {sizeObject.label}
               </option>
             )}
           </select>
@@ -92,7 +92,7 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
           <input
             id="seed"
             value={seed}
-            onChange={(evt) => setSeed(evt.target.value)}
+            onChange={(event) => setSeed(event.target.value)}
             placeholder="random if blank" />
 
         </div>
@@ -104,7 +104,7 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
             min={1}
             max={6}
             value={players}
-            onChange={(evt) => setPlayers(Number.parseInt(evt.target.value || '2', 10))} />
+            onChange={(event) => setPlayers(Number.parseInt(event.target.value || '2', 10))} />
 
         </div>
         <div style={{ marginTop: 12 }}>
@@ -149,8 +149,8 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
           <button
             type="button"
             onClick={() => {
-              const el = document.querySelector('#load-input');
-              if (el && el instanceof HTMLInputElement) el.click();
+              const element = document.querySelector('#load-input');
+              if (element && element instanceof HTMLInputElement) element.click();
             }}>
 
             Load Save…
