@@ -1,8 +1,8 @@
 import React from 'react';
-import LazySpinner from '../common/LazySpinner';
+import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
-const LeftCivicPanel = React.lazy(() => import('./LeftCivicPanel'));
-const RightProductionPanel = React.lazy(() => import('./RightProductionPanel'));
+const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
+const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
 
 type PanelProperties = { open: boolean; onClose: () => void };
 
@@ -12,8 +12,8 @@ export default function OverlayUI() {
   // Prefetch likely-next chunks shortly after mount (warm-up without blocking):
   React.useEffect(() => {
     const id = setTimeout(() => {
-      import('./LeftCivicPanel');
-      import('./RightProductionPanel');
+      import('./left-civic-panel');
+      import('./right-production-panel');
     }, 500);
     return () => clearTimeout(id);
   }, []);

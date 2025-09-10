@@ -12,7 +12,7 @@ const LEGACY_ALLOWLIST = new Set([
   'App.tsx',
   'components/common/LazySpinner.tsx',
   'components/overhaul/LeftCivicPanel.tsx',
-  'components/overhaul/RightProductionPanel.tsx',
+  // removed in favor of kebab-case implementations
   'components/ui/ContextPanel.tsx',
   'components/ui/Icon.tsx',
   'components/ui/Minimap.tsx',
