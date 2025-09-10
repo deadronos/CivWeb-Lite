@@ -1,21 +1,21 @@
 import React from 'react';
 
 export type SelectionState = {
-  selectedUnitId: string | null;
-  setSelectedUnitId: (id: string | null) => void;
+  selectedUnitId: string | undefined;
+  setSelectedUnitId: (id: string | undefined) => void;
 };
 
-const SelectionContext = React.createContext<SelectionState | null>(null);
+const SelectionContext = React.createContext<SelectionState | undefined>(undefined);
 
 export function SelectionProvider({
   children,
-  initialSelectedUnitId = null,
+  initialSelectedUnitId,
 }: {
   children: React.ReactNode;
-  initialSelectedUnitId?: string | null;
+  initialSelectedUnitId?: string | undefined;
 }) {
-  const [selectedUnitId, setSelectedUnitId] = React.useState<string | null>(
-    initialSelectedUnitId ?? null
+  const [selectedUnitId, setSelectedUnitId] = React.useState<string | undefined>(
+    initialSelectedUnitId
   );
   const value = React.useMemo(() => ({ selectedUnitId, setSelectedUnitId }), [selectedUnitId]);
   return <SelectionContext.Provider value={value}>{children}</SelectionContext.Provider>;
