@@ -1,5 +1,8 @@
 # CivWeb-Lite
+@Gemini refer to <./AGENTS.md>AGENTS.md for more AI guidance
+also refer to <.github/copilot-instructions.md> Copilot Instructions
 
+## Project Overview
 A lightweight civilization-building game for the web.
 
 ## About
