@@ -15,7 +15,7 @@ export default function LeftPanelContainer() {
     map((t) => ({ id: t.id, name: t.name, cost: t.cost }));
   }, [state.techCatalog, human]);
 
-  const currentTechId = human?.researching?.techId ?? null;
+  const currentTechId = human?.researching?.techId;
   const onSelect = (techId: string) => {
     if (!human) return;
     dispatch({ type: 'SET_RESEARCH', playerId: human.id, payload: { techId } });
