@@ -1,6 +1,6 @@
 import saveSchema from '../../../schema/save.schema.json';
-let _ajv: any = null;
-let _validate: ((data: unknown) => boolean) | null = null;
+let _ajv: any;
+let _validate: ((data: unknown) => boolean) | undefined;
 
 // Inform TypeScript that require exists in the runtime
 declare const require: any;

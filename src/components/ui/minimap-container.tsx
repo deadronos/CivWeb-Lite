@@ -8,12 +8,12 @@ import { useCamera } from "..\\..\\hooks\\use-camera";
 export default function MinimapContainer() {
   const { state } = useGame();
   // useSelection may throw if not wrapped in provider in some tests; guard safely.
-  let selectedUnitId: string | null = null;
+  let selectedUnitId: string | undefined;
   try {
-    selectedUnitId = useSelection()?.selectedUnitId ?? null;
+    selectedUnitId = useSelection()?.selectedUnitId ?? undefined;
   } catch {
-    // tests may not include SelectionProvider; fall back to null
-    selectedUnitId = null;
+    // tests may not include SelectionProvider; fall back to undefined
+    selectedUnitId = undefined;
   }
   const camera = useCamera();
   const onPickCoord = React.useCallback(
@@ -24,7 +24,7 @@ export default function MinimapContainer() {
   );
   const extension = state.contentExt;
   const highlighted = React.useMemo(() => {
-    if (!extension || !selectedUnitId) return [] as string[];
+  if (!extension || !selectedUnitId) return [] as string[];
     try {
       return computeMovementRange(extension, selectedUnitId).reachable;
     } catch {

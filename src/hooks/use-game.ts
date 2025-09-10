@@ -3,8 +3,8 @@ import { GameStateContext, GameDispatchContext, Dispatch } from "..\\contexts\\g
 import { GameState } from '../game/types';
 
 export function useGame(): {state: Readonly<GameState>;dispatch: Dispatch;} {
-  const state = useContext(GameStateContext) as GameState | null;
-  const dispatch = useContext(GameDispatchContext) as Dispatch | null;
+  const state = useContext(GameStateContext) as GameState | undefined;
+  const dispatch = useContext(GameDispatchContext) as Dispatch | undefined;
   ensureGameContext(state, dispatch);
   return { state: state as Readonly<GameState>, dispatch: dispatch as Dispatch };
 }
@@ -72,8 +72,8 @@ export function coverUseGameThrowExplicitly() {
 // the thrown branch, or false to exercise the non-throw path.
 export function coverUseGameInlinePaths(runThrow = true) {
   if (runThrow) {
-    const state = null as unknown as GameState | null;
-    const dispatch = null as unknown as Dispatch | null;
+    const state = undefined as unknown as GameState | undefined;
+    const dispatch = undefined as unknown as Dispatch | undefined;
     if (!state || !dispatch) {
       throw new Error('useGame must be used within GameProvider');
     }
@@ -90,8 +90,8 @@ export function coverUseGameInlinePaths(runThrow = true) {
 // Alternate variant that returns a tuple for easier assertions in tests
 export function coverUseGameInlinePathsTuple(runThrow = false) {
   if (runThrow) {
-    const s = null as unknown as GameState | null;
-    const d = null as unknown as Dispatch | null;
+    const s = undefined as unknown as GameState | undefined;
+    const d = undefined as unknown as Dispatch | undefined;
     if (!s || !d) throw new Error('useGame must be used within GameProvider');
   }
   const state = {} as GameState;
