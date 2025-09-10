@@ -1,5 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+// Register fiber shims first so Canvas children are safe to render.
+import './scene/fiber-shims';
 import App from './app';
 import './styles.css';
 

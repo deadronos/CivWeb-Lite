@@ -9,13 +9,13 @@ import { SelectionProvider } from './contexts/selection-context';
 import { HoverProvider } from './contexts/hover-context';
 import MainMenu from './components/ui/main-menu';
 import { useGame } from './hooks/use-game';
-import CameraControls from './scene/drei/camera-controls';
-import DevStats from './scene/drei/dev-stats';
-import { isDevOrTest as isDevelopmentOrTest } from './utils/env';
+import ErrorBoundary from './components/common/error-boundary';
+// Camera controls and dev stats are managed within the Scene module.
 
 export default function App() {
   const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
   const [started, setStarted] = React.useState(false);
+  const [canvasKey, setCanvasKey] = React.useState(0);
   return (
     <GameProvider>
       <SelectionProvider>
@@ -23,15 +23,29 @@ export default function App() {
           <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
             {!started && <MainMenu onStart={() => setStarted(true)} />}
             <LoadListener onLoaded={() => setStarted(true)} />
-            <Canvas camera={{ position: [8, 12, 12], fov: 50 }}>
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[5, 10, 5]} intensity={0.6} />
-              <React.Suspense fallback={<LazySpinner /> }>
-                <Scene />
-              </React.Suspense>
-              <CameraControls />
-              <DevStats enabled={isDevelopmentOrTest()} />
-            </Canvas>
+            <ErrorBoundary
+              fallback={({ error, reset }) => (
+                <div role="alert" style={{ padding: 12, position: 'fixed', left: 12, bottom: 180, zIndex: 1000, background: 'rgba(20,20,25,0.8)', color: '#fff', borderRadius: 6 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 6 }}>3D view crashed</div>
+                  <div style={{ fontSize: 12, opacity: 0.9, maxWidth: 560 }}>
+                    {String(error?.message || error)}
+                  </div>
+                  <div style={{ marginTop: 8 }}>
+                    <button onClick={() => { setCanvasKey(k => k + 1); reset(); }}>
+                      Reload 3D Scene
+                    </button>
+                  </div>
+                </div>
+              )}
+            >
+              <Canvas key={canvasKey} camera={{ position: [8, 12, 12], fov: 50 }}>
+                <ambientLight intensity={0.6} />
+                <directionalLight position={[5, 10, 5]} intensity={0.6} />
+                <React.Suspense fallback={<LazySpinner /> }>
+                  <Scene />
+                </React.Suspense>
+              </Canvas>
+            </ErrorBoundary>
             {/* New overlay UI replacing demo HUD */}
             <React.Suspense fallback={<LazySpinner corner="top-right" /> }>
               <OverlayUI />
