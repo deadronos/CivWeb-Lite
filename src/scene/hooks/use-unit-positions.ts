@@ -16,7 +16,7 @@ export type UseUnitPositionsOptions = {
 };
 
 function toSet(v?: string | string[]) {
-  if (!v) return null;
+  if (!v) return;
   return new Set(Array.isArray(v) ? v : [v]);
 }
 
@@ -29,11 +29,11 @@ export function useUnitPositions(options: UseUnitPositionsOptions = {}): UnitPos
   return React.useMemo(() => {
     if (!extension) return [] as UnitPosition[];
     const out: UnitPosition[] = [];
-    for (const u of Object.values(extension.units)) {
+  for (const u of (Object.values(extension.units) as any[])) {
       if (ownerSet && !ownerSet.has((u as any).ownerId)) continue;
       if (typeSet && !typeSet.has((u as any).type)) continue;
       if (options.predicate && !options.predicate(u)) continue;
-      let xz: [number, number] | null = null;
+  let xz: [number, number] | undefined;
       if (typeof u.location === 'string') {
         xz = tileIdToWorldFromExtension(extension as any, u.location);
       } else if (
@@ -43,7 +43,7 @@ export function useUnitPositions(options: UseUnitPositionsOptions = {}): UnitPos
       {
         xz = axialToWorld((u.location as any).q, (u.location as any).r);
       }
-      const [x, z] = (xz ?? [0, 0]) as [number, number];
+  const [x, z] = (xz ?? [0, 0]) as [number, number];
       out.push({ id: u.id, type: (u as any).type, position: [x, y, z] });
     }
     return out;

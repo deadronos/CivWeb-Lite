@@ -23,9 +23,9 @@ export function tileIdToWorldFromExt(
   extension: { tiles: Record<string, { q: number; r: number }> },
   tileId: string,
   size = 1
-): [number, number] | null {
+): [number, number] | undefined {
   const t = extension.tiles[tileId] as { q: number; r: number } | undefined;
-  if (!t) return null;
+  if (!t) return undefined;
   return axialToWorld(t.q, t.r, size);
 }
 
