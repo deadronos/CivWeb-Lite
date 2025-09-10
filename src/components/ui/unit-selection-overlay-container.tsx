@@ -6,8 +6,7 @@ import { computePath, computeMovementRange } from '../../game/pathfinder';
 export function UnitSelectionOverlayContainer({
   selectedUnitId
 
-
-}: {selectedUnitId: string | null;}) {
+}: {selectedUnitId?: string;}) {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;
   const [path, setPath] = useState<string[] | undefined>();
