@@ -7,7 +7,7 @@ type InstancedTilesProperties = {
   colors?: string[]; // optional per-instance hex colors (length === positions.length)
   size?: number; // hex radius
   elevations?: number[]; // 0..1, same length as positions; used for slight height variation
-  onPointerMove?: (e: any) => void;
+  onPointerMove?: (event: any) => void;
 };
 
 // Instanced tiles component used by ConnectedScene to render the map
@@ -41,8 +41,8 @@ export function InstancedTiles({
         // scale so cylinder radius matches requested size (cylinder base args use 0.5 radius)
         const scaleFactor = size / 0.5;
         // Height variation by elevation: map 0..1 -> 0.06..0.12 (geometry base height is 0.08)
-        const e = elevations && elevations[index] != undefined ? elevations[index] : 0.5;
-        const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, e));
+  const elevation = elevations && elevations[index] != undefined ? elevations[index] : 0.5;
+  const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, elevation));
         const heightScale = desiredHeight / 0.08;
         object.scale.set(scaleFactor, heightScale, scaleFactor);
         object.rotation.set(0, 0, 0);
@@ -64,11 +64,12 @@ export function InstancedTiles({
           }
         }
         if ((mesh as any).instanceColor) (mesh as any).instanceColor.needsUpdate = true;
-        // Ensure material is expecting vertex colors
-        if (mesh.material) {
+        // Ensure material is expecting vertex colors only if the instanceColor attribute exists
+        if ((mesh as any).instanceColor && mesh.material) {
           // Use pure white so instance vertex colors are not tinted darker
           (mesh.material as any).color = new Color('#ffffff');
           (mesh.material as any).vertexColors = true;
+          try { (mesh.material as any).side = (mesh.material as any).side || (require('three').DoubleSide); } catch { /* ignore in browser env */ }
           (mesh.material as any).needsUpdate = true;
         }
       } else {

@@ -2,6 +2,7 @@
 // It looks for GLB files placed under `src/scene/assets/` and loads them once.
 
 import type { BufferAttribute, BufferGeometry, Material, Mesh, Object3D } from 'three';
+import { DoubleSide } from 'three';
 import { setVariantAssets } from './biome-variants-registry';
 
 export const BIOME_ASSETS_EVENT = 'civweblite:biomeAssetsLoaded';
@@ -122,7 +123,30 @@ async function loadGLTFOnce(url: string): Promise<{ geometry: BufferGeometry; ma
   if (geos.length === 0) throw new Error('No geometries to merge: ' + url);
   // Merge geometries; useGroups=true keeps one group per input sub-geometry so we can pass a matching materials array
   const geometry: BufferGeometry = (BufferGeometryUtilities as any).mergeGeometries(geos, true);
+  // Ensure we have vertex normals for lighting; some exported assets may omit them
+  try {
+    if (!(geometry as any).attributes || !(geometry as any).attributes.normal) {
+      geometry.computeVertexNormals();
+    }
+  } catch (err) {
+    // Swallow; computeVertexNormals may fail on malformed geometry but we still return what we have
+    console.warn('[biome-assets] computeVertexNormals failed', err);
+  }
   const chosen = meshes[0]?.parent?.name || meshes[0]?.name || '(merged)';
+  // Ensure materials are render-ready: prefer double-sided for thin tile meshes and trigger update
+  try {
+    for (const m of mats) {
+      if (m && (m as any).side === undefined) (m as any).side = DoubleSide;
+      // Ensure materials don't require vertex colors unless the geometry provides them
+      try {
+        if ((m as any).vertexColors === undefined) (m as any).vertexColors = false;
+      } catch {}
+      try { (m as any).needsUpdate = true; } catch {}
+    }
+  } catch (error) {
+    console.warn('[biome-assets] material postprocess failed', error);
+  }
+
   return { geometry, material: mats, chosen, tris: Math.floor(totalTris) };
 }
 
