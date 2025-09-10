@@ -11,6 +11,8 @@ import { useSelection } from "..\\contexts\\selection-context";
 import { useHoverTile } from "..\\contexts\\hover-context";
 import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
 import UnitMarkers from "./unit-markers";
+import { colorForTile, baseColorForBiome, colorForBiomeBucket } from './utils/biome-colors';
+import { getVariantCount } from './assets/biome-variants-registry';
 import ReactLazy = React.lazy;
 const UnitMeshes = React.lazy(() => import('./unit-meshes'));
 const ProceduralPreload = React.lazy(() => import('./units/procedural-preload'));
@@ -30,34 +32,51 @@ export function ConnectedScene() {
   const { index: hoverIndex, setHoverIndex } = useHoverTile();
   const tiles = state.map.tiles;
   const positions = useMemo(() => {
-    // derive simple axial-to-plane positions using shared hex size
     const pos: Array<[number, number, number]> = [];
     for (const t of tiles) {
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       pos.push([x, 0, z]);
     }
-    // Cap positions during tests to keep the DOM light
     if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') {
       return pos.slice(0, 100);
     }
     return pos;
   }, [tiles]);
 
+  // Re-enable instancing; we will render per-biome instanced batches (no per-instance color).
   const useInstanced = true;
 
-  // Quick biome->color mapping for visual readability
-  const colors = useMemo(() => {
-    const map: Record<string, string> = {
-      ocean: '#1b4f72',
-      grass: '#2ecc71',
-      forest: '#196f3d',
-      desert: '#d4ac0d',
-      mountain: '#7f8c8d',
-      tundra: '#cfd8dc',
-      ice: '#ecf0f1',
-    } as const as any;
-    return state.map.tiles.map((t) => map[(t.biome as any)] ?? '#7ac');
-  }, [state.map.tiles]);
+  const elevations = useMemo(() => tiles.map((t) => (t as any).elevation ?? 0.5), [tiles]);
+
+  // Procedural biome colors with subtle variation by elevation/moisture
+  const colors = useMemo(() => state.map.tiles.map((t) => colorForTile(t as any)), [state.map.tiles]);
+
+  // Group tiles by biome for robust instanced rendering without per-instance colors
+  // Small stable hash: mirrors the one used for procedural color jitter
+  const hash2 = (q: number, r: number) => {
+    let x = (q | 0) * 374761393 + (r | 0) * 668265263;
+    x = (x ^ (x >>> 13)) * 1274126177;
+    x = x ^ (x >>> 16);
+    return (x >>> 0) / 0xffffffff; // 0..1
+  };
+
+  const biomeGroups = useMemo(() => {
+    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string }>
+      = Object.create(null);
+    for (let i = 0; i < tiles.length; i++) {
+      const t = tiles[i] as any;
+      const biome = String(t.biome);
+      const variantCount = Math.max(1, getVariantCount(biome));
+      // Assign a deterministic variant bucket; if no assets, this will be 1.
+      const vIndex = Math.floor(hash2(t.coord.q, t.coord.r) * variantCount);
+      const key = `${biome}#${vIndex}`;
+      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount) };
+      const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
+      map[key].positions.push([x, 0, z]);
+      map[key].elevations.push(elevations[i] ?? 0.5);
+    }
+    return Object.entries(map).map(([biome, data]) => ({ biome, ...data }));
+  }, [tiles, elevations]);
 
   // Dev/test hook: allow tests to set hovered tile index via custom event
   React.useEffect(() => {
@@ -130,14 +149,18 @@ export function ConnectedScene() {
 
       })()}
       {useInstanced ?
-      <InstancedTiles
-        positions={positions}
-        colors={colors}
-        size={DEFAULT_HEX_SIZE}
-        onPointerMove={(e) => {
-          const index = (e as any).instanceId;
-          if (typeof index === 'number') setHoverIndex(index);
-        }} /> :
+      biomeGroups.map((g, gi) => (
+        <InstancedTiles
+          key={g.biome as any + ':' + gi}
+          positions={g.positions}
+          color={g.color}
+          elevations={g.elevations}
+          size={DEFAULT_HEX_SIZE}
+          onPointerMove={(e) => {
+            const index = (e as any).instanceId;
+            if (typeof index === 'number') setHoverIndex(index);
+          }} />
+      )) :
 
 
       positions.map((p, index) =>

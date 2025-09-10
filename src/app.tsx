@@ -39,9 +39,12 @@ export default function App() {
               )}
             >
               <Canvas key={canvasKey} camera={{ position: [8, 12, 12], fov: 50 }}>
-                <ambientLight intensity={0.6} />
-                <directionalLight position={[5, 10, 5]} intensity={0.6} />
-                <React.Suspense fallback={<LazySpinner /> }>
+                <ambientLight intensity={0.8} />
+                {/** Soft sky/ground fill to improve tile readability regardless of view angle */}
+                <hemisphereLight skyColor={"#99bbff"} groundColor={"#222533"} intensity={0.5} />
+                <directionalLight position={[5, 10, 5]} intensity={0.75} />
+                {/** Do not render DOM inside Canvas; use a Three primitive as fallback */}
+                <React.Suspense fallback={<group /> }>
                   <Scene />
                 </React.Suspense>
               </Canvas>
