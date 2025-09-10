@@ -56,17 +56,17 @@ export function ConnectedScene() {
   // Group tiles by biome for robust instanced rendering without per-instance colors
   // Small stable hash: mirrors the one used for procedural color jitter
   const hash2 = (q: number, r: number) => {
-    let x = (q | 0) * 374761393 + (r | 0) * 668265263;
-    x = (x ^ (x >>> 13)) * 1274126177;
+    let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
+    x = (x ^ (x >>> 13)) * 1_274_126_177;
     x = x ^ (x >>> 16);
-    return (x >>> 0) / 0xffffffff; // 0..1
+    return (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
   };
 
   const biomeGroups = useMemo(() => {
     const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; biome: string; variantIndex: number }>
       = Object.create(null);
-    for (let i = 0; i < tiles.length; i++) {
-      const t = tiles[i] as any;
+    for (const [index, tile] of tiles.entries()) {
+      const t = tile as any;
       const biome = String(t.biome).toLowerCase();
       const variantCount = Math.max(1, getVariantCount(biome));
       // Assign a deterministic variant bucket; if no assets, this will be 1.
@@ -75,7 +75,7 @@ export function ConnectedScene() {
       if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), biome, variantIndex: vIndex };
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       map[key].positions.push([x, 0, z]);
-      map[key].elevations.push(elevations[i] ?? 0.5);
+      map[key].elevations.push(elevations[index] ?? 0.5);
     }
     return Object.values(map);
   }, [tiles, elevations]);
@@ -90,9 +90,9 @@ export function ConnectedScene() {
   const [, force] = React.useReducer((x) => x + 1, 0);
   React.useEffect(() => {
     const handler = () => force();
-    if (typeof window !== 'undefined') {
-      window.addEventListener(BIOME_ASSETS_EVENT, handler as any);
-      return () => window.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
+    if (globalThis.window !== undefined) {
+      globalThis.addEventListener(BIOME_ASSETS_EVENT, handler as any);
+      return () => globalThis.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
     }
     return;
   }, []);

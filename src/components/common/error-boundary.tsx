@@ -1,12 +1,12 @@
 import React from 'react';
 
-type FallbackRenderProps = {
+type FallbackRenderProperties = {
   error: Error | null;
   reset: () => void;
 };
 
-type ErrorBoundaryProps = {
-  fallback?: (props: FallbackRenderProps) => React.ReactNode;
+type ErrorBoundaryProperties = {
+  fallback?: (properties: FallbackRenderProperties) => React.ReactNode;
   children?: React.ReactNode;
 };
 
@@ -14,9 +14,9 @@ type ErrorBoundaryState = {
   error: Error | null;
 };
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
+export class ErrorBoundary extends React.Component<ErrorBoundaryProperties, ErrorBoundaryState> {
+  constructor(properties: ErrorBoundaryProperties) {
+    super(properties);
     this.state = { error: null };
   }
 
@@ -26,7 +26,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
     // Log for debugging; avoid crashing the app.
-    // eslint-disable-next-line no-console
+     
     console.error('ErrorBoundary caught an error:', error, info);
   }
 

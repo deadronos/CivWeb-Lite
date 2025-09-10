@@ -28,6 +28,7 @@ module.exports = [
     ignores: [
       'dist',
       './dist',
+      'dist/**',
       'node_modules',
       './node_modules',
       'memory-bank/**',
@@ -201,11 +202,5 @@ module.exports = [
     // (no rules block here)
 
   // Ignore markdown linting for memory-bank folder
-  {
-    files: ['memory-bank/**/*.md'],
-    rules: {
-      // Disable all markdown-specific linting rules for memory-bank docs
-      // (add markdown plugin rules here if present, or just disable all)
-    },
-  },
 ];
+

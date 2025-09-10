@@ -41,7 +41,7 @@ export function InstancedTiles({
         // scale so cylinder radius matches requested size (cylinder base args use 0.5 radius)
         const scaleFactor = size / 0.5;
         // Height variation by elevation: map 0..1 -> 0.06..0.12 (geometry base height is 0.08)
-        const e = elevations && elevations[index] != null ? elevations[index] : 0.5;
+        const e = elevations && elevations[index] != undefined ? elevations[index] : 0.5;
         const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, e));
         const heightScale = desiredHeight / 0.08;
         object.scale.set(scaleFactor, heightScale, scaleFactor);
