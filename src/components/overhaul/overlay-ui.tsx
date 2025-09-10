@@ -43,7 +43,7 @@ function TopMenu({ onOpenResearch, onOpenCities }: { onOpenResearch: () => void;
   );
   return (
     <div className="ui-topmenu" role="navigation" aria-label="top menu"
-      onMouseEnter={() => { import('./LeftCivicPanel'); import('./RightProductionPanel'); }}>
+      onMouseEnter={() => { import('./left-civic-panel'); import('./right-production-panel'); }}>
       <div className="ui-topmenu-left">
         <Item>Map</Item>
         <Item>Government</Item>
