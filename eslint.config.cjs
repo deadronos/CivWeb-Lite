@@ -151,7 +151,7 @@ module.exports = [
       'src/components/ui/TopBarContainer.tsx',
       'src/components/ui/UnitSelectionOverlay.tsx',
       'src/components/ui/UnitSelectionOverlayContainer.tsx',
-      'src/contexts/HoverContext.tsx',
+  // HoverContext/GameProvider/SelectionContext PascalCase shims removed from index; canonical kebab-case files are tracked
       'src/game/tech/techCatalog.ts',
   // 'src/hooks/useCamera.tsx', (removed shim)
   // 'src/hooks/useGame.ts', (removed shim)
@@ -174,8 +174,7 @@ module.exports = [
   // left-panel, minimap-container, next-turn-control-container, top-bar shims — keep in allowlist until filesystem
   // case-sensitive removals can be applied safely on CI or via git mv on case-sensitive FS.
   // LeftPanel, MinimapContainer, NextTurnControlContainer, TopBar, TopBarContainer removed in safe batch
-      'src/contexts/GameProvider.tsx',
-  // 'src/contexts/SelectionContext.tsx', (removed shim)
+    // contexts/game-provider.tsx and related kebab-case files are tracked instead
     ],
   },
 

@@ -48,8 +48,7 @@ const LEGACY_ALLOWLIST = new Set([
   'components/ui/TopBarContainer.tsx',
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
-  'contexts/GameProvider.tsx',
-  'contexts/SelectionContext.tsx', // still present on disk (case-duplicate); re-allowlisting temporarily
+  // GameProvider, SelectionContext, HoverContext PascalCase shims have been untracked; keep kebab-case files
 ]);
 
 function isKebabCase(name: string) {
