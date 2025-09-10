@@ -10,6 +10,19 @@ import { vi } from 'vitest';
 // Individual tests can override with vi.doMock as needed.
 vi.mock('@react-three/fiber', () => ({
   Canvas: ({ children }: any) => React.createElement('div', { 'data-testid': 'canvas' }, children),
+  // Minimal hooks used by components in tests. useThree should provide a camera
+  // with a position.set and lookAt, and a gl.domElement for event listeners.
+  useThree: () => ({
+    camera: {
+      position: { set: (_x: number, _y: number, _z: number) => {} },
+      lookAt: (_target: any) => {},
+    },
+    gl: { domElement: document.createElement('canvas') },
+    scene: {},
+    size: { width: 800, height: 600 },
+  }),
+  // useFrame registers a callback for animation frames. For tests a no-op is fine.
+  useFrame: (_cb: any) => undefined,
 }));
 
 vi.mock('@react-three/drei', () => ({

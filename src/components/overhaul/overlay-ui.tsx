@@ -1,15 +1,22 @@
 import React from 'react';
+import LazySpinner from '../common/LazySpinner';
 import { useGame } from '../../hooks/use-game';
-import units from '../../data/units.json';
-import buildings from '../../data/buildings.json';
-import civics from '../../data/civics.json';
-import techs from '../../data/techs.json';
+const LeftCivicPanel = React.lazy(() => import('./LeftCivicPanel'));
+const RightProductionPanel = React.lazy(() => import('./RightProductionPanel'));
 
 type PanelProps = { open: boolean; onClose: () => void };
 
 export default function OverlayUI() {
   const [showRight, setShowRight] = React.useState(false);
   const [showLeft, setShowLeft] = React.useState(false);
+  // Prefetch likely-next chunks shortly after mount (warm-up without blocking):
+  React.useEffect(() => {
+    const id = setTimeout(() => {
+      import('./LeftCivicPanel');
+      import('./RightProductionPanel');
+    }, 500);
+    return () => clearTimeout(id);
+  }, []);
 
   return (
     <>
@@ -18,8 +25,12 @@ export default function OverlayUI() {
         onOpenCities={() => setShowRight(true)}
       />
       <StatsBar />
-      <LeftCivicPanel open={showLeft} onClose={() => setShowLeft(false)} />
-      <RightProductionPanel open={showRight} onClose={() => setShowRight(false)} />
+      <React.Suspense fallback={<LazySpinner /> }>
+        <LeftCivicPanel open={showLeft} onClose={() => setShowLeft(false)} />
+      </React.Suspense>
+      <React.Suspense fallback={<LazySpinner /> }>
+        <RightProductionPanel open={showRight} onClose={() => setShowRight(false)} />
+      </React.Suspense>
     </>
   );
 }
@@ -31,7 +42,8 @@ function TopMenu({ onOpenResearch, onOpenCities }: { onOpenResearch: () => void;
     </button>
   );
   return (
-    <div className="ui-topmenu" role="navigation" aria-label="top menu">
+    <div className="ui-topmenu" role="navigation" aria-label="top menu"
+      onMouseEnter={() => { import('./LeftCivicPanel'); import('./RightProductionPanel'); }}>
       <div className="ui-topmenu-left">
         <Item>Map</Item>
         <Item>Government</Item>
@@ -72,52 +84,4 @@ function StatsBar() {
   );
 }
 
-function RightProductionPanel({ open, onClose }: PanelProps) {
-  const [tab, setTab] = React.useState<'units' | 'buildings'>('units');
-  if (!open) return null;
-  return (
-    <aside className="ui-rightpanel" aria-label="city production">
-      <div className="panel-header">
-        <div className="tabs">
-          <button className={tab === 'units' ? 'tab active' : 'tab'} onClick={() => setTab('units')}>Units</button>
-          <button className={tab === 'buildings' ? 'tab active' : 'tab'} onClick={() => setTab('buildings')}>Buildings</button>
-        </div>
-        <button className="close" onClick={onClose}>×</button>
-      </div>
-      <div className="panel-body">
-        {(tab === 'units' ? units : buildings).slice(0, 20).map((it: any) => (
-          <button key={it.id || it.name} className="list-item">
-            <div className="title">{it.name}</div>
-            {it.cost && <div className="meta">Cost: {it.cost}</div>}
-          </button>
-        ))}
-      </div>
-    </aside>
-  );
-}
-
-function LeftCivicPanel({ open, onClose }: PanelProps) {
-  const [tab, setTab] = React.useState<'science' | 'culture'>('culture');
-  if (!open) return null;
-  const list = tab === 'culture' ? civics : techs;
-  return (
-    <aside className="ui-leftpanel" aria-label="research chooser">
-      <div className="panel-header">
-        <div className="tabs">
-          <button className={tab === 'culture' ? 'tab active' : 'tab'} onClick={() => setTab('culture')}>Civics</button>
-          <button className={tab === 'science' ? 'tab active' : 'tab'} onClick={() => setTab('science')}>Science</button>
-        </div>
-        <button className="close" onClick={onClose}>×</button>
-      </div>
-      <div className="panel-body">
-        {list.slice(0, 30).map((it: any) => (
-          <button key={it.id || it.name} className="list-item">
-            <div className="title">{it.name}</div>
-            {it.cost && <div className="meta">Cost: {it.cost}</div>}
-          </button>
-        ))}
-      </div>
-    </aside>
-  );
-}
-
+// (Panels split into separate lazy-loaded components above)

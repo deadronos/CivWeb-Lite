@@ -1,13 +1,15 @@
 import React from 'react';
 import { useGame } from "..\\..\\hooks\\use-game";
 import leaders from '../../data/leaders.json';
+import { MAP_PRESETS } from '../../game/world/config';
 const LS_KEY = 'civweblite:newgame';
 
-type MapSizeKey = 'small' | 'standard' | 'large';
+type MapSizeKey = 'small' | 'medium' | 'large' | 'xlarge';
 const MAP_SIZES: Record<MapSizeKey, {width: number;height: number;label: string;}> = {
-  small: { width: 30, height: 30, label: 'Small (30x30)' },
-  standard: { width: 50, height: 50, label: 'Standard (50x50)' },
-  large: { width: 70, height: 70, label: 'Large (70x70)' }
+  small: { ...MAP_PRESETS.small, label: `Small (${MAP_PRESETS.small.width}x${MAP_PRESETS.small.height})` },
+  medium: { ...MAP_PRESETS.medium, label: `Medium (${MAP_PRESETS.medium.width}x${MAP_PRESETS.medium.height})` },
+  large: { ...MAP_PRESETS.large, label: `Large (${MAP_PRESETS.large.width}x${MAP_PRESETS.large.height})` },
+  xlarge: { ...MAP_PRESETS.xlarge, label: `XL (${MAP_PRESETS.xlarge.width}x${MAP_PRESETS.xlarge.height})` },
 };
 
 type StartConfig = {
@@ -21,7 +23,7 @@ type StartConfig = {
 
 export default function MainMenu({ onStart }: {onStart(config: StartConfig): void;}) {
   const { dispatch } = useGame();
-  const [size, setSize] = React.useState<MapSizeKey>('standard');
+  const [size, setSize] = React.useState<MapSizeKey>('medium');
   const [seed, setSeed] = React.useState<string>('');
   const [players, setPlayers] = React.useState<number>(2);
   const humanPlayers = 1; // MVP: one human
@@ -35,7 +37,7 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return;
       const cfg = JSON.parse(raw);
-      if (cfg.size > 0) setSize(cfg.size);
+      if (cfg.size && typeof cfg.size === 'string') setSize(cfg.size as MapSizeKey);
       if (typeof cfg.seed === 'string') setSeed(cfg.seed);
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
@@ -55,6 +57,13 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
       humanPlayers,
       selectedLeaders: selectedLeaders.slice(0, players)
     };
+    // Defensive: drop any persisted save slots in localStorage before starting a fresh map
+    try {
+      // We only persist menu prefs under LS_KEY; if future builds add save keys,
+      // clear well-known ones here so new games never pull an outdated map.
+      const maybeKeys = ['civweblite:save', 'civweblite:autosave'];
+      for (const k of maybeKeys) localStorage.removeItem(k);
+    } catch {}
     dispatch({ type: 'NEW_GAME', payload } as any);
     onStart(payload);
     try {

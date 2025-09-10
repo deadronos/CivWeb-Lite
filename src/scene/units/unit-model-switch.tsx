@@ -3,7 +3,6 @@
 // done in a separate refactor PR to avoid noisy import changes across the repo.
 import React from 'react';
 import { gltfEnabled } from '../../utils/flags';
-import GLTFModel from "..\\drei\\gltf-model";
 import { WarriorModel } from './procedural/warrior-model';
 import { SettlerModel } from './procedural/settler-model';
 import { WorkerModel } from './procedural/worker-model';
@@ -34,7 +33,8 @@ export type UnitModelProps = UnitModelProperties;
 // add it to `gltfRegistry` or export a dedicated mapping module.
 
 import { Bob, phaseFromId } from './bob';
-import { resolveGLTF } from "./gltf-registry";
+// Lazy GLTF pipeline: only pull code when flag is enabled
+const LazyGLTFModel = React.lazy(() => import('..\\drei\\gltf-model').then(m => ({ default: m.default })));
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
@@ -50,9 +50,23 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
 }) => {
   const lowerType = type.toLowerCase();
   const modelLabel = (model || '').toLowerCase();
-  if (gltfEnabled()) {
-    const url = resolveGLTF(gltf || modelLabel || lowerType);
-    if (url) return <GLTFModel url={url} position={position} scale={scale ?? 0.6} />;
+  const [gltfUrl, setGltfUrl] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (!gltfEnabled()) return;
+    let mounted = true;
+    import('./gltf-registry').then(({ resolveGLTF }) => {
+      if (!mounted) return;
+      const url = resolveGLTF(gltf || modelLabel || lowerType);
+      setGltfUrl(url);
+    });
+    return () => { mounted = false; };
+  }, [gltf, modelLabel, lowerType]);
+  if (gltfEnabled() && gltfUrl) {
+    return (
+      <React.Suspense fallback={null}>
+        <LazyGLTFModel url={gltfUrl} position={position} scale={scale ?? 0.6} />
+      </React.Suspense>
+    );
   }
 
   const CommonWrap: React.FC<{children: React.ReactNode;}> = ({ children }) =>

@@ -114,6 +114,8 @@ module.exports = [
       'unicorn/prefer-at': 'warn',
       'unicorn/expiring-todo-comments': 'warn',
       'unicorn/no-empty-file': 'warn',
+      // Enforce kebab-case filenames across src by default
+      'unicorn/filename-case': ['error', { cases: { kebabCase: true } }],
     },
   },
 
@@ -135,6 +137,50 @@ module.exports = [
     },
   },
 
+  // Temporary allowlist for legacy PascalCase filenames. New files must be kebab-case.
+  {
+    files: [
+      'src/App.tsx',
+      'src/components/GameHUD.tsx',
+      'src/components/common/LazySpinner.tsx',
+      'src/components/overhaul/LeftCivicPanel.tsx',
+      'src/components/overhaul/RightProductionPanel.tsx',
+      'src/components/ui/ContextPanel.tsx',
+      'src/components/ui/Icon.tsx',
+      'src/components/ui/LeftPanel.tsx',
+      'src/components/ui/Minimap.tsx',
+      'src/components/ui/MinimapContainer.tsx',
+      'src/components/ui/NextTurnControlContainer.tsx',
+      'src/components/ui/TopBar.tsx',
+      'src/components/ui/TopBarContainer.tsx',
+      'src/components/ui/UnitSelectionOverlay.tsx',
+      'src/components/ui/UnitSelectionOverlayContainer.tsx',
+      'src/contexts/GameProvider.tsx',
+      'src/contexts/HoverContext.tsx',
+      'src/contexts/SelectionContext.tsx',
+      'src/game/tech/techCatalog.ts',
+      'src/hooks/useCamera.tsx',
+      'src/hooks/useGame.ts',
+      'src/scene/InstancedTiles.tsx',
+      'src/scene/Scene.tsx',
+      'src/scene/TileMesh.tsx',
+      'src/scene/UnitMarkers.tsx',
+      'src/scene/UnitMeshes.tsx',
+      'src/scene/drei/BillboardLabel.tsx',
+      'src/scene/drei/CameraControls.tsx',
+      'src/scene/drei/DevStats.tsx',
+      'src/scene/drei/GLTFModel.tsx',
+      'src/scene/drei/HtmlLabel.tsx',
+      'src/scene/units/Bob.tsx',
+      'src/scene/units/gltfRegistry.ts',
+      'src/scene/units/modelRegistry.tsx',
+      'src/scene/units/ProceduralPreload.tsx',
+    ],
+    rules: {
+      'unicorn/filename-case': 'off',
+    },
+  },
+
   // Test files override (vitest/playwright/testing-library)
   {
     files: ['**/*.test.{ts,tsx}', 'tests/**', 'playwright/**', '**/*.spec.{ts,tsx}'],
@@ -143,6 +189,8 @@ module.exports = [
     },
     rules: {
       'import/no-extraneous-dependencies': 'off',
+      // Do not enforce filename case on legacy test filenames
+      'unicorn/filename-case': 'off',
     },
   },
 

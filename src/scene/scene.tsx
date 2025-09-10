@@ -2,17 +2,18 @@ import React, { useMemo } from 'react';
 import { useGame } from "..\\hooks\\use-game";
 import TileMesh from "./tile-mesh";
 import InstancedTiles from "./instanced-tiles";
-import CameraControls from "./drei\\camera-controls";
-import DevStats from "./drei\\dev-stats";
-import HtmlLabel from "./drei\\html-label";
-import BillboardLabel from "./drei\\billboard-label";
+import CameraControls from "./drei/camera-controls";
+import DevStats from "./drei/dev-stats";
+import HtmlLabel from "./drei/html-label";
+import BillboardLabel from "./drei/billboard-label";
 import { isDevOrTest as isDevelopmentOrTest } from '../utils/env';
 import { useSelection } from "..\\contexts\\selection-context";
 import { useHoverTile } from "..\\contexts\\hover-context";
 import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
 import UnitMarkers from "./unit-markers";
-import UnitMeshes from "./unit-meshes";
-import ProceduralPreload from "./units\\procedural-preload";
+import ReactLazy = React.lazy;
+const UnitMeshes = React.lazy(() => import('./unit-meshes'));
+const ProceduralPreload = React.lazy(() => import('./units/procedural-preload'));
 
 // Base Scene used by existing tests; remains minimal and provider-agnostic
 export default function Scene() {
@@ -71,7 +72,9 @@ export function ConnectedScene() {
 
   return (
     <group>
-      <ProceduralPreload />
+      <React.Suspense fallback={null}>
+        <ProceduralPreload />
+      </React.Suspense>
       {/* Drei wrappers: camera controls and dev stats */}
       <CameraControls />
       <DevStats enabled={isDevelopmentOrTest()} />
@@ -110,7 +113,11 @@ export function ConnectedScene() {
       })()}
       {isDevelopmentOrTest() && state.contentExt && <UnitMarkers />}
       {/* Units (procedural by default, GLTF behind flag) */}
-      {state.contentExt && <UnitMeshes />}
+      {state.contentExt && (
+        <React.Suspense fallback={null}>
+          <UnitMeshes />
+        </React.Suspense>
+      )}
       {hoverIndex != undefined &&
       tiles[hoverIndex] &&
       (() => {
