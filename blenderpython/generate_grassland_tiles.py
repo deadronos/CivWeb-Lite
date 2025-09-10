@@ -34,6 +34,27 @@ except Exception:  # pragma: no cover - happens outside Blender
     raise SystemExit(1)
 
 
+# Blender add-on metadata (allows installation via Preferences > Add-ons > Install)
+bl_info = {
+    'name': 'CivWeb-Lite: Grassland Tile Generator',
+    'author': 'Project CivWeb-Lite',
+    'version': (0, 1, 0),
+    'blender': (3, 0, 0),
+    'location': '3D Viewport > Sidebar (N) > Create',
+    'description': 'Generate grassland hex tile variations and optionally export',
+    'category': 'Add Mesh',
+}
+
+# Script directory (for resolving export paths relative to this file)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _resolve_export_path(path: str | None) -> str | None:
+    if not path:
+        return path
+    if os.path.isabs(path):
+        return path
+    return os.path.join(SCRIPT_DIR, path)
+
 # --- Parameters (aligned to repo defaults) ----------------------------------
 HEX_RADIUS = 0.5
 HEX_THICKNESS = 0.08
@@ -325,26 +346,67 @@ def main():
     main_with_options(seed=SEED, build_count=3, export_path=None, export_format='GLB')
 
 
-def export_collection(collection, filepath: str, fmt: str = 'GLB'):
-    """Export objects in the collection to filepath. fmt is 'GLB' or 'OBJ'."""
-    # Deselect all
-    bpy.ops.object.select_all(action='DESELECT')
-    objs = []
-    for obj in collection.objects:
-        obj.select_set(True)
-        objs.append(obj)
-    # also include children collections
-    for child in collection.children_recursive:
-        for obj in child.objects:
-            obj.select_set(True)
-            objs.append(obj)
+def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: bool = True):
+    """Export objects in the collection to filepath. fmt is 'GLB' or 'OBJ'.
 
-    if fmt.upper() == 'GLB' or fmt.upper() == 'GLTF':
-        bpy.ops.export_scene.gltf(filepath=filepath, export_selected=True, export_apply=True)
-    elif fmt.upper() == 'OBJ':
-        bpy.ops.export_scene.obj(filepath=filepath, use_selection=True)
+    When isolated=True, creates a temporary scene with ONLY the collection's
+    objects linked (duplicates) so the GLB contains no sibling collections.
+    """
+    def collect_objects(col):
+        objs = list(col.objects)
+        for ch in col.children_recursive:
+            objs += list(ch.objects)
+        return objs
+
+    fmtU = fmt.upper()
+
+    if isolated:
+        # Build a temporary scene with only this collection's objects
+        src_objs = collect_objects(collection)
+        tmp_scene = bpy.data.scenes.new('TMP_EXPORT_SCENE')
+        try:
+            # Duplicate and link copies to the temp scene
+            dupes = []
+            for o in src_objs:
+                dup = o.copy()
+                if o.data:
+                    dup.data = o.data.copy()
+                tmp_scene.collection.objects.link(dup)
+                dupes.append(dup)
+
+            # Make temp scene active
+            old_scene = bpy.context.window.scene if bpy.context.window else bpy.context.scene
+            if bpy.context.window:
+                bpy.context.window.scene = tmp_scene
+
+            # Export entire temp scene (no selection filtering needed)
+            if fmtU in ('GLB', 'GLTF'):
+                bpy.ops.export_scene.gltf(filepath=filepath, use_selection=False, export_apply=True)
+            elif fmtU == 'OBJ':
+                bpy.ops.export_scene.obj(filepath=filepath, use_selection=False)
+            else:
+                raise ValueError('Unsupported export format: ' + str(fmt))
+
+            # Restore scene
+            if bpy.context.window:
+                bpy.context.window.scene = old_scene
+        finally:
+            # Clean up temp scene and duplicated data
+            try:
+                bpy.data.scenes.remove(tmp_scene)
+            except Exception:
+                pass
     else:
-        raise ValueError('Unsupported export format: ' + str(fmt))
+        # Selection-based export in the current scene
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in collect_objects(collection):
+            obj.select_set(True)
+        if fmtU in ('GLB', 'GLTF'):
+            bpy.ops.export_scene.gltf(filepath=filepath, use_selection=True, export_apply=True)
+        elif fmtU == 'OBJ':
+            bpy.ops.export_scene.obj(filepath=filepath, use_selection=True)
+        else:
+            raise ValueError('Unsupported export format: ' + str(fmt))
 
 
 def parse_args(argv=None):
@@ -436,6 +498,36 @@ def main_with_options(seed=42, build_count=3, export_path=None, export_format='G
         # be resilient in headless runs where context.screen may not exist
         pass
 
+    # Handle export if requested (for operator/interactive runs)
+    export_path = _resolve_export_path(export_path)
+    if export_path:
+        try:
+            top_col = bpy.data.collections.get(col_name)
+            if not top_col:
+                print('No collection found for export:', col_name)
+                return
+            # If path looks like a directory or export_per_variant is requested, export each child
+            export_dir_mode = (
+                export_per_variant or
+                export_path.endswith(os.sep) or export_path.endswith('/') or os.path.isdir(export_path)
+            )
+            out_dir = export_path
+            if export_dir_mode:
+                if not os.path.isdir(out_dir):
+                    # If a filename was given but export_per_variant is True, use its directory or script dir
+                    out_dir = os.path.dirname(export_path) or SCRIPT_DIR
+                os.makedirs(out_dir, exist_ok=True)
+                for i, child in enumerate(top_col.children):
+                    fname = f'grassland_v{i}.glb' if export_format.upper() in ('GLB', 'GLTF') else f'grassland_v{i}.obj'
+                    outp = os.path.join(out_dir, fname)
+                    export_collection(child, outp, fmt=export_format, isolated=True)
+                    print('Exported variant', i, '->', outp)
+            else:
+                export_collection(top_col, export_path, fmt=export_format, isolated=True)
+                print('Exported collection ->', export_path)
+        except Exception as ex:
+            print('Export failed:', ex)
+
 
 def setup_simple_lighting():
     """Add a simple 3-point-ish light setup (area lights) for thumbnails; idempotent."""
@@ -475,14 +567,14 @@ def run_headless_from_args():
     opts = parse_args()
     seed = opts.get('seed', SEED)
     count = opts.get('build_count', 3)
-    export_path = opts.get('export_path')
+    export_path = _resolve_export_path(opts.get('export_path'))
     export_format = opts.get('export_format', 'GLB')
 
     # If export_path is a directory, we'll export per-variant files into it
     export_dir_mode = False
     if export_path and (export_path.endswith(os.sep) or export_path.endswith('/') or os.path.isdir(export_path)):
         export_dir_mode = True
-        out_dir = export_path if os.path.isdir(export_path) else os.path.dirname(export_path) or '.'
+        out_dir = export_path if os.path.isdir(export_path) else (os.path.dirname(export_path) or SCRIPT_DIR)
         if not os.path.exists(out_dir):
             os.makedirs(out_dir, exist_ok=True)
 
@@ -578,4 +670,13 @@ def unregister():
 
 
 if __name__ == '__main__':
-    main()
+    # If running headless (from CLI), parse args and export
+    if bpy.app.background:
+        run_headless_from_args()
+    else:
+        # Running from Blender UI/Text Editor: register UI so the panel appears
+        try:
+            register()
+            print('Grassland Tile Generator registered. Open 3D View > N-panel > Create.')
+        except Exception as ex:
+            print('Registration failed:', ex)

@@ -12,7 +12,9 @@ import { useHoverTile } from "..\\contexts\\hover-context";
 import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
 import UnitMarkers from "./unit-markers";
 import { colorForTile, baseColorForBiome, colorForBiomeBucket } from './utils/biome-colors';
-import { getVariantCount } from './assets/biome-variants-registry';
+import { getVariantCount, getVariantAssets } from './assets/biome-variants-registry';
+import { loadBiomeVariants, BIOME_ASSETS_EVENT } from './assets/biome-assets';
+import InstancedModels from './instanced-models';
 import ReactLazy = React.lazy;
 const UnitMeshes = React.lazy(() => import('./unit-meshes'));
 const ProceduralPreload = React.lazy(() => import('./units/procedural-preload'));
@@ -61,22 +63,39 @@ export function ConnectedScene() {
   };
 
   const biomeGroups = useMemo(() => {
-    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string }>
+    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; biome: string; variantIndex: number }>
       = Object.create(null);
     for (let i = 0; i < tiles.length; i++) {
       const t = tiles[i] as any;
-      const biome = String(t.biome);
+      const biome = String(t.biome).toLowerCase();
       const variantCount = Math.max(1, getVariantCount(biome));
       // Assign a deterministic variant bucket; if no assets, this will be 1.
       const vIndex = Math.floor(hash2(t.coord.q, t.coord.r) * variantCount);
       const key = `${biome}#${vIndex}`;
-      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount) };
+      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), biome, variantIndex: vIndex };
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       map[key].positions.push([x, 0, z]);
       map[key].elevations.push(elevations[i] ?? 0.5);
     }
-    return Object.entries(map).map(([biome, data]) => ({ biome, ...data }));
+    return Object.values(map);
   }, [tiles, elevations]);
+
+  // Kick off loading biome assets once in browser; safe in dev/test
+  React.useEffect(() => {
+    // Load for known biome(s); extend as more assets appear
+    loadBiomeVariants('grass');
+  }, []);
+
+  // Force re-render when biome assets arrive
+  const [, force] = React.useReducer((x) => x + 1, 0);
+  React.useEffect(() => {
+    const handler = () => force();
+    if (typeof window !== 'undefined') {
+      window.addEventListener(BIOME_ASSETS_EVENT, handler as any);
+      return () => window.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
+    }
+    return;
+  }, []);
 
   // Dev/test hook: allow tests to set hovered tile index via custom event
   React.useEffect(() => {
@@ -149,18 +168,37 @@ export function ConnectedScene() {
 
       })()}
       {useInstanced ?
-      biomeGroups.map((g, gi) => (
-        <InstancedTiles
-          key={g.biome as any + ':' + gi}
-          positions={g.positions}
-          color={g.color}
-          elevations={g.elevations}
-          size={DEFAULT_HEX_SIZE}
-          onPointerMove={(e) => {
-            const index = (e as any).instanceId;
-            if (typeof index === 'number') setHoverIndex(index);
-          }} />
-      )) :
+      biomeGroups.map((g, gi) => {
+        const assets = getVariantAssets(g.biome, g.variantIndex);
+        if (assets && assets.geometry && assets.material) {
+          return (
+            <InstancedModels
+              key={g.biome + ':' + gi}
+              geometry={assets.geometry as any}
+              material={assets.material as any}
+              positions={g.positions}
+              elevations={g.elevations}
+              size={DEFAULT_HEX_SIZE}
+              onPointerMove={(e: any) => {
+                const index = e?.instanceId;
+                if (typeof index === 'number') setHoverIndex(index);
+              }}
+            />
+          );
+        }
+        return (
+          <InstancedTiles
+            key={g.biome + ':' + gi}
+            positions={g.positions}
+            color={g.color}
+            elevations={g.elevations}
+            size={DEFAULT_HEX_SIZE}
+            onPointerMove={(e) => {
+              const index = (e as any).instanceId;
+              if (typeof index === 'number') setHoverIndex(index);
+            }} />
+        );
+      }) :
 
 
       positions.map((p, index) =>
