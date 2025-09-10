@@ -9,16 +9,7 @@ const unicornAllowlist = [
   'prefer-includes',
   'no-array-for-each',
   'no-nested-ternary',
-  'no-useless-undefined',
-  'prefer-array-index-of',
-  'prefer-array-some',
-  'prefer-at',
-  'expiring-todo-comments',
-  'no-empty-file',
-];
-const unicornSelectedWarned = Object.fromEntries(
-  unicornAllowlist.filter((k) => unicornPlugin && unicornPlugin.rules && k in unicornPlugin.rules).map((k) => [`unicorn/${k}`, 'warn'])
-);
+]
 
 // Take the plugin's recommended rules and lower them to 'warn', but only for rules
 // that actually exist in the installed plugin. This avoids "Could not find ... in plugin"
@@ -34,7 +25,18 @@ const unicornRecommendedLowered = Object.fromEntries(
 
 module.exports = [
   {
-    ignores: ['dist', 'node_modules', 'dist/**'],
+    ignores: [
+      'dist',
+      './dist',
+      'node_modules',
+      './node_modules',
+      'memory-bank/**',
+      './memory-bank/**',
+      'memory-bank/tasks/**',
+      './memory-bank/tasks/**',
+      '**/*.md',
+      './**/*.md',
+    ],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -83,7 +85,7 @@ module.exports = [
   // recommended guidance at 'warn' without causing rule-not-found errors.
   // Note: keep explicit overrides above/below this spread if you want to
   // change severity for specific rules later.
-  ...unicornSelectedWarned,
+  // ...unicornSelectedWarned, // Removed: not defined and not needed
   ...unicornRecommendedLowered,
 
   // We avoid spreading the full recommended set directly to prevent rule resolution errors.

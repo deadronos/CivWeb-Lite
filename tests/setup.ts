@@ -22,7 +22,7 @@ vi.mock('@react-three/fiber', () => ({
     size: { width: 800, height: 600 },
   }),
   // useFrame registers a callback for animation frames. For tests a no-op is fine.
-  useFrame: (_cb: any) => undefined,
+  useFrame: (_callback: any) => {},
 }));
 
 vi.mock('@react-three/drei', () => ({

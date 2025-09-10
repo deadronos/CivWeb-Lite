@@ -6,7 +6,7 @@ function benchTurns(width: number, height: number, turns: number): number[] {
   let state = makeInitial();
   state = applyAction(state, { type: 'INIT', payload: { seed: 'bench', width, height } });
   const samples: number[] = [];
-  for (let i = 0; i < turns; i++) {
+  for (let index = 0; index < turns; index++) {
     const t0 = performance.now();
     state = applyAction(state, { type: 'END_TURN' });
     const t1 = performance.now();
