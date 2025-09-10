@@ -1,10 +1,10 @@
 import React from 'react';
-import type { UnitSelectionOverlayProps as UnitSelectionOverlayProperties } from '../../game/types/ui';
+import type { UnitSelectionOverlayProperties } from '../../game/types/ui';
 
 export function UnitSelectionOverlay(properties: UnitSelectionOverlayProperties) {
   const { selectedUnitId, computedRangeTiles, computedPath, onPreviewPath, onIssueMove, onCancel } =
     properties;
-  if (!selectedUnitId) return null;
+  if (!selectedUnitId) return;
   return (
     <div data-testid="unit-selection-overlay">
       <div>Unit: {selectedUnitId}</div>
