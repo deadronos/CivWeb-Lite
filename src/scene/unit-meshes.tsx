@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case -- defer filename renames to a dedicated codemod PR that updates imports */
+ 
 import React from 'react';
 import { useGame } from "..\\hooks\\use-game";
 import { useUnitPositions } from './hooks/use-unit-positions';

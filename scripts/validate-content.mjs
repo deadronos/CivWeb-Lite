@@ -7,7 +7,7 @@ const dataDir = path.join(root, 'src', 'data');
 
 function readJson(file) {
   const p = path.join(dataDir, file);
-  const txt = fs.readFileSync(p, 'utf8');
+  const txt = fs.readFileSync(p);
   return JSON.parse(txt);
 }
 
@@ -37,7 +37,7 @@ function main() {
   const warnings = [];
 
   // DAG
-  try { validateDAG(techs); } catch (e) { errors.push(String(e.message || e)); }
+  try { validateDAG(techs); } catch (error) { errors.push(String(error.message || error)); }
 
   const techIds = new Set(techs.map(t => t.id));
   const techUnlocks = {
@@ -47,7 +47,7 @@ function main() {
   };
   const unitIds = new Set(units.map(u => u.id));
   const buildingIds = new Set(buildings.map(b => b.id));
-  const improvementIds = new Set(improvements.map(i => i.id));
+  const improvementIds = new Set(improvements.map(index => index.id));
   const civicIds = new Set(civics.map(c => c.id));
 
   // Units requires/upgrade_to
@@ -102,20 +102,20 @@ function main() {
   for (const b of buildings) {
     if (b.requires && !techUnlocks.buildings.has(b.id)) warnings.push(`Building ${b.id} has requires=${b.requires} but is not unlocked by any tech/civic`);
   }
-  for (const i of improvements) {
-    if (!techUnlocks.improvements.has(i.id)) warnings.push(`Improvement ${i.id} is not unlocked by any tech`);
+  for (const index of improvements) {
+    if (!techUnlocks.improvements.has(index.id)) warnings.push(`Improvement ${index.id} is not unlocked by any tech`);
   }
 
   // Output
-  if (errors.length) {
+  if (errors.length > 0) {
     console.error('Errors:');
     for (const e of errors) console.error(' -', e);
   }
-  if (warnings.length) {
+  if (warnings.length > 0) {
     console.warn('Warnings:');
     for (const w of warnings) console.warn(' -', w);
   }
-  if (errors.length) process.exit(1);
+  if (errors.length > 0) process.exit(1);
   console.log('Content validation OK:', { techs: techs.length, units: units.length, buildings: buildings.length, improvements: improvements.length, unlocked: { units: techUnlocks.units.size, buildings: techUnlocks.buildings.size, improvements: techUnlocks.improvements.size } });
 }
 

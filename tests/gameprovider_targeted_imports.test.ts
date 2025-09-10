@@ -7,7 +7,7 @@ test('simulateAdvanceTurn calls globalGameBus.emit and dispatches END_TURN', asy
     evaluateAI: () => [{ type: 'LOG', payload: 'ai-act' }],
   }));
 
-  const gp = await import('../src/contexts/GameProvider');
+  const gp = await import('../src/contexts/game-provider');
   const _s = gp.initialStateForTests();
   // add one AI player
   _s.players = [

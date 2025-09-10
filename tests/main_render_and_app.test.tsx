@@ -35,20 +35,48 @@ test('render App default with mocked three deps', async () => {
   // mock Canvas and children to be simple DOM
   vi.doMock('@react-three/fiber', () => ({
     Canvas: ({ children }: any) => <div data-testid="canvas">{children}</div>,
+    useThree: () => ({
+      camera: { position: { set: (_x: number, _y: number, _z: number) => {} }, lookAt: (_t: any) => {} },
+      gl: { domElement: document.createElement('canvas') },
+      scene: {},
+      size: { width: 800, height: 600 },
+    }),
+    useFrame: (_callback: any) => {},
   }));
   vi.doMock('@react-three/drei', () => ({
     OrbitControls: () => <div data-testid="orbit" />,
     Stats: () => <div data-testid="stats" />,
   }));
+  // App imports ./scene/scene (lowercase). Mock both paths to be safe.
+  vi.doMock('../src/scene/scene', () => ({
+    default: () => (
+      <div data-testid="scene">
+        <div data-testid="orbit" />
+      </div>
+    ),
+    ConnectedScene: () => (
+      <div data-testid="scene">
+        <div data-testid="orbit" />
+      </div>
+    ),
+  }));
   vi.doMock('../src/scene/Scene', () => ({
-    default: () => <div data-testid="scene" />,
-    ConnectedScene: () => <div data-testid="scene" />,
+    default: () => (
+      <div data-testid="scene">
+        <div data-testid="orbit" />
+      </div>
+    ),
+    ConnectedScene: () => (
+      <div data-testid="scene">
+        <div data-testid="orbit" />
+      </div>
+    ),
   }));
   // import App after mocks
-  const App = (await import('../src/App')).default;
+  const { default: App } = await import('../src/app');
   render(<App />);
   expect(screen.getByTestId('canvas')).toBeDefined();
-  expect(screen.getByTestId('scene')).toBeDefined();
+  await screen.findByTestId('scene');
   expect(screen.getByTestId('orbit')).toBeDefined();
   expect(screen.getByTestId('stats')).toBeDefined();
   vi.resetModules();

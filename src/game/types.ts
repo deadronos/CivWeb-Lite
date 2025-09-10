@@ -7,6 +7,7 @@ export enum BiomeType {
   Mountain = 'mountain',
   Ocean = 'ocean',
   Tundra = 'tundra',
+  Ice = 'ice',
 }
 
 export interface Tile {

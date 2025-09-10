@@ -41,3 +41,11 @@ src/
 - **Scalability:** When you add a new feature, like a diplomacy system, you can add a new file in `game-logic/systems/` and its corresponding UI in `components/game/`.
 - **Reusability:** Generic UI elements in `components/ui/` can be used anywhere, keeping your visual style consistent.
 - **Maintainability:** It's easier to find and modify code when it's organized by its domain or purpose.
+
+## File Naming & Conventions
+
+- Use kebab-case for all filenames under `src/` (e.g., `overlay-ui.tsx`, `camera-controls.tsx`, `unit-model-switch.tsx`).
+- Export React components in PascalCase, but keep the file itself in kebab-case.
+- Tests mirror files with `.test.ts(x)` suffix in kebab-case (e.g., `overlay-ui.test.tsx`).
+- Legacy files using PascalCase are allowed temporarily for backward compatibility and will be renamed incrementally; prefer kebab-case for all new files.
+- Linting: the repo enforces this via ESLint’s filename-case rule (exceptions are annotated inline until fully migrated).

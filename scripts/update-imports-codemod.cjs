@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const parser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const generate = require('@babel/generator').default;
@@ -12,14 +12,14 @@ if (!fs.existsSync(previewPath)) {
   process.exit(1);
 }
 
-const mappings = JSON.parse(fs.readFileSync(previewPath, 'utf8'));
+const mappings = JSON.parse(fs.readFileSync(previewPath));
 
 // Create map from normalized old import path (relative to repo root) to new path
 const repoRoot = path.resolve(__dirname, '..');
 const map = new Map();
 for (const m of mappings) {
-  const from = path.resolve(repoRoot, m.from).replace(/\\\\/g, '/');
-  const to = path.resolve(repoRoot, m.to).replace(/\\\\/g, '/');
+  const from = path.resolve(repoRoot, m.from).replaceAll('\\\\', '/');
+  const to = path.resolve(repoRoot, m.to).replaceAll('\\\\', '/');
   map.set(from, to);
 }
 
@@ -44,14 +44,14 @@ function resolveImportAbsolute(fromFile, importSource) {
   const abs = path.resolve(importerDir, importSource);
   // Try with extensions .tsx .ts .jsx .js and index files
   const candidates = [];
-  for (const ext of ['.tsx', '.ts', '.jsx', '.js']) candidates.push(abs + ext);
-  for (const ext of ['.tsx', '.ts', '.jsx', '.js']) candidates.push(path.join(abs, 'index' + ext));
+  for (const extension of ['.tsx', '.ts', '.jsx', '.js']) candidates.push(abs + extension);
+  for (const extension of ['.tsx', '.ts', '.jsx', '.js']) candidates.push(path.join(abs, 'index' + extension));
   for (const c of candidates) {
-    const norm = c.replace(/\\\\/g, '/');
+    const norm = c.replaceAll('\\\\', '/');
     if (map.has(norm)) return map.get(norm);
   }
   // Also check if abs itself maps (maybe original import had extension)
-  const normAbs = abs.replace(/\\\\/g, '/');
+  const normAbs = abs.replaceAll('\\\\', '/');
   if (map.has(normAbs)) return map.get(normAbs);
   return null;
 }
@@ -63,21 +63,21 @@ for (const file of files) {
   let ast;
   try {
     ast = parser.parse(code, { sourceType: 'module', plugins: ['typescript', 'jsx'] });
-  } catch (e) {
-    console.error('Parse failed for', file, e.message);
+  } catch (error) {
+    console.error('Parse failed for', file, error.message);
     continue;
   }
 
   let fileChanged = false;
   traverse(ast, {
     ImportDeclaration(pathNode) {
-      const src = pathNode.node.source.value;
-      const resolved = resolveImportAbsolute(file, src);
+      const source = pathNode.node.source.value;
+      const resolved = resolveImportAbsolute(file, source);
       if (!resolved) return;
       // Compute new relative path from importer to resolved new file
       const importerDir = path.dirname(file);
       // prefer extensionless path; compute relative
-      let rel = path.relative(importerDir, resolved).replace(/\\\\/g, '/');
+      let rel = path.relative(importerDir, resolved).replaceAll('\\\\', '/');
       if (!rel.startsWith('.')) rel = './' + rel;
       // remove extensions and trailing /index
       rel = rel.replace(/(index)?(\.tsx?|\.jsx?|\.ts|\.js)$/i, '');

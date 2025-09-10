@@ -6,15 +6,17 @@ type InstancedTilesProperties = {
   color?: string; // fallback uniform color
   colors?: string[]; // optional per-instance hex colors (length === positions.length)
   size?: number; // hex radius
+  elevations?: number[]; // 0..1, same length as positions; used for slight height variation
   onPointerMove?: (e: any) => void;
 };
 
-// Lightweight instanced tiles component (not yet wired into Scene)
+// Instanced tiles component used by ConnectedScene to render the map
 export function InstancedTiles({
   positions,
   color = '#7ac',
   colors,
   size = 0.5,
+  elevations,
   onPointerMove,
 }: InstancedTilesProperties) {
   const count = positions.length;
@@ -38,7 +40,11 @@ export function InstancedTiles({
         object.position.set(p[0], p[1], p[2]);
         // scale so cylinder radius matches requested size (cylinder base args use 0.5 radius)
         const scaleFactor = size / 0.5;
-        object.scale.set(scaleFactor, 1, scaleFactor);
+        // Height variation by elevation: map 0..1 -> 0.06..0.12 (geometry base height is 0.08)
+        const e = elevations && elevations[index] != null ? elevations[index] : 0.5;
+        const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, e));
+        const heightScale = desiredHeight / 0.08;
+        object.scale.set(scaleFactor, heightScale, scaleFactor);
         object.rotation.set(0, 0, 0);
         object.updateMatrix();
         (mesh as any).setMatrixAt(index, object.matrix);
@@ -58,11 +64,18 @@ export function InstancedTiles({
           }
         }
         if ((mesh as any).instanceColor) (mesh as any).instanceColor.needsUpdate = true;
-        if (mesh.material) (mesh.material as any).vertexColors = true;
+        // Ensure material is expecting vertex colors
+        if (mesh.material) {
+          // Use pure white so instance vertex colors are not tinted darker
+          (mesh.material as any).color = new Color('#ffffff');
+          (mesh.material as any).vertexColors = true;
+          (mesh.material as any).needsUpdate = true;
+        }
       } else {
         if (mesh.material) {
           (mesh.material as any).color = new Color(materialColor);
           (mesh.material as any).vertexColors = false;
+          (mesh.material as any).needsUpdate = true;
         }
       }
     } else {
@@ -81,10 +94,18 @@ export function InstancedTiles({
       onPointerMove={onPointerMove as any}
     >
       <cylinderGeometry args={[0.5, 0.5, 0.08, 6]} />
-      <meshStandardMaterial
-        color={materialColor}
-        vertexColors={colors && colors.length === count ? true : false}
-      />
+      {/**
+       * We default vertexColors to false here; the effect toggles it on when
+       * instance colors are actually set via setColorAt. This avoids a state
+       * where vertexColors=true but no instanceColor attribute exists yet,
+       * which renders black on some three versions.
+       */}
+      {/**
+       * Lambert is bright and view-independent enough while respecting lights.
+       * Start with vertexColors disabled; effect enables it after instance colors are populated
+       * to avoid black output on first frame.
+       */}
+      <meshLambertMaterial color={materialColor} vertexColors={false} />
     </instancedMesh>
   );
 }
