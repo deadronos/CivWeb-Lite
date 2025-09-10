@@ -34,7 +34,7 @@ const unicornRecommendedLowered = Object.fromEntries(
 
 module.exports = [
   {
-    ignores: ['dist', 'node_modules'],
+    ignores: ['dist', 'node_modules', 'dist/**'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -197,4 +197,13 @@ module.exports = [
 
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
     // (no rules block here)
+
+  // Ignore markdown linting for memory-bank folder
+  {
+    files: ['memory-bank/**/*.md'],
+    rules: {
+      // Disable all markdown-specific linting rules for memory-bank docs
+      // (add markdown plugin rules here if present, or just disable all)
+    },
+  },
 ];
