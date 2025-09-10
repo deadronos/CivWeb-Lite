@@ -73,7 +73,7 @@ test('render App default with mocked three deps', async () => {
     ),
   }));
   // import App after mocks
-  const { default: App } = await import('../src/App');
+  const { default: App } = await import('../src/app');
   render(<App />);
   expect(screen.getByTestId('canvas')).toBeDefined();
   await screen.findByTestId('scene');
