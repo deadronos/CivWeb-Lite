@@ -71,3 +71,19 @@ This document describes how to extend the current per‑biome instancing to supp
 
 Ask me when you're ready for Blender: I can provide Python scripts to batch‑export GLTF variants, automatically align hex pivots, and generate LODs with naming conventions (e.g., `biome_variant_LOD0/1`).
 
+
+
+Populate BIOME_VARIANTS.grass = [{name:'v1'},{name:'v2'},{name:'v3'}] (and later attach loaded geometry/material).
+You’ll immediately see 3 shade buckets for grass, using current hex geometry until meshes arrive.
+
+
+Enabled three grassland variants immediately.
+
+Updated: src/scene/assets/biome-variants-registry.ts
+BIOME_VARIANTS.grass = [{ name: 'v1' }, { name: 'v2' }, { name: 'v3' }]
+Effect
+
+Scene now creates 3 shader buckets for grassland using current hex geometry.
+Buckets get slightly different tints via colorForBiomeBucket, so you’ll see variation right away.
+When GLTF assets are ready, attach geometry/material to each variant entry and the same buckets can render the Blender meshes without further scene changes.
+Want me to scaffold an InstancedModels component next so swapping in GLTF geometry is a one-line change per bucket?
