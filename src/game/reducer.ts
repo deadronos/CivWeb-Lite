@@ -12,6 +12,7 @@ import {
 } from './content/rules';
 import { createEmptyState as createContentExtension } from './content/engine';
 import { UNIT_TYPES } from './content/registry';
+import { computePath } from './pathfinder';
 
 function findPlayer(players: PlayerState[], id: string) {
   return players.find((p) => p.id === id);
@@ -137,7 +138,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const width = action.payload?.width ?? draft.map.width;
         const height = action.payload?.height ?? draft.map.height;
         draft.seed = seed;
-        const world = generateWorld(seed, width, height);
+        const world = generateWorld(seed, width as number, height as number);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
         // ensure extension state exists
@@ -152,7 +153,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         // Reset core state
         draft.turn = 0;
         draft.seed = seed;
-        const world = generateWorld(seed, width, height);
+        const world = generateWorld(seed, width as number, height as number);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
         // Players
@@ -454,6 +455,134 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };
         draft.aiPerf.total += action.payload.duration;
         draft.aiPerf.count += 1;
+        break;
+      }
+      // UI Interaction Actions
+      case 'SELECT_UNIT': {
+        draft.ui.selectedUnitId = action.payload.unitId;
+        draft.ui.previewPath = undefined;
+        // Emit event for UI components to listen to
+        globalGameBus.emit('unit:selected', { unitId: action.payload.unitId });
+        break;
+      }
+      case 'PREVIEW_PATH': {
+        if (draft.contentExt && draft.ui.selectedUnitId) {
+          const result = computePath(
+            draft.contentExt, 
+            draft.ui.selectedUnitId, 
+            action.payload.targetTileId,
+            draft.map.width,
+            draft.map.height
+          );
+          draft.ui.previewPath = result.path || undefined;
+        }
+        break;
+      }
+      case 'ISSUE_MOVE': {
+        if (draft.contentExt) {
+          const { unitId, path, confirmCombat } = action.payload;
+          const unit = draft.contentExt.units[unitId];
+          if (unit && path.length > 0) {
+            // For now, implement simple move to first tile in path
+            const targetTileId = path[path.length - 1];
+            if (extensionMoveUnit(draft.contentExt, unitId, targetTileId)) {
+              globalGameBus.emit('actionAccepted', { 
+                requestId: `move_${unitId}_${Date.now()}`, 
+                appliedAtTick: draft.turn 
+              });
+              globalGameBus.emit('actionsResolved', { 
+                tick: draft.turn, 
+                results: [{ unitId, action: 'move', location: targetTileId }] 
+              });
+            } else {
+              globalGameBus.emit('actionRejected', { 
+                requestId: `move_${unitId}_${Date.now()}`, 
+                reason: 'Invalid move target' 
+              });
+            }
+          }
+        }
+        draft.ui.selectedUnitId = undefined;
+        draft.ui.previewPath = undefined;
+        break;
+      }
+      case 'CANCEL_SELECTION': {
+        draft.ui.selectedUnitId = undefined;
+        draft.ui.previewPath = undefined;
+        break;
+      }
+      case 'OPEN_CITY_PANEL': {
+        draft.ui.openPanels.cityPanel = action.payload.cityId;
+        break;
+      }
+      case 'CHOOSE_PRODUCTION_ITEM': {
+        if (draft.contentExt) {
+          const { cityId, order } = action.payload;
+          const city = draft.contentExt.cities[cityId];
+          if (city) {
+            city.productionQueue.push({
+              type: order.type,
+              item: order.itemId,
+              turnsRemaining: 5, // TODO: Calculate based on cost and production
+            });
+            globalGameBus.emit('productionQueued', { cityId, order });
+          }
+        }
+        break;
+      }
+      case 'REORDER_PRODUCTION_QUEUE': {
+        if (draft.contentExt) {
+          const { cityId, newQueue } = action.payload;
+          const city = draft.contentExt.cities[cityId];
+          if (city) {
+            // Convert UI ProductionOrder to internal CityProductionOrder
+            city.productionQueue = newQueue.map(order => ({
+              type: order.type,
+              item: order.itemId,
+              turnsRemaining: 5, // TODO: Calculate based on cost and production
+            }));
+          }
+        }
+        break;
+      }
+      case 'CANCEL_ORDER': {
+        if (draft.contentExt) {
+          const { cityId, orderIndex } = action.payload;
+          const city = draft.contentExt.cities[cityId];
+          if (city && orderIndex >= 0 && orderIndex < city.productionQueue.length) {
+            city.productionQueue.splice(orderIndex, 1);
+          }
+        }
+        break;
+      }
+      case 'OPEN_RESEARCH_PANEL': {
+        draft.ui.openPanels.researchPanel = true;
+        break;
+      }
+      case 'START_RESEARCH': {
+        if (draft.contentExt) {
+          extensionBeginResearch(draft.contentExt, action.payload.techId);
+          globalGameBus.emit('researchStarted', { 
+            playerId: action.payload.playerId, 
+            techId: action.payload.techId 
+          });
+        }
+        break;
+      }
+      case 'QUEUE_RESEARCH': {
+        // TODO: Implement research queue when multiple techs can be queued
+        globalGameBus.emit('researchQueued', { 
+          playerId: action.payload.playerId, 
+          techId: action.payload.techId 
+        });
+        break;
+      }
+      case 'BEGIN_TURN': {
+        globalGameBus.emit('turn:playerStart', { playerId: action.payload.playerId, turn: draft.turn });
+        break;
+      }
+      case 'END_PLAYER_PHASE': {
+        globalGameBus.emit('turn:playerEnd', { playerId: action.payload.playerId, turn: draft.turn });
         break;
       }
       default: {

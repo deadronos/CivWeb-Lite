@@ -5,8 +5,20 @@ type Listener<T> = (payload: T) => void;
 export interface GameEvents {
   'turn:start': { turn: number };
   'turn:end': { turn: number };
+  'turn:playerStart': { playerId: string; turn: number };
+  'turn:playerEnd': { playerId: string; turn: number };
   'action:applied': { action: GameAction };
   'tech:unlocked': { playerId: string; techId: string };
+  'unit:selected': { unitId: string };
+  'actionAccepted': { requestId: string; appliedAtTick: number };
+  'actionRejected': { requestId: string; reason: string };
+  'actionsResolved': { tick: number; results: any[] };
+  'combatResolved': { tick: number; combats: any[] };
+  'productionCompleted': { cityId: string; itemId: string; spawnedEntityId?: string };
+  'productionQueued': { cityId: string; order: any };
+  'researchProgress': { playerId: string; techId: string; progress: number; completed?: boolean };
+  'researchStarted': { playerId: string; techId: string };
+  'researchQueued': { playerId: string; techId: string };
 }
 
 export class GameEventBus<E extends Record<string, any>> {
