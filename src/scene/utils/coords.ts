@@ -2,20 +2,19 @@
  * Convert axial hex coordinates (q, r) to world X/Z plane coordinates.
  * Orientation: flat-top hexes (flat sides on top/bottom).
  *
- * Projection: Cylindrical world layout (modified for seamless wrapping)
- *  - Creates evenly spaced columns for cylindrical world wrapping
- *  - Removes the odd-q offset to ensure columns align vertically
- *  - Maintains axial math (neighbors, distance, pathfinding) unchanged
+ * Projection: standard flat-top axial layout with vertical staggering.
+ *  - Columns wrap horizontally for a cylindrical world.
+ *  - Vertical coordinate accounts for the odd-q offset (r + q/2).
  *
  * Formulas (flat-top, cylindrical):
  *   worldX = size * 3/2 * q
- *   worldZ = size * sqrt(3) * r
+ *   worldZ = size * sqrt(3) * (r + q / 2)
  *
  * `size` is the hex radius (distance from center to any corner).
  */
 export function axialToWorld(q: number, r: number, size = 1): [number, number] {
   const worldX = size * (3 / 2) * q;
-  const worldZ = size * Math.sqrt(3) * r;
+  const worldZ = size * Math.sqrt(3) * (r + q / 2);
   return [worldX, worldZ];
 }
 

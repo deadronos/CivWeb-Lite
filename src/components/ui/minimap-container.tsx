@@ -24,13 +24,13 @@ export default function MinimapContainer() {
   );
   const extension = state.contentExt;
   const highlighted = React.useMemo(() => {
-  if (!extension || !selectedUnitId) return [] as string[];
+    if (!extension || !selectedUnitId) return [] as string[];
     try {
-      return computeMovementRange(extension, selectedUnitId).reachable;
+      return computeMovementRange(extension, selectedUnitId, state.map.width, state.map.height).reachable;
     } catch {
       return [] as string[];
     }
-  }, [extension, selectedUnitId]);
+  }, [extension, selectedUnitId, state.map.height, state.map.width]);
   return (
     <Minimap
       width={state.map.width}
