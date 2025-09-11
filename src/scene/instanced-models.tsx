@@ -1,42 +1,65 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { InstancedMesh, Object3D } from 'three';
+import React from 'react';
+import { InstancedMesh, Matrix4, Object3D } from 'three';
 
-type InstancedModelsProperties = {
-  geometry: any; // THREE.BufferGeometry
-  material: any; // THREE.Material
-  positions: Array<[number, number, number]>;
-  size?: number; // hex radius baseline (to scale geometry uniformly)
-  elevations?: number[]; // 0..1 per instance -> Y scale
-  onPointerMove?: (e: any) => void;
+export type InstanceTransform = {
+  position: [number, number, number];
+  scale?: number | [number, number, number];
+  rotationY?: number; // radians
 };
 
-export default function InstancedModels({ geometry, material, positions, size = 0.5, elevations, onPointerMove }: InstancedModelsProperties) {
-  const count = positions.length;
-  const reference = useRef<InstancedMesh>(null);
-  const object = useMemo(() => new Object3D(), []);
+type Properties = {
+  geometry: any; // THREE.BufferGeometry
+  material: any; // THREE.Material | THREE.Material[]
+  transforms: InstanceTransform[];
+  castShadow?: boolean;
+  receiveShadow?: boolean;
+  name?: string;
+  frustumCulled?: boolean; // default false: instances can extend far due to wrapping
+};
 
-  useEffect(() => {
-    const mesh = reference.current;
-    if (!mesh) return;
-    if (typeof (mesh as any).setMatrixAt !== 'function') return;
+// Lightweight helper to render arbitrary geometry via InstancedMesh.
+// Accepts per-instance transforms and applies them to the instanceMatrix.
+export default function InstancedModels({
+  geometry,
+  material,
+  transforms,
+  castShadow,
+  receiveShadow,
+  name,
+  frustumCulled = false,
+}: Properties) {
+  const meshRef = React.useRef<InstancedMesh>(null!);
+
+  // Apply matrices whenever transforms change
+  React.useEffect(() => {
+    const mesh = meshRef.current as any;
+    if (!mesh || typeof mesh.setMatrixAt !== 'function') return; // tests/jsdom may stub this
+    const temp = new Object3D();
+    const count = transforms.length;
     mesh.count = count;
-    for (let index = 0; index < count; index++) {
-      const p = positions[index];
-      object.position.set(p[0], p[1], p[2]);
-      const scaleFactor = size / 0.5; // assume source geometry matches 0.5 radius baseline
-      const e = elevations && elevations[index] != undefined ? elevations[index] : 0.5;
-      const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, e));
-      const heightScale = desiredHeight / 0.08;
-      object.scale.set(scaleFactor, heightScale, scaleFactor);
-      object.rotation.set(0, -Math.PI / 6, 0);
-      object.updateMatrix();
-      (mesh as any).setMatrixAt(index, object.matrix);
+    for (let i = 0; i < count; i++) {
+      const t = transforms[i];
+      const [x, y, z] = t.position;
+      temp.position.set(x, y, z);
+      const s = t.scale ?? 1;
+      if (Array.isArray(s)) temp.scale.set(s[0], s[1], s[2]);
+      else temp.scale.setScalar(s);
+      temp.rotation.set(0, t.rotationY ?? 0, 0);
+      temp.updateMatrix();
+      mesh.setMatrixAt(i, temp.matrix as Matrix4);
     }
-    if ((mesh as any).instanceMatrix) (mesh as any).instanceMatrix.needsUpdate = true;
-  }, [positions, elevations, size, object, count]);
+    if (mesh.instanceMatrix) mesh.instanceMatrix.needsUpdate = true;
+  }, [transforms]);
 
+  if (!geometry || !material || transforms.length === 0) return null;
   return (
-    <instancedMesh ref={reference} args={[geometry as any, material as any, count]} onPointerMove={onPointerMove as any} />
+    <instancedMesh
+      ref={meshRef}
+      args={[geometry, material, Math.max(1, transforms.length)] as any}
+      castShadow={castShadow}
+      receiveShadow={receiveShadow}
+      name={name}
+      frustumCulled={frustumCulled}
+    />
   );
 }
-

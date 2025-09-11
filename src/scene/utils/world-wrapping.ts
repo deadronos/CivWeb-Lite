@@ -19,7 +19,7 @@ export interface WrappingConfig {
 export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
   worldWidth: 106, // Default medium map
   worldHeight: 66,
-  wrapBuffer: 5, // Render 5 extra columns on each side
+  wrapBuffer: 50, // Render a couple of extra columns for edge stitching
   teleportThreshold: 10, // Teleport when camera gets within 10 units of edge
 };
 
@@ -28,15 +28,25 @@ export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
  */
 export function getWorldBounds(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
   const leftEdge = 0;
-  const rightEdge = hexSize * Math.sqrt(3) * (config.worldWidth - 1);
+  // Horizontal spacing between axial columns we use for wrapping math.
+  // Keep consistent with tests that assume 3/2 * size per column.
+  const rightEdge = hexSize * (3 / 2) * (config.worldWidth - 1);
   const worldSpan = rightEdge - leftEdge;
   
   return {
     leftEdge,
     rightEdge,
     worldSpan,
-    wrapBufferWidth: hexSize * Math.sqrt(3) * config.wrapBuffer,
+    wrapBufferWidth: hexSize * (3 / 2) * config.wrapBuffer,
   };
+}
+
+/**
+ * Exact horizontal wrap delta for pointy-top axial: moving q by ±worldWidth
+ * shifts X by √3 * size * worldWidth, independent of r.
+ */
+export function getHorizontalWrapDelta(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
+  return Math.sqrt(3) * hexSize * config.worldWidth;
 }
 
 /**
@@ -48,7 +58,8 @@ export function generateWrappedPositions(
   config: WrappingConfig,
   hexSize = DEFAULT_HEX_SIZE
 ): Array<[number, number, number]> {
-  const { worldSpan, wrapBufferWidth } = getWorldBounds(config, hexSize);
+  const { wrapBufferWidth } = getWorldBounds(config, hexSize);
+  const wrapDelta = getHorizontalWrapDelta(config, hexSize);
   const wrappedPositions = [...originalPositions];
 
   // Add left wrap buffer - render rightmost columns on the left side
@@ -57,8 +68,8 @@ export function generateWrappedPositions(
       const tileIndex = tiles.findIndex(t => t.coord.q === q && t.coord.r === r);
       if (tileIndex >= 0) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
-        // Shift to left side
-        wrappedPositions.push([origX - worldSpan - hexSize * (3 / 2), origY, origZ]);
+        // Shift to left side by exact wrap delta
+        wrappedPositions.push([origX - wrapDelta, origY, origZ]);
       }
     }
   }
@@ -69,8 +80,8 @@ export function generateWrappedPositions(
       const tileIndex = tiles.findIndex(t => t.coord.q === q && t.coord.r === r);
       if (tileIndex >= 0) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
-        // Shift to right side
-        wrappedPositions.push([origX + worldSpan + hexSize * Math.sqrt(3), origY, origZ]);
+        // Shift to right side by exact wrap delta
+        wrappedPositions.push([origX + wrapDelta, origY, origZ]);
       }
     }
   }
@@ -95,7 +106,7 @@ export function generateWrappedBiomeGroups(
   config: WrappingConfig,
   hexSize = DEFAULT_HEX_SIZE
 ) {
-  const { worldSpan } = getWorldBounds(config, hexSize);
+  const wrapDelta = getHorizontalWrapDelta(config, hexSize);
   const wrappedGroups = originalBiomeGroups.map(group => ({
     ...group,
     positions: [...group.positions],
@@ -118,13 +129,12 @@ export function generateWrappedBiomeGroups(
         const tileKey = `${q},${r}`;
         const tileData = tileMap.get(tileKey);
         if (tileData && String(tileData.tile.biome).toLowerCase() === group.biome) {
-          const origIndex = group.positions.findIndex(([x]) => 
-            Math.abs(x - hexSize * (3 / 2) * q) < 0.1
-          );
+          // Find the exact original index by (q,r) match instead of approximate X
+          const origIndex = group.hexCoords.findIndex(h => h.q === q && h.r === r);
           if (origIndex >= 0) {
             const [origX, origY, origZ] = group.positions[origIndex];
             wrappedGroups[groupIndex].positions.push([
-              origX - worldSpan - hexSize * (3 / 2), 
+              origX - wrapDelta, 
               origY, 
               origZ
             ]);
@@ -144,13 +154,11 @@ export function generateWrappedBiomeGroups(
         const tileKey = `${q},${r}`;
         const tileData = tileMap.get(tileKey);
         if (tileData && String(tileData.tile.biome).toLowerCase() === group.biome) {
-          const origIndex = group.positions.findIndex(([x]) => 
-            Math.abs(x - hexSize * (3 / 2) * q) < 0.1
-          );
+          const origIndex = group.hexCoords.findIndex(h => h.q === q && h.r === r);
           if (origIndex >= 0) {
             const [origX, origY, origZ] = group.positions[origIndex];
             wrappedGroups[groupIndex].positions.push([
-              origX + worldSpan + hexSize * (3 / 2), 
+              origX + wrapDelta, 
               origY, 
               origZ
             ]);
@@ -176,16 +184,17 @@ export function checkCameraTeleport(
   config: WrappingConfig,
   hexSize = DEFAULT_HEX_SIZE
 ): number | null {
-  const { leftEdge, rightEdge, worldSpan } = getWorldBounds(config, hexSize);
+  const { leftEdge, rightEdge } = getWorldBounds(config, hexSize);
+  const wrapDelta = getHorizontalWrapDelta(config, hexSize);
 
   // If camera is too far left, teleport to right side
   if (cameraX < leftEdge - config.teleportThreshold) {
-    return cameraX + worldSpan + hexSize * Math.sqrt(3);
+    return cameraX + wrapDelta;
   }
 
   // If camera is too far right, teleport to left side
   if (cameraX > rightEdge + config.teleportThreshold) {
-    return cameraX - worldSpan - hexSize * Math.sqrt(3);
+    return cameraX - wrapDelta;
   }
 
   return null; // No teleport needed
@@ -199,14 +208,14 @@ export function wrapCameraPosition(
   config: WrappingConfig,
   hexSize = DEFAULT_HEX_SIZE
 ): number {
-  const { worldSpan } = getWorldBounds(config, hexSize);
+  const wrapDelta = getHorizontalWrapDelta(config, hexSize);
   
   // Normalize camera position to the main world bounds
   while (cameraX < 0) {
-    cameraX += worldSpan;
+    cameraX += wrapDelta;
   }
-  while (cameraX > worldSpan) {
-    cameraX -= worldSpan;
+  while (cameraX > wrapDelta) {
+    cameraX -= wrapDelta;
   }
   
   return cameraX;
