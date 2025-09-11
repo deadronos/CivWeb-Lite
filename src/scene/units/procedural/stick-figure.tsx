@@ -1,4 +1,3 @@
- 
 import React from 'react';
 import { getBox, getCone, getCylinder, getSphere, getTorus } from './shared';
 

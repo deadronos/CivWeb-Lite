@@ -14,22 +14,31 @@ function urlFor(name: string): string {
 
 function findMeshes(root: Object3D): Mesh[] {
   const out: Mesh[] = [] as any;
-  root.traverse((o: any) => { if (o && (o as any).isMesh) out.push(o as Mesh); });
+  root.traverse((o: any) => {
+    if (o && (o as any).isMesh) out.push(o as Mesh);
+  });
   return out;
 }
 
 function pickBestMesh(meshes: Mesh[]): Mesh | undefined {
   if (meshes.length === 0) return undefined;
   // 1) Prefer name hints
-  const preferred = meshes.find(m => /tile|base|hex/i.test(m.name));
+  const preferred = meshes.find((m) => /tile|base|hex/i.test(m.name));
   if (preferred) return preferred;
   // 2) Fallback: largest triangle count
   let best = meshes[0];
   let bestTris = -1;
   for (const m of meshes) {
     const g: any = m.geometry;
-    const tri = g?.index ? (g.index.count / 3) : (g?.attributes?.position?.count ? g.attributes.position.count / 3 : 0);
-    if (tri > bestTris) { bestTris = tri; best = m; }
+    const tri = g?.index
+      ? g.index.count / 3
+      : g?.attributes?.position?.count
+        ? g.attributes.position.count / 3
+        : 0;
+    if (tri > bestTris) {
+      bestTris = tri;
+      best = m;
+    }
   }
   return best;
 }
@@ -64,17 +73,20 @@ function cloneSubsetGeometry(source: BufferGeometry, indices: number[]): BufferG
     (dst as any).setAttribute(name as string, new (attribute.constructor as any)(out, itemSize));
   }
   const IndexTyped = (source.index!.array as any).constructor as any;
-  dst.setIndex(new (IndexTyped)(remappedIndices));
+  dst.setIndex(new IndexTyped(remappedIndices));
   dst.computeBoundingSphere();
   dst.computeBoundingBox();
   return dst;
 }
 
-function splitGeometryByMaterial(geometry: BufferGeometry, material: Material | Material[]): { geos: BufferGeometry[]; mats: Material[] } {
+function splitGeometryByMaterial(
+  geometry: BufferGeometry,
+  material: Material | Material[]
+): { geos: BufferGeometry[]; mats: Material[] } {
   if (!Array.isArray(material) || !geometry.index || !geometry.groups?.length) {
     return { geos: [geometry], mats: [Array.isArray(material) ? material[0] : material] };
   }
-  const indexArray = [...(geometry.index!.array as any) as number[]];
+  const indexArray = [...(geometry.index!.array as any as number[])];
   const geos: BufferGeometry[] = [];
   const mats: Material[] = [];
   for (const g of geometry.groups) {
@@ -86,14 +98,23 @@ function splitGeometryByMaterial(geometry: BufferGeometry, material: Material | 
   return { geos, mats };
 }
 
-async function loadGLTFOnce(url: string): Promise<{ geometry: BufferGeometry; material: Material | Material[]; chosen: string; tris: number }> {
+async function loadGLTFOnce(
+  url: string
+): Promise<{
+  geometry: BufferGeometry;
+  material: Material | Material[];
+  chosen: string;
+  tris: number;
+}> {
   // Dynamic import to avoid bundling loader in tests/SSR unnecessarily
   const [{ GLTFLoader }, BufferGeometryUtilities] = await Promise.all([
     import('three/examples/jsm/loaders/GLTFLoader.js' as any),
     import('three/examples/jsm/utils/BufferGeometryUtils.js' as any),
   ]);
   const loader = new GLTFLoader();
-  const gltf: any = await new Promise((resolve, reject) => loader.load(url, resolve, undefined, reject));
+  const gltf: any = await new Promise((resolve, reject) =>
+    loader.load(url, resolve, undefined, reject)
+  );
   const scene = gltf.scene || gltf.scenes?.[0];
   if (!scene) throw new Error('GLTF has no scene: ' + url);
   const meshes = findMeshes(scene);
@@ -116,7 +137,6 @@ async function loadGLTFOnce(url: string): Promise<{ geometry: BufferGeometry; ma
         totalTris += tri;
       }
     } catch (error) {
-       
       console.warn('[biome-assets] Skip submesh due to error', m?.name, error);
     }
   }
@@ -141,7 +161,9 @@ async function loadGLTFOnce(url: string): Promise<{ geometry: BufferGeometry; ma
       try {
         if ((m as any).vertexColors === undefined) (m as any).vertexColors = false;
       } catch {}
-      try { (m as any).needsUpdate = true; } catch {}
+      try {
+        (m as any).needsUpdate = true;
+      } catch {}
     }
   } catch (error) {
     console.warn('[biome-assets] material postprocess failed', error);
@@ -160,14 +182,24 @@ export async function loadBiomeVariants(biome: string): Promise<void> {
         console.info('[biome-assets] Loading', biome, index, url);
         const { geometry, material, chosen, tris } = await loadGLTFOnce(url);
         setVariantAssets('grass', index, geometry, material);
-        console.info('[biome-assets] Loaded', biome, index, 'mesh:', chosen, 'tris:', Math.floor(tris));
+        console.info(
+          '[biome-assets] Loaded',
+          biome,
+          index,
+          'mesh:',
+          chosen,
+          'tris:',
+          Math.floor(tris)
+        );
         // Notify listeners (scene) so it can re-render using assets
         try {
-          globalThis.dispatchEvent(new CustomEvent(BIOME_ASSETS_EVENT, { detail: { biome, index: index } }));
+          globalThis.dispatchEvent(
+            new CustomEvent(BIOME_ASSETS_EVENT, { detail: { biome, index: index } })
+          );
         } catch {}
       } catch (error) {
         // Swallow per-variant errors so others can still load
-         
+
         console.warn('[biome-assets] Failed', biome, index, error);
       }
     }

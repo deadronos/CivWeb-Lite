@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   simulateAdvanceTurn,
   GAME_PROVIDER_MARKER,
-  initialState } from
-"../src/contexts/game-provider";
+  initialState,
+} from '../src/contexts/game-provider';
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider simulateAdvanceTurn helper', () => {
@@ -12,15 +12,16 @@ describe('GameProvider simulateAdvanceTurn helper', () => {
     const state = initialState();
     // add a fake AI player
     state.players = [
-    {
-      id: 'ai1',
-      isHuman: false,
-      sciencePoints: 1,
-      culturePoints: 0,
-      researching: null,
-      researchedTechIds: [],
-      leader: { scienceFocus: 1, cultureFocus: 0 }
-    } as any];
+      {
+        id: 'ai1',
+        isHuman: false,
+        sciencePoints: 1,
+        culturePoints: 0,
+        researching: null,
+        researchedTechIds: [],
+        leader: { scienceFocus: 1, cultureFocus: 0 },
+      } as any,
+    ];
 
     const dispatched: any[] = [];
     const dispatch = vi.fn((a: any) => dispatched.push(a));

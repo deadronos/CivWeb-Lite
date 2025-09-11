@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import Scene from "../src/scene/scene";
-import { SCENE_RUNTIME_MARKER } from "../src/scene/scene";
+import Scene from '../src/scene/scene';
+import { SCENE_RUNTIME_MARKER } from '../src/scene/scene';
 
 describe('Scene component', () => {
   it('renders a group element', () => {

@@ -30,7 +30,12 @@ function makePlayer(id: string, leaderIndex: number): PlayerState {
   };
 }
 
-function makeInitialState(seed: string, width: number, height: number, numberAI: number): GameState {
+function makeInitialState(
+  seed: string,
+  width: number,
+  height: number,
+  numberAI: number
+): GameState {
   const world = generateWorld(seed, width, height);
   const players = [] as PlayerState[];
   for (let index = 0; index < numberAI; index++) players.push(makePlayer(`AI-${index + 1}`, index));

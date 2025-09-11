@@ -1,7 +1,7 @@
 ```markdown
 # Repository snapshot observations (2025-09-11)
 
-- GameProvider implementation: `src/contexts/game-provider.tsx` provides `GameStateContext`, `GameDispatchContext`, `GameProvider` and test helpers (simulateAdvanceTurn, cover* helpers). It initializes state via a reducer (`applyAction`) and dispatches `INIT` on mount. An autoSim RAF loop exists which runs when `state.autoSim` is true.
+- GameProvider implementation: `src/contexts/game-provider.tsx` provides `GameStateContext`, `GameDispatchContext`, `GameProvider` and test helpers (simulateAdvanceTurn, cover\* helpers). It initializes state via a reducer (`applyAction`) and dispatches `INIT` on mount. An autoSim RAF loop exists which runs when `state.autoSim` is true.
 
 - Reducer and content model: `src/game/reducer.ts` handles core actions (`INIT`, `NEW_GAME`, `END_TURN`) and extension actions (`EXT_ADD_UNIT`, `EXT_ADD_CITY`, `EXT_QUEUE_PRODUCTION`, etc.). There are helper functions for spawn placement and a content extension used to store units/cities per-tile.
 
@@ -15,5 +15,4 @@
   - Document GameProvider public API in `memory-bank/` and add a small reference README for new contributors.
   - Move test-only helpers out of runtime modules or guard their exports behind `process.env.NODE_ENV === 'test'`.
   - Add unit tests for GameProvider's public behaviors (INIT, NEW_GAME, autoSim toggle, simulateAdvanceTurn) if not present.
-
 ```

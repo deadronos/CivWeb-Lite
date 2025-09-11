@@ -28,7 +28,11 @@ vi.mock('@react-three/fiber', () => ({
 vi.mock('@react-three/drei', () => ({
   OrbitControls: () => React.createElement('div', { 'data-testid': 'orbit' }),
   Html: (properties: any) =>
-    React.createElement('div', { 'data-testid': properties['data-testid'] ?? 'html' }, properties.children),
+    React.createElement(
+      'div',
+      { 'data-testid': properties['data-testid'] ?? 'html' },
+      properties.children
+    ),
   Stats: () => React.createElement('div', { 'data-testid': 'stats' }),
   useGLTF: () => ({ scene: {} }),
   Billboard: ({ children }: any) =>
@@ -38,9 +42,8 @@ vi.mock('@react-three/drei', () => ({
 
 // Mock react-icons to avoid Vite resolving subpath imports in tests
 vi.mock('react-icons/md', () => ({
-  MdScience: (properties: any) => React.createElement('i', { 'data-testid': 'md-science', ...properties }),
+  MdScience: (properties: any) =>
+    React.createElement('i', { 'data-testid': 'md-science', ...properties }),
   MdTheaterComedy: (properties: any) =>
     React.createElement('i', { 'data-testid': 'md-theater', ...properties }),
 }));
-
-

@@ -8,7 +8,6 @@ CivWeb-Lite is a lightweight, extensible implementation of a Civ-like, turn-base
 
 <img src="demo.png" alt="Demo screenshot" width="600"/>
 
-
 This repository is for an evolving deterministic simulation: procedural hex-world generation, a turn engine, tech progression, and AI players. The work here is intended to be modular, testable, and easy to extend.
 
 Key goals:
@@ -17,7 +16,7 @@ Key goals:
 - Modular systems: world generation, turn engine, tech trees, AI heuristics, and save/load.
 - Small, testable core so features can be iteratively added and verified.
 
-Status: Planned / in development. See `spec/spec-architecture-civweb-lite-core.md` and `plan/feature-core-game-foundation-1.md` for detailed requirements and the implementation plan.
+Status: Active development (work in progress). See `spec/spec-architecture-civweb-lite-core.md` and `plan/feature-core-game-foundation-1.md` for requirements and implementation planning.
 
 ## Quick start
 
@@ -40,9 +39,25 @@ Preview a production build:
 npm run preview
 ```
 
+Tests and validation:
+
+```powershell
+# Run unit tests (Vitest)
+npm test
+
+# Run tests in watch mode during development
+npm run test:watch
+
+# Run end-to-end tests (Playwright)
+npm run test:e2e
+
+# Validate content/schema
+npm run validate:data
+```
+
 ## Project structure
 
-This project follows a canonical `src/` layout. The structure below is authoritative — it should inform where new code goes. If you need to deviate, open a short proposal and update the `spec/` and `plan/` documents with the rationale.
+This project follows a canonical `src/` layout. The structure below reflects the current codebase — use these locations when adding or modifying code. If you need to deviate, open a short proposal and update `spec/` and `plan/` with the rationale.
 
 ### Runtime flags (dev/testing)
 
@@ -52,33 +67,16 @@ This project follows a canonical `src/` layout. The structure below is authorita
 
 ```text
 src/
-├── assets/
-│   └── # Images, sounds, and other media
-├── components/
-│   ├── ui/
-│   │   └── # Reusable UI elements like Button.tsx, Modal.tsx, etc.
-│   └── game/
-│       └── # Game-specific components like CityInfo.tsx, UnitSprite.tsx
-├── constants/
-│   └── # Game constants, like technology costs or unit stats
-├── contexts/
-│   └── GameProvider.tsx  # Central state management
-├── hooks/
-│   └── # Custom hooks, e.g., useGame.ts to access game state
-├── scenes/
-│   ├── GameScene.tsx     # The main game view
-│   └── MainMenu.tsx    # A main menu, for example
-├── styles/
-│   └── # Global and shared styles
+├── app.tsx                 # Top-level React app (uses GameProvider)
+├── main.tsx                # React bootstrap / entry
+├── components/             # UI and game components (game-hud, overlays, panels)
+├── contexts/               # Context providers (GameProvider, hover, etc.)
+├── hooks/                  # Custom hooks (use-game.ts)
+├── scene/                  # three/@react-three/fiber scene and helpers
+├── styles.css
 ├── types/
-│   └── index.ts          # TypeScript interfaces for game objects (e.g., City, Unit)
-├── game-logic/
-│   ├── systems/
-│   │   └── # Core game systems, e.g., technology.ts, combat.ts
-│   └── utils/
-│       └── # Helper functions
-├── App.tsx
-└── main.tsx
+├── game/ or game-logic/    # Simulation systems and utilities
+└── ...
 ```
 
 ## How to contribute
@@ -90,7 +88,7 @@ src/
 
 ## Development practices
 
-- Use the `useGame()` hook from `src/hooks/useGame.ts` to read the canonical, read-only game state in UI components.
+- Use the `useGame()` hook from `src/hooks/use-game.ts` to read the canonical, read-only game state in UI components. The codebase exports `GameProvider` from `src/contexts/game-provider.tsx` and many components consume the hook from `src/hooks/use-game.ts`.
 - Prefer pure functions for simulation logic so state transitions are deterministic and testable.
 - Use the provided seedable RNG utilities in `src/game/rng.ts` rather than `Math.random()` to ensure reproducibility.
 

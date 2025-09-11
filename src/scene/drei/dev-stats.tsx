@@ -7,7 +7,12 @@ type Properties = React.ComponentProps<typeof Stats> & {
   testid?: string;
 };
 
-export default function DevelopmentStats({ enabled = true, 'data-testid': _dataTestId, testid: _testid, ...rest }: Properties) {
+export default function DevelopmentStats({
+  enabled = true,
+  'data-testid': _dataTestId,
+  testid: _testid,
+  ...rest
+}: Properties) {
   if (!enabled) return null;
   return <Stats {...rest} />;
 }

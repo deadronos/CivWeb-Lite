@@ -36,7 +36,9 @@ export function computePath(
   targetTileId: string,
   width?: number,
   height?: number
-): { path: string[]; totalCost: number; combatPreview?: CombatPreview } | { path: null; totalCost: number } {
+):
+  | { path: string[]; totalCost: number; combatPreview?: CombatPreview }
+  | { path: null; totalCost: number } {
   const unit = state.units[unitId];
   const start = unit ? state.tiles[unit.location] : undefined;
   const goal = state.tiles[targetTileId];

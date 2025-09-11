@@ -3,8 +3,8 @@ import {
   coverForTestsUseGame,
   coverUseGameInlinePaths,
   coverUseGameThrowExplicitly,
-  coverAllUseGameHuge } from
-"../src/hooks/use-game";
+  coverAllUseGameHuge,
+} from '../src/hooks/use-game';
 
 describe('useGame helper coverage', () => {
   it('coverForTestsUseGame simulates throw path', () => {

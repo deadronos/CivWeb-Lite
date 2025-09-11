@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
-import { GameProvider } from "../src/contexts/game-provider";
-import GameHUD from "../src/components/game-hud";
+import { GameProvider } from '../src/contexts/game-provider';
+import GameHUD from '../src/components/game-hud';
 import { vi } from 'vitest';
 
 describe('GameHUD', () => {

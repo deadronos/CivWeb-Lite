@@ -25,12 +25,12 @@ Refactor the scene and game provider for better modularity and maintainability. 
 
 ### Subtasks
 
-| ID | Description | Status | Updated | Notes |
-|----|-------------|--------|---------|-------|
-| 1.1 | Audit scene and provider code | Complete | 2025-09-10 | |
-| 1.2 | Extract reusable components/hooks | In Progress | 2025-09-10 | |
-| 1.3 | Remove unused/legacy code | Not Started | 2025-09-10 | |
-| 1.4 | Update docs/context | Not Started | 2025-09-10 | |
+| ID  | Description                       | Status      | Updated    | Notes |
+| --- | --------------------------------- | ----------- | ---------- | ----- |
+| 1.1 | Audit scene and provider code     | Complete    | 2025-09-10 |       |
+| 1.2 | Extract reusable components/hooks | In Progress | 2025-09-10 |       |
+| 1.3 | Remove unused/legacy code         | Not Started | 2025-09-10 |       |
+| 1.4 | Update docs/context               | Not Started | 2025-09-10 |       |
 
 ## Progress Log
 

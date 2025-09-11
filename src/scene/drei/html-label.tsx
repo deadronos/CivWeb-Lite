@@ -8,7 +8,13 @@ type Properties = React.ComponentProps<typeof Html> & {
   testid?: string;
 } & React.AriaAttributes;
 
-export default function HtmlLabel({ children, className: cssClass = 'label', 'data-testid': dataTestId, testid, ...rest }: Properties) {
+export default function HtmlLabel({
+  children,
+  className: cssClass = 'label',
+  'data-testid': dataTestId,
+  testid,
+  ...rest
+}: Properties) {
   // Properties that belong to the DOM child should not be forwarded into the Drei Html
   // component because applyProps will attempt to apply them to three/fiber objects and
   // can throw (see runtime applyProps errors). We therefore only forward the remaining
@@ -21,13 +27,22 @@ export default function HtmlLabel({ children, className: cssClass = 'label', 'da
 
   // Collect DOM-like keys and cleaned props
   const domLikePrefixes = ['data-', 'aria-'];
-  const domLikeKeys = new Set(['id', 'role', 'className', 'tabIndex', 'testid', 'testId', 'testID', 'data-testid']);
+  const domLikeKeys = new Set([
+    'id',
+    'role',
+    'className',
+    'tabIndex',
+    'testid',
+    'testId',
+    'testID',
+    'data-testid',
+  ]);
 
   const cleanedProperties: Record<string, unknown> = {};
   const domPropertiesFromRest: Record<string, unknown> = {};
 
   for (const [k, v] of Object.entries(rest)) {
-    if (domLikeKeys.has(k) || domLikePrefixes.some(p => k.startsWith(p))) {
+    if (domLikeKeys.has(k) || domLikePrefixes.some((p) => k.startsWith(p))) {
       domPropertiesFromRest[k] = v;
     } else {
       cleanedProperties[k] = v;
@@ -47,7 +62,11 @@ export default function HtmlLabel({ children, className: cssClass = 'label', 'da
 
   // Compose DOM properties to apply to the inner <div>
   const domProperties = {
-    'data-testid': dataTestId ?? testid ?? (domPropertiesFromRest['data-testid'] as string | undefined) ?? (domPropertiesFromRest['dataTestId'] as string | undefined),
+    'data-testid':
+      dataTestId ??
+      testid ??
+      (domPropertiesFromRest['data-testid'] as string | undefined) ??
+      (domPropertiesFromRest['dataTestId'] as string | undefined),
     className: cssClass,
     // Spread any other DOM-like props we captured (id, role, aria-*, etc.)
     ...domPropertiesFromRest,
@@ -65,9 +84,7 @@ export default function HtmlLabel({ children, className: cssClass = 'label', 'da
 
   return (
     <Html {...htmlProperties}>
-      <div {...domProperties}>
-        {children}
-      </div>
+      <div {...domProperties}>{children}</div>
     </Html>
   );
 }

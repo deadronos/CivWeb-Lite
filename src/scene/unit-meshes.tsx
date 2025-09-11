@@ -1,6 +1,5 @@
- 
 import React from 'react';
-import { useGame } from "../hooks/use-game";
+import { useGame } from '../hooks/use-game';
 import { useUnitPositions } from './hooks/use-unit-positions';
 import { playerColor } from './utils/colors';
 import { UnitModelSwitch } from './units/unit-model-switch';
@@ -15,11 +14,11 @@ export const UnitMeshes: React.FC = () => {
   // eslint-disable-next-line unicorn/no-null -- React component render: return null to render nothing
   if (!state.contentExt) return null;
   const extension = state.contentExt;
-  const rangedByType: Record<string, {ranged: boolean;range: number;}> = Object.fromEntries(
+  const rangedByType: Record<string, { ranged: boolean; range: number }> = Object.fromEntries(
     (unitsData as any[]).map((u: any) => [
-    u.id,
-    { ranged: !!u.ranged, range: typeof u.range === 'number' ? u.range : 2 }]
-    )
+      u.id,
+      { ranged: !!u.ranged, range: typeof u.range === 'number' ? u.range : 2 },
+    ])
   );
   return (
     <group>
@@ -52,7 +51,8 @@ export const UnitMeshes: React.FC = () => {
         const unitDefinition = UNIT_TYPES[u.type];
         const model = unitDefinition?.visual?.model ?? unitDefinition?.model ?? undefined;
         const gltf = unitDefinition?.visual?.gltf ?? undefined;
-        const offsetY = unitDefinition?.visual?.offsetY ?? (unitDefinition?.domain === 'naval' ? 0.06 : 0);
+        const offsetY =
+          unitDefinition?.visual?.offsetY ?? (unitDefinition?.domain === 'naval' ? 0.06 : 0);
         const anim = unitDefinition?.visual?.anim;
         const vScale = unitDefinition?.visual?.scale;
         return (
@@ -67,12 +67,12 @@ export const UnitMeshes: React.FC = () => {
             model={model}
             gltf={gltf}
             offsetY={offsetY}
-            anim={anim} />);
-
-
+            anim={anim}
+          />
+        );
       })}
-    </group>);
-
+    </group>
+  );
 };
 
 export default UnitMeshes;

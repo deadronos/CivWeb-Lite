@@ -6,11 +6,13 @@ function hash2(q: number, r: number): number {
   x = (x ^ (x >>> 13)) * 1_274_126_177;
   x = x ^ (x >>> 16);
   // 0..1
-  return (x >>> 0) / 0xFF_FF_FF_FF;
+  return (x >>> 0) / 0xff_ff_ff_ff;
 }
 
 // Helper: clamp 0..1
-function clamp01(n: number) { return Math.max(0, Math.min(1, n)); }
+function clamp01(n: number) {
+  return Math.max(0, Math.min(1, n));
+}
 
 // Convert HSL (0..1) to hex string
 function hsl(h: number, s: number, l: number): string {
@@ -21,7 +23,9 @@ function hsl(h: number, s: number, l: number): string {
     const col = l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)));
     return Math.round(255 * col);
   };
-  const r = f(0), g = f(8), b = f(4);
+  const r = f(0),
+    g = f(8),
+    b = f(4);
   const toHex = (v: number) => v.toString(16).padStart(2, '0');
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
@@ -40,42 +44,56 @@ export function colorForTile(t: Tile): string {
   let l = 0.5;
   switch (t.biome) {
     case BiomeType.Ocean: {
-      h = 0.57; s = 0.65; l = 0.3; // deep blue
+      h = 0.57;
+      s = 0.65;
+      l = 0.3; // deep blue
       // Slightly lighter in shallow (higher elevation near shore)
       l += (t.elevation - 0.5) * 0.1;
       break;
     }
     case BiomeType.Grassland: {
-      h = 0.33; s = 0.55; l = 0.44; // mid green
+      h = 0.33;
+      s = 0.55;
+      l = 0.44; // mid green
       // Wetter -> richer (more saturation), higher -> lighter
       s += (t.moisture - 0.5) * 0.15;
       l += (t.elevation - 0.5) * 0.1;
       break;
     }
     case BiomeType.Forest: {
-      h = 0.33; s = 0.65; l = 0.3; // dark green
+      h = 0.33;
+      s = 0.65;
+      l = 0.3; // dark green
       s += (t.moisture - 0.5) * 0.1;
       l += (t.elevation - 0.5) * 0.06;
       break;
     }
     case BiomeType.Desert: {
-      h = 0.12; s = 0.7; l = 0.6; // yellow/orange sand
-      s -= (t.moisture) * 0.2; // drier -> more saturated
+      h = 0.12;
+      s = 0.7;
+      l = 0.6; // yellow/orange sand
+      s -= t.moisture * 0.2; // drier -> more saturated
       l += (t.elevation - 0.5) * 0.06;
       break;
     }
     case BiomeType.Mountain: {
-      h = 0.62; s = 0.05; l = 0.55; // grayish
+      h = 0.62;
+      s = 0.05;
+      l = 0.55; // grayish
       l += (t.elevation - 0.7) * 0.2; // higher -> lighter (snow caps hint)
       break;
     }
     case BiomeType.Tundra: {
-      h = 0.58; s = 0.08; l = 0.8; // pale blue-gray
+      h = 0.58;
+      s = 0.08;
+      l = 0.8; // pale blue-gray
       l += (t.moisture - 0.5) * 0.05;
       break;
     }
     case BiomeType.Ice: {
-      h = 0.58; s = 0.05; l = 0.92; // near white
+      h = 0.58;
+      s = 0.05;
+      l = 0.92; // near white
       break;
     }
   }
@@ -88,19 +106,26 @@ export function colorForTile(t: Tile): string {
 // Base, stable color per biome (no per-tile variation). Useful for per-biome instancing.
 export function baseColorForBiome(b: BiomeType): string {
   switch (b) {
-    case BiomeType.Ocean: { return hsl(0.57, 0.65, 0.3);
+    case BiomeType.Ocean: {
+      return hsl(0.57, 0.65, 0.3);
     }
-    case BiomeType.Grassland: { return hsl(0.33, 0.55, 0.44);
+    case BiomeType.Grassland: {
+      return hsl(0.33, 0.55, 0.44);
     }
-    case BiomeType.Forest: { return hsl(0.33, 0.65, 0.3);
+    case BiomeType.Forest: {
+      return hsl(0.33, 0.65, 0.3);
     }
-    case BiomeType.Desert: { return hsl(0.12, 0.7, 0.6);
+    case BiomeType.Desert: {
+      return hsl(0.12, 0.7, 0.6);
     }
-    case BiomeType.Mountain: { return hsl(0.62, 0.05, 0.55);
+    case BiomeType.Mountain: {
+      return hsl(0.62, 0.05, 0.55);
     }
-    case BiomeType.Tundra: { return hsl(0.58, 0.08, 0.8);
+    case BiomeType.Tundra: {
+      return hsl(0.58, 0.08, 0.8);
     }
-    case BiomeType.Ice: { return hsl(0.58, 0.05, 0.92);
+    case BiomeType.Ice: {
+      return hsl(0.58, 0.05, 0.92);
     }
   }
 }
@@ -109,21 +134,51 @@ export function baseColorForBiome(b: BiomeType): string {
 export function colorForBiomeBucket(b: BiomeType, index: number, total: number): string {
   const t = total <= 1 ? 0.5 : index / (total - 1); // 0..1
   // Adjust lightness around the base per-biome color by +/- 6%
-  let h = 0.5, s = 0.6, l = 0.5;
+  let h = 0.5,
+    s = 0.6,
+    l = 0.5;
   switch (b) {
-    case BiomeType.Ocean: { h = 0.57; s = 0.65; l = 0.3; break;
+    case BiomeType.Ocean: {
+      h = 0.57;
+      s = 0.65;
+      l = 0.3;
+      break;
     }
-    case BiomeType.Grassland: { h = 0.33; s = 0.55; l = 0.44; break;
+    case BiomeType.Grassland: {
+      h = 0.33;
+      s = 0.55;
+      l = 0.44;
+      break;
     }
-    case BiomeType.Forest: { h = 0.33; s = 0.65; l = 0.3; break;
+    case BiomeType.Forest: {
+      h = 0.33;
+      s = 0.65;
+      l = 0.3;
+      break;
     }
-    case BiomeType.Desert: { h = 0.12; s = 0.7; l = 0.6; break;
+    case BiomeType.Desert: {
+      h = 0.12;
+      s = 0.7;
+      l = 0.6;
+      break;
     }
-    case BiomeType.Mountain: { h = 0.62; s = 0.05; l = 0.55; break;
+    case BiomeType.Mountain: {
+      h = 0.62;
+      s = 0.05;
+      l = 0.55;
+      break;
     }
-    case BiomeType.Tundra: { h = 0.58; s = 0.08; l = 0.8; break;
+    case BiomeType.Tundra: {
+      h = 0.58;
+      s = 0.08;
+      l = 0.8;
+      break;
     }
-    case BiomeType.Ice: { h = 0.58; s = 0.05; l = 0.92; break;
+    case BiomeType.Ice: {
+      h = 0.58;
+      s = 0.05;
+      l = 0.92;
+      break;
     }
   }
   const delta = (t - 0.5) * 0.12; // +/- 0.06

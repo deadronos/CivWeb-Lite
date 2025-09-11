@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateTechCatalog, techCatalog } from "../src/game/tech/tech-catalog";
+import { validateTechCatalog, techCatalog } from '../src/game/tech/tech-catalog';
 import { applyAction } from '../src/game/reducer';
 import { GameState, PlayerState } from '../src/game/types';
 import { LEADER_PERSONALITIES } from '../src/game/ai/leaders';
@@ -16,17 +16,17 @@ function baseState(player: PlayerState): GameState {
     rngState: undefined,
     log: [],
     mode: 'standard',
-    autoSim: false
+    autoSim: false,
   };
 }
 
 describe('tech system', () => {
   it('detects cycles', () => {
     expect(() =>
-    validateTechCatalog([
-    { id: 'a', tree: 'science', name: 'A', cost: 1, prerequisites: ['b'], effects: [] },
-    { id: 'b', tree: 'science', name: 'B', cost: 1, prerequisites: ['a'], effects: [] }]
-    )
+      validateTechCatalog([
+        { id: 'a', tree: 'science', name: 'A', cost: 1, prerequisites: ['b'], effects: [] },
+        { id: 'b', tree: 'science', name: 'B', cost: 1, prerequisites: ['a'], effects: [] },
+      ])
     ).toThrow();
   });
 
@@ -38,13 +38,13 @@ describe('tech system', () => {
       sciencePoints: 40,
       culturePoints: 40,
       researchedTechIds: ['pottery'],
-      researching: null
+      researching: null,
     };
     let state = baseState(player);
     state = applyAction(state, {
       type: 'SET_RESEARCH',
       playerId: 'p1',
-      payload: { techId: 'writing' }
+      payload: { techId: 'writing' },
     });
     expect(state.players[0].researching?.techId).toBe('writing');
     state = applyAction(state, { type: 'END_TURN' });
@@ -59,9 +59,9 @@ describe('tech system', () => {
       sciencePoints: 40,
       culturePoints: 40,
       researchedTechIds: ['pottery'],
-      researching: null
+      researching: null,
     };
-    let event: {playerId: string;techId: string;} | undefined;
+    let event: { playerId: string; techId: string } | undefined;
     const off = globalGameBus.on('tech:unlocked', (e) => {
       event = e;
     });
@@ -69,7 +69,7 @@ describe('tech system', () => {
     state = applyAction(state, {
       type: 'SET_RESEARCH',
       playerId: 'p1',
-      payload: { techId: 'writing' }
+      payload: { techId: 'writing' },
     });
     applyAction(state, { type: 'END_TURN' });
     off();
@@ -84,13 +84,13 @@ describe('tech system', () => {
       sciencePoints: 40,
       culturePoints: 40,
       researchedTechIds: [],
-      researching: null
+      researching: null,
     };
     let state = baseState(player);
     state = applyAction(state, {
       type: 'SET_RESEARCH',
       playerId: 'p1',
-      payload: { techId: 'writing' }
+      payload: { techId: 'writing' },
     });
     expect(state.players[0].researching).toBeNull();
   });

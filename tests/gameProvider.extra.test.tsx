@@ -2,8 +2,8 @@ import { describe, test, expect, vi } from 'vitest';
 import {
   simulateAdvanceTurn,
   initialStateForTests,
-  coverGameProviderEffects } from
-"../src/contexts/game-provider";
+  coverGameProviderEffects,
+} from '../src/contexts/game-provider';
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider extra behaviors', () => {
@@ -11,8 +11,9 @@ describe('GameProvider extra behaviors', () => {
     const s = initialStateForTests();
     // add one AI and one human player
     s.players = [
-    { id: 'p1', isHuman: false, leader: 'alpha', name: 'AI' } as any,
-    { id: 'p2', isHuman: true, leader: 'beta', name: 'Human' } as any];
+      { id: 'p1', isHuman: false, leader: 'alpha', name: 'AI' } as any,
+      { id: 'p2', isHuman: true, leader: 'beta', name: 'Human' } as any,
+    ];
 
     s.turn = 5;
     const dispatched: any[] = [];

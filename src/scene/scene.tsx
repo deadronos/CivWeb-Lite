@@ -1,5 +1,12 @@
 import React from 'react';
-import { CylinderGeometry, MeshStandardMaterial, Color, BufferGeometry, Material, RepeatWrapping } from 'three';
+import {
+  CylinderGeometry,
+  MeshStandardMaterial,
+  Color,
+  BufferGeometry,
+  Material,
+  RepeatWrapping,
+} from 'three';
 import { useGame } from '../hooks/use-game';
 import { useSelection } from '../contexts/selection-context';
 import CameraControls from './drei/camera-controls';
@@ -26,7 +33,7 @@ function variantIndexFor(q: number, r: number, count: number): number {
   let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
   x = (x ^ (x >>> 13)) * 1_274_126_177;
   x = x ^ (x >>> 16);
-  const f = (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
+  const f = (x >>> 0) / 0xff_ff_ff_ff; // 0..1
   return Math.floor(f * count) % count;
 }
 
@@ -125,7 +132,11 @@ function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
           );
         }
         // Fallback — procedural hex prism with per-bucket tinted material
-        const mat = materialForBiomeBucket(b.biome, b.variantIndex, Math.max(1, getVariantCount(b.biome)));
+        const mat = materialForBiomeBucket(
+          b.biome,
+          b.variantIndex,
+          Math.max(1, getVariantCount(b.biome))
+        );
         return (
           <InstancedModels
             key={`${b.biome}:${b.variantIndex}:fallback`}
@@ -147,7 +158,11 @@ export function ConnectedScene() {
   const { state } = useGame();
   const { selectedUnitId } = useSelection();
   // Enable cylindrical camera wrapping
-  useCameraWrapping({ ...DEFAULT_WRAPPING_CONFIG, worldWidth: state.map.width, worldHeight: state.map.height });
+  useCameraWrapping({
+    ...DEFAULT_WRAPPING_CONFIG,
+    worldWidth: state.map.width,
+    worldHeight: state.map.height,
+  });
 
   // Kick off loading for known assets (grassland variants)
   const [assetVersion, setAssetVersion] = React.useState(0);
@@ -165,12 +180,16 @@ export function ConnectedScene() {
 
   // When texture and bounds are available, configure repeating so the image tiles across the plane
 
-
   // Compute background bounds from tiles (memoized)
   const backgroundBounds = React.useMemo(() => {
-    const positions = state.map.tiles.map((t) => axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE));
-  if (positions.length === 0) return;
-    let minX = Infinity; let maxX = -Infinity; let minZ = Infinity; let maxZ = -Infinity;
+    const positions = state.map.tiles.map((t) =>
+      axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE)
+    );
+    if (positions.length === 0) return;
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minZ = Infinity;
+    let maxZ = -Infinity;
     for (const [x, z] of positions) {
       if (x < minX) minX = x;
       if (x > maxX) maxX = x;
@@ -178,8 +197,8 @@ export function ConnectedScene() {
       if (z > maxZ) maxZ = z;
     }
     const pad = DEFAULT_HEX_SIZE * 10;
-    const width = Math.max(1, maxX - minX + pad * 2)*64;
-    const height = Math.max(1, maxZ - minZ + pad * 2)*64;
+    const width = Math.max(1, maxX - minX + pad * 2) * 64;
+    const height = Math.max(1, maxZ - minZ + pad * 2) * 64;
     const centerX = (minX + maxX) / 2;
     const centerZ = (minZ + maxZ) / 2;
     return { width, height, centerX, centerZ };
@@ -203,7 +222,11 @@ export function ConnectedScene() {
   // Build buckets and apply cylindrical wrapping duplicates
   const buckets = React.useMemo(() => {
     const baseBuckets = buildBuckets(state.map.tiles);
-    const config = { ...DEFAULT_WRAPPING_CONFIG, worldWidth: state.map.width, worldHeight: state.map.height };
+    const config = {
+      ...DEFAULT_WRAPPING_CONFIG,
+      worldWidth: state.map.width,
+      worldHeight: state.map.height,
+    };
     const wrapped = generateWrappedBiomeGroups(
       baseBuckets.map((b) => ({
         positions: b.positions,
@@ -233,7 +256,10 @@ export function ConnectedScene() {
     const onHover = (event: any) => {
       const index = event?.detail?.index ?? -1;
       const t = state.map.tiles[index];
-      if (!t) { setHoverPos(undefined); return; }
+      if (!t) {
+        setHoverPos(undefined);
+        return;
+      }
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       setHoverPos([x, 0.9, z]);
     };
@@ -242,11 +268,19 @@ export function ConnectedScene() {
   }, [state.map.tiles]);
 
   // Selected unit label position
-  const [selectedUnitLabel, setSelectedUnitLabel] = React.useState<{ pos: [number, number, number]; id: string } | undefined>();
+  const [selectedUnitLabel, setSelectedUnitLabel] = React.useState<
+    { pos: [number, number, number]; id: string } | undefined
+  >();
   React.useEffect(() => {
-    if (!state.contentExt || !selectedUnitId) { setSelectedUnitLabel(undefined); return; }
+    if (!state.contentExt || !selectedUnitId) {
+      setSelectedUnitLabel(undefined);
+      return;
+    }
     const u = state.contentExt.units[selectedUnitId];
-    if (!u) { setSelectedUnitLabel(undefined); return; }
+    if (!u) {
+      setSelectedUnitLabel(undefined);
+      return;
+    }
     let xz: [number, number] | undefined;
     if (typeof u.location === 'string') {
       const tile = state.contentExt.tiles[u.location];
@@ -280,7 +314,12 @@ export function ConnectedScene() {
           castShadow={false}
         >
           <planeGeometry args={[backgroundBounds.width, backgroundBounds.height]} />
-          <meshStandardMaterial map={dragonTexture} toneMapped={false} transparent={false} depthWrite={true} />
+          <meshStandardMaterial
+            map={dragonTexture}
+            toneMapped={false}
+            transparent={false}
+            depthWrite={true}
+          />
         </mesh>
       ) : undefined}
 
@@ -296,7 +335,7 @@ export function ConnectedScene() {
         <HtmlLabel position={hoverPos} data-testid="hovered-tile-label" center>
           hovered
         </HtmlLabel>
-  ) : undefined}
+      ) : undefined}
 
       {/* Selected unit label */}
       {selectedUnitLabel ? (
@@ -311,4 +350,6 @@ export function ConnectedScene() {
 // Default export for convenience
 // Default export is a safe stub for tests that render the Scene without
 // providers. App imports ConnectedScene explicitly via dynamic import.
-export default function Scene() { return <group name="scene-stub" />; }
+export default function Scene() {
+  return <group name="scene-stub" />;
+}

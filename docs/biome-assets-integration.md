@@ -71,4 +71,3 @@
 - `src/scene/instanced-models.tsx`
 - `src/scene/scene.tsx`
 - `blenderpython/generate_grassland_tiles.py`
-

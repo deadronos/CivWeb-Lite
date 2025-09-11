@@ -83,9 +83,7 @@ export async function hashState(state: GameState): Promise<string> {
   if (subtle && typeof subtle.digest === 'function') {
     const buf = await subtle.digest('SHA-256', data);
     // convert buffer to hex
-    const hex = [...new Uint8Array(buf)]
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+    const hex = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
     return hex;
   }
   // Node static import fallback

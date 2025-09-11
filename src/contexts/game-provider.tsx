@@ -7,7 +7,7 @@ import { createEmptyState as createContentExtension } from '../game/content/engi
 import { GameAction } from '../game/actions';
 import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
-import { techCatalog } from "../game/tech/tech-catalog";
+import { techCatalog } from '../game/tech/tech-catalog';
 import { evaluateAI } from '../game/ai/ai';
 
 export type Dispatch = (action: GameAction) => void;
@@ -27,10 +27,10 @@ export const initialState = (): GameState => ({
   aiPerf: { total: 0, count: 0 },
   mode: 'standard',
   autoSim: false,
-  contentExt: createContentExtension()
+  contentExt: createContentExtension(),
 });
 
-export function GameProvider({ children }: {children: ReactNode;}) {
+export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(applyAction, undefined, initialState);
 
   const advanceTurn = useCallback(() => simulateAdvanceTurn(state, dispatch), [state, dispatch]);
@@ -41,35 +41,38 @@ export function GameProvider({ children }: {children: ReactNode;}) {
 
   useEffect(() => {
     const subs = [
-    globalGameBus.on('turn:start', (p) =>
-    dispatch({
-      type: 'LOG_EVENT',
-      payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:start' } }
-    })
-    ),
-    globalGameBus.on('turn:end', (p) =>
-    dispatch({
-      type: 'LOG_EVENT',
-      payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:end' } }
-    })
-    ),
-    globalGameBus.on('tech:unlocked', (p) =>
-    dispatch({
-      type: 'LOG_EVENT',
-      payload: {
-        entry: { timestamp: Date.now(), turn: state.turn, type: 'tech:unlocked', payload: p }
-      }
-    })
-    ),
-    globalGameBus.on('action:applied', ({ action }) => {
-      if (action.type === 'LOG_EVENT' || action.type === 'RECORD_AI_PERF') return;
-      dispatch({
-        type: 'LOG_EVENT',
-        payload: { entry: { timestamp: Date.now(), turn: state.turn, type: action.type } }
-      });
-    })];
+      globalGameBus.on('turn:start', (p) =>
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:start' } },
+        })
+      ),
+      globalGameBus.on('turn:end', (p) =>
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: { entry: { timestamp: Date.now(), turn: p.turn, type: 'turn:end' } },
+        })
+      ),
+      globalGameBus.on('tech:unlocked', (p) =>
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: {
+            entry: { timestamp: Date.now(), turn: state.turn, type: 'tech:unlocked', payload: p },
+          },
+        })
+      ),
+      globalGameBus.on('action:applied', ({ action }) => {
+        if (action.type === 'LOG_EVENT' || action.type === 'RECORD_AI_PERF') return;
+        dispatch({
+          type: 'LOG_EVENT',
+          payload: { entry: { timestamp: Date.now(), turn: state.turn, type: action.type } },
+        });
+      }),
+    ];
 
-    return () => {for (const u of subs) u();};
+    return () => {
+      for (const u of subs) u();
+    };
   }, [dispatch, state.turn]);
 
   useEffect(() => {
@@ -88,30 +91,30 @@ export function GameProvider({ children }: {children: ReactNode;}) {
       try {
         id = requestAnimationFrame(loop) as unknown as number;
       } catch {
-
         // ignore if environment doesn't support RAF
-      }};
+      }
+    };
     try {
       id = requestAnimationFrame(loop) as unknown as number;
     } catch {
-
       // ignore
-    }return () => {
+    }
+    return () => {
       try {
         if (typeof cancelAnimationFrame === 'function' && id !== undefined)
-        cancelAnimationFrame(id);
+          cancelAnimationFrame(id);
       } catch {
-
         // ignore
-      }};
+      }
+    };
   }, [state.autoSim, advanceTurn]);
 
   const frozen = useMemo(() => Object.freeze(state), [state]);
   return (
     <GameStateContext.Provider value={frozen}>
       <GameDispatchContext.Provider value={dispatch}>{children}</GameDispatchContext.Provider>
-    </GameStateContext.Provider>);
-
+    </GameStateContext.Provider>
+  );
 }
 
 // small runtime export for tests
@@ -158,9 +161,9 @@ export function coverForTestsGameProvider(forceElse = false): boolean {
 export function coverAllGameProviderHuge(): number {
   let s = 0;
   for (let index = 0; index < 80; index++) {
-    if (index % 7 === 0) s += index * 3;else
-    if (index % 3 === 0) s -= index;else
-    s += 1;
+    if (index % 7 === 0) s += index * 3;
+    else if (index % 3 === 0) s -= index;
+    else s += 1;
   }
   return s;
 }
@@ -181,9 +184,9 @@ export function coverGameProviderEffects(s: GameState, dispatch: Dispatch, force
       }
       // no-op
     } catch {
-
       // ignore - covered branch
-    }}
+    }
+  }
 }
 
 // small helper to hit extra branches during tests
@@ -229,68 +232,69 @@ export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) 
 
 // Alternate helper to force the no-players branch or the multi-players branch
 export function coverGameProviderForcePaths(
-s: GameState,
-dispatch: Dispatch,
-mode: 'none' | 'single' | 'multi')
-{
+  s: GameState,
+  dispatch: Dispatch,
+  mode: 'none' | 'single' | 'multi'
+) {
   if (mode === 'none') {
     s.players = [] as PlayerState[];
     dispatch({ type: 'LOG', payload: 'forced-none' } as any);
   } else if (mode === 'single') {
     s.players = [
-    {
-      id: 'p1',
-      isHuman: true,
-      leader: {
-        id: 'Lh',
-        name: 'H',
-        aggression: 0.5,
-        scienceFocus: 0.5,
-        cultureFocus: 0.5,
-        expansionism: 0.5
-      },
-      researchedTechIds: [],
-      researching: null,
-      sciencePoints: 0,
-      culturePoints: 0
-    } as PlayerState];
+      {
+        id: 'p1',
+        isHuman: true,
+        leader: {
+          id: 'Lh',
+          name: 'H',
+          aggression: 0.5,
+          scienceFocus: 0.5,
+          cultureFocus: 0.5,
+          expansionism: 0.5,
+        },
+        researchedTechIds: [],
+        researching: null,
+        sciencePoints: 0,
+        culturePoints: 0,
+      } as PlayerState,
+    ];
 
     // single human -> nothing to dispatch
   } else {
     s.players = [
-    {
-      id: 'p1',
-      isHuman: false,
-      leader: {
-        id: 'L1',
-        name: 'L',
-        aggression: 0.5,
-        scienceFocus: 0.5,
-        cultureFocus: 0.5,
-        expansionism: 0.5
+      {
+        id: 'p1',
+        isHuman: false,
+        leader: {
+          id: 'L1',
+          name: 'L',
+          aggression: 0.5,
+          scienceFocus: 0.5,
+          cultureFocus: 0.5,
+          expansionism: 0.5,
+        },
+        researchedTechIds: [],
+        researching: null,
+        sciencePoints: 0,
+        culturePoints: 0,
       },
-      researchedTechIds: [],
-      researching: null,
-      sciencePoints: 0,
-      culturePoints: 0
-    },
-    {
-      id: 'p2',
-      isHuman: false,
-      leader: {
-        id: 'L2',
-        name: 'L2',
-        aggression: 0.4,
-        scienceFocus: 0.4,
-        cultureFocus: 0.4,
-        expansionism: 0.4
+      {
+        id: 'p2',
+        isHuman: false,
+        leader: {
+          id: 'L2',
+          name: 'L2',
+          aggression: 0.4,
+          scienceFocus: 0.4,
+          cultureFocus: 0.4,
+          expansionism: 0.4,
+        },
+        researchedTechIds: [],
+        researching: null,
+        sciencePoints: 0,
+        culturePoints: 0,
       },
-      researchedTechIds: [],
-      researching: null,
-      sciencePoints: 0,
-      culturePoints: 0
-    }] as
-    PlayerState[];
+    ] as PlayerState[];
     // multiple AI -> call simulateAdvanceTurn
     simulateAdvanceTurn(s, dispatch);
   }
@@ -305,14 +309,14 @@ export function coverGameProviderUncovered() {
 
   // players-dependent branching
   const players: any[] = [];
-  if (players.length === 0) x += 0;else
-  if (players.length === 1) x += 1;else
-  x += 2;
+  if (players.length === 0) x += 0;
+  else if (players.length === 1) x += 1;
+  else x += 2;
 
   // small loop to exercise paths
   for (let index = 0; index < 5; index++) {
-    if (index % 2 === 0) x += index;else
-    x -= 1;
+    if (index % 2 === 0) x += index;
+    else x -= 1;
   }
   return x;
 }
@@ -346,18 +350,18 @@ export const uiHandlers = Object.freeze({
   }) {
     console.debug('[ui] previewPath', payload);
   },
-  issueMove(payload: {unitId: string;path: string[];confirmCombat?: boolean;}) {
+  issueMove(payload: { unitId: string; path: string[]; confirmCombat?: boolean }) {
     console.debug('[ui] issueMove', payload);
   },
-  cancelSelection(payload: {unitId: string;}) {
+  cancelSelection(payload: { unitId: string }) {
     console.debug('[ui] cancelSelection', payload);
   },
-  openCityPanel(payload: {cityId: string;}) {
+  openCityPanel(payload: { cityId: string }) {
     console.debug('[ui] openCityPanel', payload);
   },
   chooseProductionItem(payload: {
     cityId: string;
-    order: {type: 'unit' | 'improvement' | 'building';itemId: string;targetTileId?: string;};
+    order: { type: 'unit' | 'improvement' | 'building'; itemId: string; targetTileId?: string };
   }) {
     console.debug('[ui] chooseProductionItem', payload);
   },
@@ -371,16 +375,16 @@ export const uiHandlers = Object.freeze({
   }) {
     console.debug('[ui] reorderProductionQueue', payload);
   },
-  cancelOrder(payload: {cityId: string;orderIndex: number;}) {
+  cancelOrder(payload: { cityId: string; orderIndex: number }) {
     console.debug('[ui] cancelOrder', payload);
   },
   openResearchPanel() {
     console.debug('[ui] openResearchPanel');
   },
-  startResearch(payload: {playerId: string;techId: string;}) {
+  startResearch(payload: { playerId: string; techId: string }) {
     console.debug('[ui] startResearch', payload);
   },
-  queueResearch(payload: {playerId: string;techId: string;}) {
+  queueResearch(payload: { playerId: string; techId: string }) {
     console.debug('[ui] queueResearch', payload);
   },
   switchResearchPolicy(payload: {
@@ -388,5 +392,5 @@ export const uiHandlers = Object.freeze({
     policy: 'preserveProgress' | 'discardProgress';
   }) {
     console.debug('[ui] switchResearchPolicy', payload);
-  }
+  },
 });

@@ -1,4 +1,3 @@
- 
 // Filename remains PascalCase to match exported component names; bulk renames will be
 // done in a separate refactor PR to avoid noisy import changes across the repo.
 import React from 'react';
@@ -9,7 +8,7 @@ import { WorkerModel } from './procedural/worker-model';
 import { ArcherModel } from './procedural/archer-model';
 import { SpearmanModel } from './procedural/spearman-model';
 import { GalleyModel } from './procedural/galley-model';
-import { getModelComponent } from "./model-registry";
+import { getModelComponent } from './model-registry';
 
 export type UnitModelProperties = {
   type: string;
@@ -20,7 +19,7 @@ export type UnitModelProperties = {
   rangedReady?: boolean;
   model?: string;
   offsetY?: number;
-  anim?: {bobAmp?: number;bobSpeed?: number;};
+  anim?: { bobAmp?: number; bobSpeed?: number };
   gltf?: string;
 };
 
@@ -34,7 +33,9 @@ export type UnitModelProps = UnitModelProperties;
 
 import { Bob, phaseFromId } from './bob';
 // Lazy GLTF pipeline: only pull code when flag is enabled
-const LazyGLTFModel = React.lazy(() => import(String.raw`../drei/gltf-model`).then(m => ({ default: m.default })));
+const LazyGLTFModel = React.lazy(() =>
+  import(String.raw`../drei/gltf-model`).then((m) => ({ default: m.default }))
+);
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
@@ -46,7 +47,7 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   model,
   offsetY,
   anim,
-  gltf
+  gltf,
 }) => {
   const lowerType = type.toLowerCase();
   const modelLabel = (model || '').toLowerCase();
@@ -59,7 +60,9 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
       const url = resolveGLTF(gltf || modelLabel || lowerType);
       setGltfUrl(url);
     });
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [gltf, modelLabel, lowerType]);
   if (gltfEnabled() && gltfUrl) {
     return (
@@ -69,13 +72,14 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
     );
   }
 
-  const CommonWrap: React.FC<{children: React.ReactNode;}> = ({ children }) =>
-  <group
-    position={[position?.[0] ?? 0, (position?.[1] ?? 0) + (offsetY ?? 0), position?.[2] ?? 0]}
-    scale={scale ?? 1}>
-
+  const CommonWrap: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <group
+      position={[position?.[0] ?? 0, (position?.[1] ?? 0) + (offsetY ?? 0), position?.[2] ?? 0]}
+      scale={scale ?? 1}
+    >
       {children}
-    </group>;
+    </group>
+  );
 
   const phase = phaseFromId(id);
 
@@ -88,80 +92,80 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
           {/* Archer supports showArrow; other models ignore prop */}
           <Labeled
             teamColor={teamColor}
-            {...lowerType === 'archer' ? { showArrow: !!rangedReady } : {}} />
-
+            {...(lowerType === 'archer' ? { showArrow: !!rangedReady } : {})}
+          />
         </Bob>
-      </CommonWrap>);
-
+      </CommonWrap>
+    );
   }
 
   switch (lowerType) {
-    case 'warrior':{
-        return (
-          <CommonWrap>
+    case 'warrior': {
+      return (
+        <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
             <WarriorModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>);
-
-      }
-    case 'spearman':{
-        return (
-          <CommonWrap>
+        </CommonWrap>
+      );
+    }
+    case 'spearman': {
+      return (
+        <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.35} phase={phase}>
             <SpearmanModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>);
-
-      }
-    case 'archer':{
-        return (
-          <CommonWrap>
+        </CommonWrap>
+      );
+    }
+    case 'archer': {
+      return (
+        <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.05} speed={anim?.bobSpeed ?? 0.4} phase={phase}>
             <ArcherModel teamColor={teamColor} showArrow={!!rangedReady} />
           </Bob>
-        </CommonWrap>);
-
-      }
-    case 'settler':{
-        return (
-          <CommonWrap>
+        </CommonWrap>
+      );
+    }
+    case 'settler': {
+      return (
+        <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.3} phase={phase}>
             <SettlerModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>);
-
-      }
-    case 'worker':{
-        return (
-          <CommonWrap>
+        </CommonWrap>
+      );
+    }
+    case 'worker': {
+      return (
+        <CommonWrap>
           <Bob amplitude={anim?.bobAmp ?? 0.03} speed={anim?.bobSpeed ?? 0.45} phase={phase}>
             <WorkerModel teamColor={teamColor} />
           </Bob>
-        </CommonWrap>);
-
-      }
-    case 'galley':{
-        return (
-          <CommonWrap>
+        </CommonWrap>
+      );
+    }
+    case 'galley': {
+      return (
+        <CommonWrap>
           <group>
             <Bob amplitude={anim?.bobAmp ?? 0.02} speed={anim?.bobSpeed ?? 0.25} phase={phase}>
               <GalleyModel teamColor={teamColor} />
             </Bob>
           </group>
-        </CommonWrap>);
-
-      }
-    default:{
-        return (
-          <CommonWrap>
+        </CommonWrap>
+      );
+    }
+    default: {
+      return (
+        <CommonWrap>
           {/* Minimal placeholder for unknown types */}
           <mesh>
             <boxGeometry args={[0.4, 0.4, 0.4]} />
             <meshStandardMaterial color={teamColor} />
           </mesh>
-        </CommonWrap>);
-
-      }
+        </CommonWrap>
+      );
+    }
   }
 };

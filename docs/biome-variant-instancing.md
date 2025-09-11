@@ -71,11 +71,8 @@ This document describes how to extend the current per‑biome instancing to supp
 
 Ask me when you're ready for Blender: I can provide Python scripts to batch‑export GLTF variants, automatically align hex pivots, and generate LODs with naming conventions (e.g., `biome_variant_LOD0/1`).
 
-
-
 Populate BIOME_VARIANTS.grass = [{name:'v1'},{name:'v2'},{name:'v3'}] (and later attach loaded geometry/material).
 You’ll immediately see 3 shade buckets for grass, using current hex geometry until meshes arrive.
-
 
 Enabled three grassland variants immediately.
 

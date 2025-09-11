@@ -5,8 +5,8 @@ import {
   coverGameProviderEffects,
   coverRemainingGameProviderPaths,
   coverGameProviderForcePaths,
-  triggerAutoSimOnce } from
-"../src/contexts/game-provider";
+  triggerAutoSimOnce,
+} from '../src/contexts/game-provider';
 
 describe('GameProvider coverage helpers', () => {
   it('initialStateForTests returns a valid state and helpers run', () => {

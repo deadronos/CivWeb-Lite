@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import TopBar from "../src/components/ui/top-bar";
+import TopBar from '../src/components/ui/top-bar';
 
 describe('TopBar', () => {
   it('renders turn and resources', () => {

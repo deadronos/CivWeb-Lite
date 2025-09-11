@@ -8,10 +8,10 @@ import {
   GameDispatchContext,
   initialStateForTests,
   coverGameProviderEffects,
-  simulateAdvanceTurn } from
-"../src/contexts/game-provider";
+  simulateAdvanceTurn,
+} from '../src/contexts/game-provider';
 import { globalGameBus } from '../src/game/events';
-import { useGame } from "../src/hooks/use-game";
+import { useGame } from '../src/hooks/use-game';
 
 // Simple TestConsumer to read state and provide a button to toggle autoSim
 function TestConsumer() {
@@ -25,27 +25,27 @@ function TestConsumer() {
         toggle
       </button>
       <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
-    </div>);
-
+    </div>
+  );
 }
 
 describe('GameProvider effects', () => {
   beforeEach(() => {
     // deterministic RAF mock that runs callbacks once when id assigned
-  let queued: FrameRequestCallback | null | undefined;
+    let queued: FrameRequestCallback | null | undefined;
     (globalThis as any).requestAnimationFrame = (callback: FrameRequestCallback) => {
       queued = callback;
       // return an id
       return 1;
     };
     (globalThis as any).cancelAnimationFrame = () => {
-  queued = undefined;
+      queued = undefined;
     };
     // When asked, run queued callback synchronously
     (globalThis as any).__runQueuedRAF = () => {
       if (queued) {
         const callback = queued;
-  queued = undefined;
+        queued = undefined;
         callback(0);
       }
     };
@@ -91,14 +91,15 @@ describe('GameProvider effects', () => {
     const s = initialStateForTests();
     // add a fake AI player with a leader so evaluateAI can run without crashing
     s.players = [
-    {
-      id: 'p1',
-      name: 'AI',
-      isHuman: false,
-      leader: { name: 'AI-Leader' },
-      cities: [],
-      research: undefined
-    } as any];
+      {
+        id: 'p1',
+        name: 'AI',
+        isHuman: false,
+        leader: { name: 'AI-Leader' },
+        cities: [],
+        research: undefined,
+      } as any,
+    ];
 
     // spy a dispatch
     const actions: any[] = [];
@@ -117,8 +118,8 @@ describe('GameProvider effects', () => {
         <div>
           <div data-testid="uh-turn">{state.turn}</div>
           <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
-        </div>);
-
+        </div>
+      );
     }
     const { getByText } = render(
       <GameProvider>

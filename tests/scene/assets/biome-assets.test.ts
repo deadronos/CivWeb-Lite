@@ -7,12 +7,12 @@ const mockMesh = {
   name: 'tile_mesh',
   geometry: {
     clone: () => ({ applyMatrix4: vi.fn(), groups: [] }),
-    index: { array: [0,1,2,3,4,5], count: 6 },
+    index: { array: [0, 1, 2, 3, 4, 5], count: 6 },
     attributes: { position: { count: 4 } },
   },
-  material: { clone: vi.fn(() => ({isMaterial: true})) },
+  material: { clone: vi.fn(() => ({ isMaterial: true })) },
   updateWorldMatrix: vi.fn(),
-  matrixWorld: {isMatrix4: true},
+  matrixWorld: { isMatrix4: true },
 };
 
 const mockScene = {

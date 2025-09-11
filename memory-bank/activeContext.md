@@ -10,4 +10,5 @@
 - Use only named exports for hooks where possible
 
 **Notes:**
+
 - The refactor is implemented in code but still needs small polish and documentation updates. See `memory-bank/tasks/TASK001-refactor-scene-and-game-provider.md` for details.

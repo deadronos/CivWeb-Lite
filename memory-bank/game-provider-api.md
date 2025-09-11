@@ -1,4 +1,4 @@
-```markdown
+````markdown
 # GameProvider API (reference)
 
 This document describes the public shapes and APIs exposed by the `GameProvider` in `src/contexts/game-provider.tsx` and related game modules. It's intended as a quick reference for contributors.
@@ -18,6 +18,7 @@ Typical consumption via a `useGame()` hook (project convention):
 const state = useContext(GameStateContext);
 const dispatch = useContext(GameDispatchContext);
 ```
+````
 
 The `GameStateContext` value is frozen (Object.freeze) — do not mutate directly.
 
@@ -32,15 +33,31 @@ type Dispatch = (action: GameAction) => void;
 
 type GameAction =
   | { type: 'INIT' }
-  | { type: 'NEW_GAME'; payload: { seed?: string; width?: number; height?: number; totalPlayers: number; humanPlayers?: number; selectedLeaders?: string[] } }
+  | {
+      type: 'NEW_GAME';
+      payload: {
+        seed?: string;
+        width?: number;
+        height?: number;
+        totalPlayers: number;
+        humanPlayers?: number;
+        selectedLeaders?: string[];
+      };
+    }
   | { type: 'LOAD_STATE'; payload: GameState }
   | { type: 'END_TURN' }
   | { type: 'AUTO_SIM_TOGGLE'; payload?: { enabled?: boolean } }
   | { type: 'SET_RESEARCH'; playerId: string; payload: { techId: string } }
   | { type: 'ADVANCE_RESEARCH'; playerId: string; payload?: { points?: number } }
-  | { type: 'EXT_ADD_UNIT'; payload: { unitId: string; type: string; ownerId: string; tileId: string } }
-  | { type: 'EXT_ADD_CITY'; payload: { cityId: string; name: string; ownerId: string; tileId: string } }
-  // ...and other EXT_ and UI-related action shapes handled by reducer
+  | {
+      type: 'EXT_ADD_UNIT';
+      payload: { unitId: string; type: string; ownerId: string; tileId: string };
+    }
+  | {
+      type: 'EXT_ADD_CITY';
+      payload: { cityId: string; name: string; ownerId: string; tileId: string };
+    };
+// ...and other EXT_ and UI-related action shapes handled by reducer
 ```
 
 Refer to `src/game/actions.ts` and `src/game/reducer.ts` for the full list and precise payload shapes.
@@ -68,5 +85,7 @@ UI components should prefer reading the frozen `GameState` over relying on event
 - Reducer and actions: `src/game/reducer.ts`, `src/game/actions.ts`
 - Game types: `src/game/types.ts` and `src/game/types/index.ts`
 - Event bus: `src/game/events.ts`
+
+```
 
 ```

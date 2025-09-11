@@ -82,7 +82,10 @@ export default function CameraControls({
     };
     const onWheel = (e: WheelEvent) => {
       const dir = Math.sign(e.deltaY);
-      distance.current = Math.min(maxDistance, Math.max(minDistance, distance.current + dir * zoomSpeed));
+      distance.current = Math.min(
+        maxDistance,
+        Math.max(minDistance, distance.current + dir * zoomSpeed)
+      );
     };
     const onKey = (down: boolean) => (e: KeyboardEvent) => {
       const k = e.key.toLowerCase();
@@ -90,8 +93,12 @@ export default function CameraControls({
         pressed.current[k] = down;
         e.preventDefault();
       }
-      if (k === 'q') { pitch.current = Math.min(maxPitch, Math.max(minPitch, pitch.current + (down ? 0.03 : 0))); }
-      if (k === 'e') { pitch.current = Math.min(maxPitch, Math.max(minPitch, pitch.current - (down ? 0.03 : 0))); }
+      if (k === 'q') {
+        pitch.current = Math.min(maxPitch, Math.max(minPitch, pitch.current + (down ? 0.03 : 0)));
+      }
+      if (k === 'e') {
+        pitch.current = Math.min(maxPitch, Math.max(minPitch, pitch.current - (down ? 0.03 : 0)));
+      }
     };
     element.addEventListener('mousedown', onDown);
     globalThis.addEventListener('mouseup', onUp);
@@ -107,15 +114,26 @@ export default function CameraControls({
       globalThis.removeEventListener('keydown', onKey(true));
       globalThis.removeEventListener('keyup', onKey(false));
     };
-  }, [enabled, gl.domElement, rotateSpeed, zoomSpeed, minDistance, maxDistance, minPitch, maxPitch]);
+  }, [
+    enabled,
+    gl.domElement,
+    rotateSpeed,
+    zoomSpeed,
+    minDistance,
+    maxDistance,
+    minPitch,
+    maxPitch,
+  ]);
 
   useFrame((_, dt) => {
     if (!enabled) return;
     // Movement in camera-relative plane
-    const forward = +(pressed.current['w'] || pressed.current['arrowup'] || false) -
-                    +(pressed.current['s'] || pressed.current['arrowdown'] || false);
-    const strafe = +(pressed.current['d'] || pressed.current['arrowright'] || false) -
-                   +(pressed.current['a'] || pressed.current['arrowleft'] || false);
+    const forward =
+      +(pressed.current['w'] || pressed.current['arrowup'] || false) -
+      +(pressed.current['s'] || pressed.current['arrowdown'] || false);
+    const strafe =
+      +(pressed.current['d'] || pressed.current['arrowright'] || false) -
+      +(pressed.current['a'] || pressed.current['arrowleft'] || false);
     if (forward || strafe) {
       const speed = moveSpeed * dt;
       const sin = Math.sin(yaw.current);

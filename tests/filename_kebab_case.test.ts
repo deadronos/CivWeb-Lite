@@ -74,7 +74,8 @@ describe('kebab-case filenames under src/', () => {
   });
 
   it('has no non-kebab filenames (outside allowlist)', () => {
-    expect(offenders, `Rename these files to kebab-case or add to allowlist temporarily`).toEqual([]);
+    expect(offenders, `Rename these files to kebab-case or add to allowlist temporarily`).toEqual(
+      []
+    );
   });
 });
-

@@ -20,12 +20,7 @@ export function getVariantCount(biome: string): number {
   return Array.isArray(list) ? list.length : 0;
 }
 
-export function setVariantAssets(
-  biome: string,
-  index: number,
-  geometry: any,
-  material: any
-) {
+export function setVariantAssets(biome: string, index: number, geometry: any, material: any) {
   const list = BIOME_VARIANTS[biome] || (BIOME_VARIANTS[biome] = []);
   if (!list[index]) list[index] = { name: `v${index}` } as BiomeVariantDef;
   list[index].geometry = geometry;

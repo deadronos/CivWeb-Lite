@@ -36,7 +36,9 @@ for (let r = 0; r < 3; r++) {
   for (let q = 0; q < 5; q++) {
     const [x, z] = axialToWorld(q, r, 0.5);
     const tile = positionMap.get(`${q},${r}`);
-    console.log(`(${q},${r}) -> world(${x.toFixed(2)}, ${z.toFixed(2)}) biome: ${tile?.biome || 'missing'}`);
+    console.log(
+      `(${q},${r}) -> world(${x.toFixed(2)}, ${z.toFixed(2)}) biome: ${tile?.biome || 'missing'}`
+    );
   }
 }
 

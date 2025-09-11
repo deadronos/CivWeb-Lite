@@ -58,7 +58,9 @@ export function generateWorld(
   const amps: number[] = [];
   const layers = 4;
   for (let index = 0; index < layers; index++) {
-    const p = next(rng); rng = p.state; phases.push(p.value * Math.PI * 2);
+    const p = next(rng);
+    rng = p.state;
+    phases.push(p.value * Math.PI * 2);
     const fx = 1 + index; // 1,2,3,4 cycles across width (wrap safe)
     const fy = 1 + Math.floor(index / 2); // slower vertical variation
     freqsX.push(fx);
@@ -72,7 +74,9 @@ export function generateWorld(
   const freqsYM: number[] = [];
   const ampsM: number[] = [];
   for (let index = 0; index < layers; index++) {
-    const p = next(rng); rng = p.state; phasesM.push(p.value * Math.PI * 2);
+    const p = next(rng);
+    rng = p.state;
+    phasesM.push(p.value * Math.PI * 2);
     const fx = 1 + ((index + 1) % 3);
     const fy = 1 + Math.floor((index + 2) / 2);
     freqsXM.push(fx);
