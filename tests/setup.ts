@@ -35,6 +35,12 @@ vi.mock('@react-three/drei', () => ({
     ),
   Stats: () => React.createElement('div', { 'data-testid': 'stats' }),
   useGLTF: () => ({ scene: {} }),
+  useTexture: (_url: string) => ({
+    wrapS: 0,
+    wrapT: 0,
+    repeat: { set: (_x: number, _y: number) => {} },
+    needsUpdate: false,
+  }),
   Billboard: ({ children }: any) =>
     React.createElement('div', { 'data-testid': 'billboard' }, children),
   Text: ({ children }: any) => React.createElement('span', { 'data-testid': 'text' }, children),

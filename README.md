@@ -123,8 +123,3 @@ This project is licensed under the MIT license — see `LICENSE`.
 Owner: deadronos — open issues or PRs for collaboration.
 
 ---
-
-If you'd like, I can now: (1) run a markdown-lint pass to normalize headings/blank lines across the spec/plan/README, (2) commit these edits to `impl-phase1` and open a PR, or (3) both. Which would you like next?
-
-- npm run dev - start dev server
-- npm run build - build production
