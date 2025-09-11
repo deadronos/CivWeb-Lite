@@ -4,7 +4,7 @@ import {
   coverRemainingGameProviderPaths,
   coverGameProviderInlineExtras,
   initialStateForTests } from
-"..\\src\\contexts\\game-provider";
+"../src/contexts/game-provider";
 
 describe('GameProvider extra coverage helpers', () => {
   it('simulateAdvanceTurn with multiple AI players dispatches END_TURN and calls evaluateAI safely', () => {

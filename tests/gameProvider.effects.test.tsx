@@ -9,9 +9,9 @@ import {
   initialStateForTests,
   coverGameProviderEffects,
   simulateAdvanceTurn } from
-"..\\src\\contexts\\game-provider";
+"../src/contexts/game-provider";
 import { globalGameBus } from '../src/game/events';
-import { useGame } from "..\\src\\hooks\\use-game";
+import { useGame } from "../src/hooks/use-game";
 
 // Simple TestConsumer to read state and provide a button to toggle autoSim
 function TestConsumer() {

@@ -3,7 +3,7 @@ import {
   simulateAdvanceTurn,
   GAME_PROVIDER_MARKER,
   initialState } from
-"..\\src\\contexts\\game-provider";
+"../src/contexts/game-provider";
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider simulateAdvanceTurn helper', () => {

@@ -5,7 +5,7 @@ import {
   coverUseGameExtra,
   coverUseGameThrowExplicitly,
   coverUseGameInlinePaths } from
-"..\\src\\hooks\\use-game";
+"../src/hooks/use-game";
 
 describe('useGame coverage helpers', () => {
   it('cover thrown path helper returns threw', () => {

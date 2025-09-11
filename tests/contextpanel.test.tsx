@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import ContextPanel from "..\\src\\components\\ui\\context-panel";
+import ContextPanel from "../src/components/ui/context-panel";
 
 describe('ContextPanel', () => {
   it('renders details and handles actions', () => {

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { initialState } from "..\\src\\contexts\\game-provider";
+import { initialState } from "../src/contexts/game-provider";
 import { applyAction } from '../src/game/reducer';
 
 describe('reducer INIT and END_TURN', () => {

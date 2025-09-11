@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from "..\\src\\contexts\\game-provider";
+import { initialState } from "../src/contexts/game-provider";
 import { computePath } from '../src/game/pathfinder';
 
 describe('computePath combat preview', () => {

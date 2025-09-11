@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createRingLogger, appendLog } from '../src/game/logging';
-import { initialStateForTests } from "..\\src\\contexts\\game-provider";
+import { initialStateForTests } from "../src/contexts/game-provider";
 
 describe('logging helpers', () => {
   it('ring logger evicts oldest beyond capacity', () => {
