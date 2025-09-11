@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from "..\\src\\contexts\\game-provider";
+import { initialState } from "../src/contexts/game-provider";
 import { computePath } from '../src/game/pathfinder';
 
 describe('computePath combat preview', () => {
@@ -31,7 +31,7 @@ describe('computePath combat preview', () => {
       payload: { unitId: 'e1', type: 'warrior', ownerId: 'E', tileId: 'c' }
     });
 
-    const res: any = computePath(s.contentExt!, 'u1', 'c');
+    const res: any = computePath(s.contentExt!, 'u1', 'c', s.map.width, s.map.height);
     expect(res.path).toBeTruthy();
     expect(res.totalCost).toBeGreaterThanOrEqual(2);
     expect(res.combatPreview).toBeTruthy();

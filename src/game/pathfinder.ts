@@ -33,7 +33,9 @@ function passableFor(state: GameStateExtension, unit: Unit, tile: Hextile): bool
 export function computePath(
   state: GameStateExtension,
   unitId: string,
-  targetTileId: string
+  targetTileId: string,
+  width?: number,
+  height?: number
 ): { path: string[]; totalCost: number; combatPreview?: CombatPreview } | { path: null; totalCost: number } {
   const unit = state.units[unitId];
   const start = unit ? state.tiles[unit.location] : undefined;
@@ -60,7 +62,7 @@ export function computePath(
     const cid = pq.shift()!;
     if (cid === goal.id) break;
     const ct = state.tiles[cid];
-    const neighCoords = hexNeighbors({ q: ct.q, r: ct.r });
+    const neighCoords = hexNeighbors({ q: ct.q, r: ct.r }, width, height);
     for (const nc of neighCoords) {
       const nid = index.get(`${nc.q},${nc.r}`);
       if (!nid) continue;
@@ -126,7 +128,9 @@ export function computePath(
 }
 export function computeMovementRange(
   state: GameStateExtension,
-  unitId: string
+  unitId: string,
+  width?: number,
+  height?: number
 ): { reachable: string[]; cost: Record<string, number> } {
   const unit = state.units[unitId];
   const start = unit ? state.tiles[unit.location] : undefined;
@@ -150,7 +154,7 @@ export function computeMovementRange(
     const ccost = distribution.get(cid)!;
     if (ccost <= unit.movementRemaining && cid !== start.id) reachable.push(cid);
     const ct = state.tiles[cid];
-    const neighCoords = hexNeighbors({ q: ct.q, r: ct.r });
+    const neighCoords = hexNeighbors({ q: ct.q, r: ct.r }, width, height);
     for (const nc of neighCoords) {
       const nid = index.get(`${nc.q},${nc.r}`);
       if (!nid) continue;

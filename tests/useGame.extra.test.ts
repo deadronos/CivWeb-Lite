@@ -4,7 +4,7 @@ import {
   coverAllUseGameHuge,
   coverUseGameExtra,
   USE_GAME_MARKER } from
-"..\\src\\hooks\\use-game";
+"../src/hooks/use-game";
 
 describe('useGame helper coverage', () => {
   test('coverForTestsUseGame simulates throw path', () => {

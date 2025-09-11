@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
-import { GameProvider } from "..\\src\\contexts\\game-provider";
+import { GameProvider } from "../src/contexts/game-provider";
 import {
   useGame,
   ensureGameContext,
@@ -10,7 +10,7 @@ import {
   coverUseGameInlinePaths,
   coverAllUseGameHuge,
   coverUseGameExtra } from
-"..\\src\\hooks\\use-game";
+"../src/hooks/use-game";
 
 describe('useGame final coverage', () => {
   test('ensureGameContext throws when missing', () => {

@@ -5,9 +5,9 @@ import {
   GameProvider,
   simulateAdvanceTurn,
   initialStateForTests } from
-"..\\src\\contexts\\game-provider";
+"../src/contexts/game-provider";
 // GameStateContext intentionally removed; not used in this test
-import { useGame } from "..\\src\\hooks\\use-game";
+import { useGame } from "../src/hooks/use-game";
 
 function ConsumerShow() {
   const { state, dispatch } = useGame();

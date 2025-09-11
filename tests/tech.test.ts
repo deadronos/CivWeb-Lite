@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateTechCatalog, techCatalog } from "..\\src\\game\\tech\\tech-catalog";
+import { validateTechCatalog, techCatalog } from "../src/game/tech/tech-catalog";
 import { applyAction } from '../src/game/reducer';
 import { GameState, PlayerState } from '../src/game/types';
 import { LEADER_PERSONALITIES } from '../src/game/ai/leaders';

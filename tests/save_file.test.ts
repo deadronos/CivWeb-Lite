@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import { exportToFile, importFromFile, serializeState, SizeExceededError } from '../src/game/save';
-import { initialStateForTests } from "..\\src\\contexts\\game-provider";
+import { initialStateForTests } from "../src/contexts/game-provider";
 
 describe('file save helpers', () => {
   test('exportToFile triggers download', () => {

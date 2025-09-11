@@ -8,20 +8,26 @@ type TileMeshProperties = {
   color?: string;
   onPointerMove?: (event: React.PointerEvent) => void;
   size?: number; // hex radius (default: 0.5)
+  hexCoord?: { q: number; r: number }; // hex coordinates for alternating rotation
 };
 
-// TileMesh: renders a flat-top hex using a short cylinder with 6 radial segments.
-// Size is the hex radius (distance center->corner). Orientation: flat-top.
+// TileMesh: renders a pointy-top hex using a short cylinder with 6 radial segments.
+// Size is the hex radius (distance center->corner). Orientation: pointy-top.
 export const TileMesh = React.memo(function TileMesh({
   position,
   color = '#88c',
   onPointerMove,
   size = 0.5,
+  hexCoord,
 }: TileMeshProperties) {
   const hexRadius = size;
   const hexThickness = 0.08; // small height for slight elevation
+  
+  // All tiles are rotated by 30 degrees for pointy-top orientation
+  const rotationY = -Math.PI / 6; // -30 degrees
+  
   return (
-    <mesh position={position} onPointerMove={onPointerMove}>
+    <mesh position={position} rotation={[0, rotationY, 0]} onPointerMove={onPointerMove}>
       {/* cylinderGeometry(topRadius, bottomRadius, height, radialSegments) */}
       <cylinderGeometry args={[hexRadius, hexRadius, hexThickness, 6]} />
       <meshStandardMaterial color={color} />

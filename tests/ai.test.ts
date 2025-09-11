@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateAI } from '../src/game/ai/ai';
 import { GameState, PlayerState } from '../src/game/types';
-import { techCatalog } from "..\\src\\game\\tech\\tech-catalog";
+import { techCatalog } from "../src/game/tech/tech-catalog";
 import { LEADER_PERSONALITIES } from '../src/game/ai/leaders';
 
 function mockState(player: PlayerState): GameState {

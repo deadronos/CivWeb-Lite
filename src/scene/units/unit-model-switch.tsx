@@ -34,7 +34,7 @@ export type UnitModelProps = UnitModelProperties;
 
 import { Bob, phaseFromId } from './bob';
 // Lazy GLTF pipeline: only pull code when flag is enabled
-const LazyGLTFModel = React.lazy(() => import(String.raw`..\drei\gltf-model`).then(m => ({ default: m.default })));
+const LazyGLTFModel = React.lazy(() => import(String.raw`../drei/gltf-model`).then(m => ({ default: m.default })));
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,

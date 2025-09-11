@@ -4,7 +4,7 @@ import {
   VersionMismatchError,
   ValidationError } from
 '../src/game/save';
-import { initialStateForTests } from "..\\src\\contexts\\game-provider";
+import { initialStateForTests } from "../src/contexts/game-provider";
 
 describe('save/load roundtrip', () => {
   test('roundtrip retains state', () => {
