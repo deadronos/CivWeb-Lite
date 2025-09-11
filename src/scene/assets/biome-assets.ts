@@ -153,7 +153,7 @@ async function loadGLTFOnce(url: string): Promise<{ geometry: BufferGeometry; ma
 export async function loadBiomeVariants(biome: string): Promise<void> {
   if (globalThis.window === undefined) return; // no-op in tests/SSR
   if (biome === 'grass') {
-    const files = ['grassland_v0.glb', 'grassland_v1.glb', 'grassland_v2.glb'];
+    const files = ['grass_v0.glb', 'grass_v1.glb', 'grass_v2.glb'];
     for (const [index, file] of files.entries()) {
       try {
         const url = urlFor(file);

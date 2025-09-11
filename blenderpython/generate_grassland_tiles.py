@@ -134,8 +134,26 @@ def create_base_hex(name: str, radius=HEX_RADIUS, thickness=HEX_THICKNESS):
         bm.faces.new([v_top_a, v_top_b, v_bot_b, v_bot_a])
     # Bottom face (reverse order for correct normal)
     bm.faces.new(list(reversed(verts_bottom)))
+    
+    # Ensure all faces have proper normals
+    bm.normal_update()
+    bm.faces.ensure_lookup_table()
+    
+    # Generate UV coordinates for proper Three.js compatibility
+    uv_layer = bm.loops.layers.uv.new()
+    for face in bm.faces:
+        for loop in face.loops:
+            # Basic planar UV mapping (top-down projection)
+            loop[uv_layer].uv = ((loop.vert.co.x / radius + 1) * 0.5, 
+                                  (loop.vert.co.y / radius + 1) * 0.5)
+    
     bm.to_mesh(mesh)
     bm.free()
+    
+    # Ensure mesh has proper data
+    mesh.update()
+    mesh.validate()
+    
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(obj)
     return obj
@@ -426,10 +444,26 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
         try:
             # Duplicate and link copies to the temp scene
             dupes = []
+            # Find the main hex tile object to use as reference
+            main_tile = None
+            for o in src_objs:
+                if 'grassland_tile_' in o.name:
+                    main_tile = o
+                    break
+            
+            main_tile_offset = main_tile.location.copy() if main_tile else (0, 0, 0)
+            
             for o in src_objs:
                 dup = o.copy()
                 if o.data:
                     dup.data = o.data.copy()
+                # Reset location to origin, accounting for the tile's original offset
+                # This ensures all child objects are positioned relative to (0,0,0)
+                dup.location = (
+                    o.location.x - main_tile_offset[0],
+                    o.location.y - main_tile_offset[1], 
+                    o.location.z - main_tile_offset[2]
+                )
                 tmp_scene.collection.objects.link(dup)
                 dupes.append(dup)
 
@@ -440,7 +474,15 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
 
             # Export entire temp scene (no selection filtering needed)
             if fmtU in ('GLB', 'GLTF'):
-                bpy.ops.export_scene.gltf(filepath=filepath, use_selection=False, export_apply=True)
+                bpy.ops.export_scene.gltf(
+                    filepath=filepath, 
+                    use_selection=False, 
+                    export_apply=True,
+                    export_normals=True,
+                    export_texcoords=True,
+                    export_materials='EXPORT',
+                    export_original_specular=False
+                )
             elif fmtU == 'OBJ':
                 bpy.ops.export_scene.obj(filepath=filepath, use_selection=False)
             else:
@@ -461,7 +503,15 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
         for obj in collect_objects(collection):
             obj.select_set(True)
         if fmtU in ('GLB', 'GLTF'):
-            bpy.ops.export_scene.gltf(filepath=filepath, use_selection=True, export_apply=True)
+            bpy.ops.export_scene.gltf(
+                filepath=filepath, 
+                use_selection=True, 
+                export_apply=True,
+                export_normals=True,
+                export_texcoords=True,
+                export_materials='EXPORT',
+                export_original_specular=False
+            )
         elif fmtU == 'OBJ':
             bpy.ops.export_scene.obj(filepath=filepath, use_selection=True)
         else:
@@ -654,7 +704,7 @@ def run_headless_from_args():
         if export_dir_mode:
             # export each variant as separate file
             for i, child in enumerate(top_col.children):
-                fname = f'grassland_v{i}.glb' if export_format.upper() in ('GLB','GLTF') else f'grassland_v{i}.obj'
+                fname = f'grass_v{i}.glb' if export_format.upper() in ('GLB','GLTF') else f'grass_v{i}.obj'
                 outp = os.path.join(out_dir, fname)
                 export_collection(child, outp, fmt=export_format)
                 print('Exported variant', i, '->', outp)

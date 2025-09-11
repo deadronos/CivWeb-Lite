@@ -38,7 +38,7 @@ const FALLBACK_GEOMETRY = new CylinderGeometry(
   1,
   false
 );
-// Rotate so a point faces +Z (pointy-top alignment) — CylinderGeometry default is fine for pointy-top; no rotation needed.
+// CylinderGeometry with 6 radial segments is already pointy-top oriented by default
 
 // Prepare simple materials cache per biome bucket to keep GPU state changes minimal
 const materialCache = new Map<string, MeshStandardMaterial>();
