@@ -28,14 +28,14 @@ export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
  */
 export function getWorldBounds(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
   const leftEdge = 0;
-  const rightEdge = hexSize * (3 / 2) * (config.worldWidth - 1);
+  const rightEdge = hexSize * Math.sqrt(3) * (config.worldWidth - 1);
   const worldSpan = rightEdge - leftEdge;
   
   return {
     leftEdge,
     rightEdge,
     worldSpan,
-    wrapBufferWidth: hexSize * (3 / 2) * config.wrapBuffer,
+    wrapBufferWidth: hexSize * Math.sqrt(3) * config.wrapBuffer,
   };
 }
 
@@ -70,7 +70,7 @@ export function generateWrappedPositions(
       if (tileIndex >= 0) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
         // Shift to right side
-        wrappedPositions.push([origX + worldSpan + hexSize * (3 / 2), origY, origZ]);
+        wrappedPositions.push([origX + worldSpan + hexSize * Math.sqrt(3), origY, origZ]);
       }
     }
   }
@@ -180,12 +180,12 @@ export function checkCameraTeleport(
 
   // If camera is too far left, teleport to right side
   if (cameraX < leftEdge - config.teleportThreshold) {
-    return cameraX + worldSpan + hexSize * (3 / 2);
+    return cameraX + worldSpan + hexSize * Math.sqrt(3);
   }
 
   // If camera is too far right, teleport to left side
   if (cameraX > rightEdge + config.teleportThreshold) {
-    return cameraX - worldSpan - hexSize * (3 / 2);
+    return cameraX - worldSpan - hexSize * Math.sqrt(3);
   }
 
   return null; // No teleport needed

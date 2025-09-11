@@ -28,7 +28,7 @@ export default function InstancedModels({ geometry, material, positions, size = 
       const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, e));
       const heightScale = desiredHeight / 0.08;
       object.scale.set(scaleFactor, heightScale, scaleFactor);
-      object.rotation.set(0, 0, 0);
+      object.rotation.set(0, -Math.PI / 6, 0);
       object.updateMatrix();
       (mesh as any).setMatrixAt(index, object.matrix);
     }

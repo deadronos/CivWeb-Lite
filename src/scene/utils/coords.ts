@@ -1,20 +1,19 @@
 /**
  * Convert axial hex coordinates (q, r) to world X/Z plane coordinates.
- * Orientation: flat-top hexes (flat sides on top/bottom).
+ * Orientation: pointy-top hexes (pointy sides on top/bottom).
  *
- * Projection: standard flat-top axial layout with vertical staggering.
- *  - Columns wrap horizontally for a cylindrical world.
- *  - Vertical coordinate uses an odd-q offset (r + (q & 1) / 2).
+ * Projection: standard pointy-top axial layout with horizontal staggering.
+ *  - Rows wrap vertically for a cylindrical world.
  *
- * Formulas (flat-top, cylindrical):
- *   worldX = size * 3/2 * q
- *   worldZ = size * sqrt(3) * (r + (q & 1) / 2)
+ * Formulas (pointy-top, cylindrical):
+ *   worldX = size * sqrt(3) * (q + r / 2)
+ *   worldZ = size * 3/2 * r
  *
  * `size` is the hex radius (distance from center to any corner).
  */
 export function axialToWorld(q: number, r: number, size = 1): [number, number] {
-  const worldX = size * (3 / 2) * q;
-  const worldZ = size * Math.sqrt(3) * (r + ((q & 1) ? 0.5 : 0));
+  const worldX = size * Math.sqrt(3) * (q + r / 2);
+  const worldZ = size * (3 / 2) * r;
 
   return [worldX, worldZ];
 }
@@ -31,4 +30,4 @@ export function tileIdToWorldFromExt(
 
 // Default hex size (radius). Exported so rendering and layout can share the same scale.
 // Matches the base radius of the tile geometry so edges meet without gaps
-export const DEFAULT_HEX_SIZE = 0.5;
+export const DEFAULT_HEX_SIZE = 0.51;

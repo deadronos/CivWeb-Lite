@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useRef } from 'react';
-import { InstancedMesh, Object3D, Color, InstancedBufferAttribute, DoubleSide, DynamicDrawUsage, BufferGeometry, MeshBasicMaterial, BufferAttribute } from 'three';
+import { InstancedMesh, Object3D, Color, InstancedBufferAttribute, DoubleSide, DynamicDrawUsage, BufferGeometry, MeshBasicMaterial, BufferAttribute, CylinderGeometry } from 'three';
 
 type InstancedTilesProperties = {
   positions: Array<[number, number, number]>;
@@ -30,6 +30,12 @@ export function InstancedTiles({
   // Optional debug logging switch: set `window.__CWL_DEBUG = true` in devtools to enable
   const debugLogs = useMemo(() => {
     return (globalThis as any).window !== undefined && (globalThis as any).window.__CWL_DEBUG === true;
+  }, []);
+
+  const geometry = useMemo(() => {
+    const geo = new CylinderGeometry(0.5, 0.5, 0.08, 6);
+    geo.rotateY(-Math.PI / 6); // -30 degrees for pointy-top
+    return geo;
   }, []);
 
   // temp object for building matrices
@@ -82,17 +88,7 @@ export function InstancedTiles({
         const heightScale = desiredHeight / 0.08;
         object.scale.set(scaleFactor, heightScale, scaleFactor);
         
-        // Alternating hex rotation pattern for better tile interlocking
-        // Rotate alternate tiles by 30 degrees (π/6 radians) based on hex coordinates
-        let rotationY = 0;
-        if (hexCoords && hexCoords[index]) {
-          const { q, r } = hexCoords[index];
-          // Alternate tiles based on the sum of hex coordinates
-          if ((q + r) % 2 === 1) {
-            rotationY = Math.PI / 6; // 30 degrees
-          }
-        }
-        object.rotation.set(0, rotationY, 0);
+        object.rotation.set(0, 0, 0);
         
         object.updateMatrix();
         (mesh as any).setMatrixAt(index, object.matrix);
@@ -447,26 +443,12 @@ export function InstancedTiles({
     };
   }, [positions, count, materialColor, object, size, colors, hexCoords]);
 
-  // Build a simple hex cylinder geometry: cylinderGeometry(radius, radius, thickness, radialSegments)
-  // We'll let the mesh create geometry from JSX children; provide proper args below.
   return (
     <instancedMesh
       ref={reference}
-      args={[undefined as any, undefined as any, count]}
+      args={[geometry, undefined as any, count]}
       onPointerMove={onPointerMove as any}
     >
-      <cylinderGeometry args={[0.5, 0.5, 0.08, 6]} />
-      {/**
-       * We default vertexColors to false here; the effect toggles it on when
-       * instance colors are actually set via setColorAt. This avoids a state
-       * where vertexColors=true but no instanceColor attribute exists yet,
-       * which renders black on some three versions.
-       */}
-      {/**
-       * Use MeshBasicMaterial to avoid dependency on scene lighting. The effect will
-       * enable vertexColors once per-instance colors are ready. This guarantees tiles
-       * are visible even without lights.
-       */}
       <meshBasicMaterial color={materialColor} vertexColors={false} />
     </instancedMesh>
   );

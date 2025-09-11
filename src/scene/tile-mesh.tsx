@@ -11,8 +11,8 @@ type TileMeshProperties = {
   hexCoord?: { q: number; r: number }; // hex coordinates for alternating rotation
 };
 
-// TileMesh: renders a flat-top hex using a short cylinder with 6 radial segments.
-// Size is the hex radius (distance center->corner). Orientation: flat-top.
+// TileMesh: renders a pointy-top hex using a short cylinder with 6 radial segments.
+// Size is the hex radius (distance center->corner). Orientation: pointy-top.
 export const TileMesh = React.memo(function TileMesh({
   position,
   color = '#88c',
@@ -23,15 +23,8 @@ export const TileMesh = React.memo(function TileMesh({
   const hexRadius = size;
   const hexThickness = 0.08; // small height for slight elevation
   
-  // Calculate alternating rotation based on hex coordinates
-  let rotationY = 0;
-  if (hexCoord) {
-    const { q, r } = hexCoord;
-    // Alternate tiles based on the sum of hex coordinates
-    if ((q + r) % 2 === 1) {
-      rotationY = Math.PI / 6; // 30 degrees
-    }
-  }
+  // All tiles are rotated by 30 degrees for pointy-top orientation
+  const rotationY = -Math.PI / 6; // -30 degrees
   
   return (
     <mesh position={position} rotation={[0, rotationY, 0]} onPointerMove={onPointerMove}>
