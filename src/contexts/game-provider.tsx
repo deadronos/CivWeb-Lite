@@ -7,7 +7,7 @@ import { createEmptyState as createContentExtension } from '../game/content/engi
 import { GameAction } from '../game/actions';
 import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
-import { techCatalog } from "..\\game\\tech\\tech-catalog";
+import { techCatalog } from "../game/tech/tech-catalog";
 import { evaluateAI } from '../game/ai/ai';
 
 export type Dispatch = (action: GameAction) => void;
