@@ -16,6 +16,13 @@ import { colorForTile, baseColorForBiome, colorForBiomeBucket } from './utils/bi
 import { getVariantCount, getVariantAssets } from './assets/biome-variants-registry';
 import { loadBiomeVariants, BIOME_ASSETS_EVENT } from './assets/biome-assets';
 import InstancedModels from './instanced-models';
+import { 
+  generateWrappedBiomeGroups, 
+  DEFAULT_WRAPPING_CONFIG, 
+  WrappingConfig 
+} from './utils/world-wrapping';
+import { useCameraWrapping } from './hooks/use-camera-wrapping';
+import { TileDebugVisualizer } from './debug/tile-debug-visualizer';
 import ReactLazy = React.lazy;
 const UnitMeshes = React.lazy(() => import('./unit-meshes'));
 const ProceduralPreload = React.lazy(() => import('./units/procedural-preload'));
@@ -34,6 +41,17 @@ export function ConnectedScene() {
   const { selectedUnitId } = useSelection();
   const { index: hoverIndex, setHoverIndex } = useHoverTile();
   const tiles = state.map.tiles;
+  
+  // Wrapping world configuration
+  const wrappingConfig: WrappingConfig = {
+    ...DEFAULT_WRAPPING_CONFIG,
+    worldWidth: state.map.width,
+    worldHeight: state.map.height,
+  };
+  
+  // Enable camera wrapping for seamless world navigation
+  useCameraWrapping(wrappingConfig);
+
   const positions = useMemo(() => {
     const pos: Array<[number, number, number]> = [];
     for (const t of tiles) {
@@ -53,6 +71,59 @@ export function ConnectedScene() {
 
   // Procedural biome colors with subtle variation by elevation/moisture
   const colors = useMemo(() => state.map.tiles.map((t) => colorForTile(t as any)), [state.map.tiles]);
+
+  // Debug analysis of tile coverage and coordinates
+  React.useEffect(() => {
+    if (globalThis.window && isDevelopmentOrTest()) {
+      console.log('=== TILE COVERAGE ANALYSIS ===');
+      console.log(`Total tiles generated: ${tiles.length}`);
+      console.log(`Expected tiles (${state.map.width}x${state.map.height}): ${state.map.width * state.map.height}`);
+      
+      // Check for missing positions
+      const positionMap = new Map();
+      for (const tile of tiles) {
+        const key = `${tile.coord.q},${tile.coord.r}`;
+        positionMap.set(key, tile);
+      }
+      
+      let missingCount = 0;
+      const sampleMissing = [];
+      for (let r = 0; r < state.map.height; r++) {
+        for (let q = 0; q < state.map.width; q++) {
+          const key = `${q},${r}`;
+          if (!positionMap.has(key)) {
+            missingCount++;
+            if (sampleMissing.length < 5) {
+              sampleMissing.push({ q, r });
+            }
+          }
+        }
+      }
+      
+      console.log(`Missing positions: ${missingCount}`);
+      if (missingCount > 0) {
+        console.log('Sample missing positions:', sampleMissing);
+      }
+      
+      // Biome distribution
+      const biomeCount: Record<string, number> = {};
+      for (const tile of tiles) {
+        const biomeKey = String(tile.biome);
+        biomeCount[biomeKey] = (biomeCount[biomeKey] || 0) + 1;
+      }
+      console.log('Biome distribution:', biomeCount);
+      
+      // Check coordinate mapping for a small sample
+      console.log('=== COORDINATE MAPPING SAMPLE ===');
+      for (let r = 0; r < Math.min(3, state.map.height); r++) {
+        for (let q = 0; q < Math.min(5, state.map.width); q++) {
+          const [x, z] = axialToWorld(q, r, DEFAULT_HEX_SIZE);
+          const tile = positionMap.get(`${q},${r}`);
+          console.log(`(${q},${r}) -> world(${x.toFixed(2)}, ${z.toFixed(2)}) biome: ${tile?.biome || 'MISSING'}`);
+        }
+      }
+    }
+  }, [tiles, state.map.width, state.map.height]);
 
   // Feature flag: enable per-instance colors only when explicitly requested.
   // By default we use stable per-biome uniform colors for instanced groups to
@@ -89,8 +160,11 @@ export function ConnectedScene() {
       // record the per-instance procedural color so InstancedTiles can use instanceColor
       map[key].colors!.push(colorForTile(t as any));
     }
-    return Object.values(map);
-  }, [tiles, elevations]);
+    const originalGroups = Object.values(map);
+    
+    // Generate wrapped biome groups for seamless world edges
+    return generateWrappedBiomeGroups(originalGroups, tiles, wrappingConfig);
+  }, [tiles, elevations, wrappingConfig]);
 
   // Kick off loading biome assets once in browser; safe in dev/test
   React.useEffect(() => {
@@ -128,6 +202,10 @@ export function ConnectedScene() {
       {/* Drei wrappers: camera controls and dev stats */}
       <CameraControls />
       <DevStats enabled={isDevelopmentOrTest()} />
+      
+      {/* Debug visualizer - temporary for diagnosing black tile issue */}
+      {isDevelopmentOrTest() && <TileDebugVisualizer />}
+      
       {/* Phase 3 sample: dev-only labels */}
       {isDevelopmentOrTest() &&
       <>
