@@ -15,6 +15,7 @@
 export function axialToWorld(q: number, r: number, size = 1): [number, number] {
   const worldX = size * (3 / 2) * q;
   const worldZ = size * Math.sqrt(3) * (r + ((q & 1) ? 0.5 : 0));
+
   return [worldX, worldZ];
 }
 
