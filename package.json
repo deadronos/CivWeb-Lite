@@ -63,6 +63,7 @@
     "lcov": "*",
     "playwright": "*",
     "prettier": "*",
+    "sharp": "^0.34.3",
     "tsx": "^4.7.0",
     "typescript": "*",
     "vite": "*",

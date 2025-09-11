@@ -451,19 +451,38 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
                     main_tile = o
                     break
             
-            main_tile_offset = main_tile.location.copy() if main_tile else (0, 0, 0)
-            
+            # Compute the main tile world translation so we can recenter everything
+            # Use matrix_world to capture any parent/scene transforms that may apply
+            main_tile_world_loc = None
+            try:
+                main_tile_world_loc = main_tile.matrix_world.to_translation() if main_tile else None
+            except Exception:
+                # Fallback to simple location if matrix_world isn't available
+                main_tile_world_loc = main_tile.location.copy() if main_tile else None
+
+            from mathutils import Matrix
+
             for o in src_objs:
                 dup = o.copy()
                 if o.data:
                     dup.data = o.data.copy()
-                # Reset location to origin, accounting for the tile's original offset
-                # This ensures all child objects are positioned relative to (0,0,0)
-                dup.location = (
-                    o.location.x - main_tile_offset[0],
-                    o.location.y - main_tile_offset[1], 
-                    o.location.z - main_tile_offset[2]
-                )
+                # Preserve the object's world transform then translate so main tile sits at origin
+                try:
+                    # Copy full world matrix to preserve rotations/scales
+                    dup.matrix_world = o.matrix_world.copy()
+                    if main_tile_world_loc is not None:
+                        dup.matrix_world.translation -= main_tile_world_loc
+                except Exception:
+                    # Fallback: adjust local location relative to main tile world location
+                    if main_tile_world_loc is not None:
+                        dup.location = (
+                            o.location.x - main_tile_world_loc.x,
+                            o.location.y - main_tile_world_loc.y,
+                            o.location.z - main_tile_world_loc.z,
+                        )
+                    else:
+                        dup.location = o.location
+
                 tmp_scene.collection.objects.link(dup)
                 dupes.append(dup)
 

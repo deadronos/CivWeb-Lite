@@ -1,11 +1,13 @@
 import React from 'react';
-import { CylinderGeometry, MeshStandardMaterial, Color, BufferGeometry, Material } from 'three';
+import { CylinderGeometry, MeshStandardMaterial, Color, BufferGeometry, Material, RepeatWrapping } from 'three';
 import { useGame } from '../hooks/use-game';
 import { useSelection } from '../contexts/selection-context';
 import CameraControls from './drei/camera-controls';
 import HtmlLabel from './drei/html-label';
 import UnitMeshes from './unit-meshes';
 import UnitMarkers from './unit-markers';
+import { useTexture } from '@react-three/drei';
+import dragonMapUrl from './background/dragonmap.png';
 import InstancedModels, { InstanceTransform } from './instanced-models';
 import { axialToWorld, DEFAULT_HEX_SIZE } from './utils/coords';
 import { baseColorForBiome, colorForBiomeBucket } from './utils/biome-colors';
@@ -158,6 +160,46 @@ export function ConnectedScene() {
     return () => window.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
   }, []);
 
+  // Load background texture via hook (must be unconditionally called to keep hook order stable)
+  const dragonTexture = useTexture(dragonMapUrl) as any;
+
+  // When texture and bounds are available, configure repeating so the image tiles across the plane
+
+
+  // Compute background bounds from tiles (memoized)
+  const backgroundBounds = React.useMemo(() => {
+    const positions = state.map.tiles.map((t) => axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE));
+  if (positions.length === 0) return;
+    let minX = Infinity; let maxX = -Infinity; let minZ = Infinity; let maxZ = -Infinity;
+    for (const [x, z] of positions) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (z < minZ) minZ = z;
+      if (z > maxZ) maxZ = z;
+    }
+    const pad = DEFAULT_HEX_SIZE * 4;
+    const width = Math.max(1, maxX - minX + pad * 2);
+    const height = Math.max(1, maxZ - minZ + pad * 2);
+    const centerX = (minX + maxX) / 2;
+    const centerZ = (minZ + maxZ) / 2;
+    return { width, height, centerX, centerZ };
+  }, [state.map.tiles]);
+
+  // When texture and bounds are available, configure repeating so the image tiles across the plane
+  React.useEffect(() => {
+    if (!dragonTexture || !backgroundBounds) return;
+    try {
+      dragonTexture.wrapS = dragonTexture.wrapT = RepeatWrapping;
+      // Repeat across the map so there is roughly one texture tile per map column/row
+      const repeatX = Math.max(1, Math.round(state.map.width));
+      const repeatY = Math.max(1, Math.round(state.map.height));
+      dragonTexture.repeat.set(repeatX, repeatY);
+      dragonTexture.needsUpdate = true;
+    } catch {
+      // ignore
+    }
+  }, [dragonTexture, backgroundBounds, state.map.width, state.map.height]);
+
   // Build buckets and apply cylindrical wrapping duplicates
   const buckets = React.useMemo(() => {
     const baseBuckets = buildBuckets(state.map.tiles);
@@ -186,12 +228,12 @@ export function ConnectedScene() {
   }, [state.map.tiles, state.map.width, state.map.height, assetVersion]);
 
   // Hovered tile label via custom event (dev/test convenience)
-  const [hoverPos, setHoverPos] = React.useState<[number, number, number] | null>(null);
+  const [hoverPos, setHoverPos] = React.useState<[number, number, number] | undefined>();
   React.useEffect(() => {
-    const onHover = (e: any) => {
-      const index = e?.detail?.index ?? -1;
+    const onHover = (event: any) => {
+      const index = event?.detail?.index ?? -1;
       const t = state.map.tiles[index];
-      if (!t) { setHoverPos(null); return; }
+      if (!t) { setHoverPos(undefined); return; }
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       setHoverPos([x, 0.9, z]);
     };
@@ -200,11 +242,11 @@ export function ConnectedScene() {
   }, [state.map.tiles]);
 
   // Selected unit label position
-  const [selectedUnitLabel, setSelectedUnitLabel] = React.useState<{ pos: [number, number, number]; id: string } | null>(null);
+  const [selectedUnitLabel, setSelectedUnitLabel] = React.useState<{ pos: [number, number, number]; id: string } | undefined>();
   React.useEffect(() => {
-    if (!state.contentExt || !selectedUnitId) { setSelectedUnitLabel(null); return; }
+    if (!state.contentExt || !selectedUnitId) { setSelectedUnitLabel(undefined); return; }
     const u = state.contentExt.units[selectedUnitId];
-    if (!u) { setSelectedUnitLabel(null); return; }
+    if (!u) { setSelectedUnitLabel(undefined); return; }
     let xz: [number, number] | undefined;
     if (typeof u.location === 'string') {
       const tile = state.contentExt.tiles[u.location];
@@ -221,6 +263,27 @@ export function ConnectedScene() {
       {/* Controls and lights are managed at App-level; this exposes movement */}
       <CameraControls />
 
+      {/* Background map plane (stretched to cover the map extents). Placed slightly below tiles */}
+      {/**
+       * Strategy:
+       * - Compute approximate world bounds from tiles
+       * - Create a single Plane geometry sized to cover bounds + padding
+       * - Apply the dragonmap texture and place the plane slightly below the tile geometry so it appears under the map
+       */}
+      {dragonTexture && backgroundBounds ? (
+        <mesh
+          key="background-dragonmap"
+          position={[backgroundBounds.centerX, -0.05, backgroundBounds.centerZ]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          name="background-map"
+          receiveShadow={false}
+          castShadow={false}
+        >
+          <planeGeometry args={[backgroundBounds.width, backgroundBounds.height]} />
+          <meshStandardMaterial map={dragonTexture} toneMapped={false} transparent={false} depthWrite={true} />
+        </mesh>
+      ) : undefined}
+
       {/* Terrain */}
       <HexBucketsInstanced buckets={buckets} />
 
@@ -233,14 +296,14 @@ export function ConnectedScene() {
         <HtmlLabel position={hoverPos} data-testid="hovered-tile-label" center>
           hovered
         </HtmlLabel>
-      ) : null}
+  ) : undefined}
 
       {/* Selected unit label */}
       {selectedUnitLabel ? (
         <HtmlLabel position={selectedUnitLabel.pos} data-testid="selected-unit-label" center>
           {selectedUnitLabel.id}
         </HtmlLabel>
-      ) : null}
+      ) : undefined}
     </group>
   );
 }
