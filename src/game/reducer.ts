@@ -12,6 +12,7 @@ import {
 } from './content/rules';
 import { createEmptyState as createContentExtension } from './content/engine';
 import { UNIT_TYPES } from './content/registry';
+import { computePath } from './pathfinder';
 
 function findPlayer(players: PlayerState[], id: string) {
   return players.find((p) => p.id === id);
@@ -155,6 +156,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const world = generateWorld(seed, width, height);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
+        // Reset UI state to clear any stale selections
+        draft.ui = {
+          openPanels: {},
+        };
         // Players
         const total = Math.max(1, Math.min(6, action.payload.totalPlayers));
         const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
@@ -454,6 +459,170 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };
         draft.aiPerf.total += action.payload.duration;
         draft.aiPerf.count += 1;
+        break;
+      }
+      // UI Interaction Actions
+      case 'SELECT_UNIT': {
+        draft.ui.selectedUnitId = action.payload.unitId;
+        draft.ui.previewPath = undefined;
+        // Emit event for UI components to listen to
+        globalGameBus.emit('unit:selected', { unitId: action.payload.unitId });
+        break;
+      }
+      case 'PREVIEW_PATH': {
+        if (draft.contentExt && draft.ui.selectedUnitId) {
+          const result = computePath(
+            draft.contentExt, 
+            draft.ui.selectedUnitId, 
+            action.payload.targetTileId,
+            draft.map.width,
+            draft.map.height
+          );
+          draft.ui.previewPath = result.path || undefined;
+        }
+        break;
+      }
+      case 'ISSUE_MOVE': {
+        if (draft.contentExt) {
+          const { unitId, path, confirmCombat } = action.payload;
+          const unit = draft.contentExt.units[unitId];
+          if (unit && path.length > 0) {
+            const extension = draft.contentExt;
+            
+            // Helper to check for enemies at a tile
+            const enemyAt = (tileId: string): boolean => {
+              const t = extension.tiles[tileId];
+              if (!t) return false;
+              if (t.occupantCityId) {
+                const c = extension.cities[t.occupantCityId];
+                if (c && c.ownerId !== unit.ownerId) return true;
+              }
+              for (const other of Object.values(extension.units)) {
+                if (other.id !== unit.id && other.location === tileId && other.ownerId !== unit.ownerId)
+                  return true;
+              }
+              return false;
+            };
+            
+            // Move through the path step by step with proper validation
+            let moved = false;
+            for (const tileId of path) {
+              if (enemyAt(tileId) && !confirmCombat) {
+                break; // require confirmCombat to proceed into enemy tile
+              }
+              const before = unit.location;
+              const ok = extensionMoveUnit(extension, unit.id, tileId);
+              if (!ok) break;
+              if (unit.location === before) break; // no progress safeguard
+              moved = true;
+            }
+            
+            if (moved) {
+              globalGameBus.emit('actionAccepted', { 
+                requestId: `move_${unitId}_${Date.now()}`, 
+                appliedAtTick: draft.turn 
+              });
+              globalGameBus.emit('actionsResolved', { 
+                tick: draft.turn, 
+                results: [{ unitId, action: 'move', location: unit.location }] 
+              });
+            } else {
+              globalGameBus.emit('actionRejected', { 
+                requestId: `move_${unitId}_${Date.now()}`, 
+                reason: 'Invalid move target or path blocked' 
+              });
+            }
+          }
+        }
+        draft.ui.selectedUnitId = undefined;
+        draft.ui.previewPath = undefined;
+        break;
+      }
+      case 'CANCEL_SELECTION': {
+        draft.ui.selectedUnitId = undefined;
+        draft.ui.previewPath = undefined;
+        break;
+      }
+      case 'OPEN_CITY_PANEL': {
+        draft.ui.openPanels.cityPanel = action.payload.cityId;
+        break;
+      }
+      case 'CHOOSE_PRODUCTION_ITEM': {
+        if (draft.contentExt) {
+          const { cityId, order } = action.payload;
+          const city = draft.contentExt.cities[cityId];
+          if (city) {
+            city.productionQueue.push({
+              type: order.type,
+              item: order.itemId,
+              turnsRemaining: 5, // TODO: Calculate based on cost and production
+            });
+            globalGameBus.emit('productionQueued', { cityId, order });
+          }
+        }
+        break;
+      }
+      case 'REORDER_PRODUCTION_QUEUE': {
+        if (draft.contentExt) {
+          const { cityId, newQueue } = action.payload;
+          const city = draft.contentExt.cities[cityId];
+          if (city) {
+            // Convert UI ProductionOrder to internal CityProductionOrder
+            city.productionQueue = newQueue.map(order => ({
+              type: order.type,
+              item: order.itemId,
+              turnsRemaining: 5, // TODO: Calculate based on cost and production
+            }));
+          }
+        }
+        break;
+      }
+      case 'CANCEL_ORDER': {
+        if (draft.contentExt) {
+          const { cityId, orderIndex } = action.payload;
+          const city = draft.contentExt.cities[cityId];
+          if (city && orderIndex >= 0 && orderIndex < city.productionQueue.length) {
+            city.productionQueue.splice(orderIndex, 1);
+          }
+        }
+        break;
+      }
+      case 'OPEN_RESEARCH_PANEL': {
+        draft.ui.openPanels.researchPanel = true;
+        break;
+      }
+      case 'CLOSE_RESEARCH_PANEL': {
+        draft.ui.openPanels.researchPanel = false;
+        break;
+      }
+      case 'CLOSE_CITY_PANEL': {
+        draft.ui.openPanels.cityPanel = undefined;
+        break;
+      }
+      case 'START_RESEARCH': {
+        if (draft.contentExt) {
+          extensionBeginResearch(draft.contentExt, action.payload.techId);
+          globalGameBus.emit('researchStarted', { 
+            playerId: action.payload.playerId, 
+            techId: action.payload.techId 
+          });
+        }
+        break;
+      }
+      case 'QUEUE_RESEARCH': {
+        // TODO: Implement research queue when multiple techs can be queued
+        globalGameBus.emit('researchQueued', { 
+          playerId: action.payload.playerId, 
+          techId: action.payload.techId 
+        });
+        break;
+      }
+      case 'BEGIN_TURN': {
+        globalGameBus.emit('turn:playerStart', { playerId: action.payload.playerId, turn: draft.turn });
+        break;
+      }
+      case 'END_PLAYER_PHASE': {
+        globalGameBus.emit('turn:playerEnd', { playerId: action.payload.playerId, turn: draft.turn });
         break;
       }
       default: {

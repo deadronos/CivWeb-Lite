@@ -46,8 +46,8 @@ function chooseBiome(e: number, m: number, lat: number): BiomeType {
 
 export function generateWorld(
   seed: string | RNGState,
-  width = DEFAULT_MAP_SIZE.width,
-  height = DEFAULT_MAP_SIZE.height
+  width: number = DEFAULT_MAP_SIZE.width,
+  height: number = DEFAULT_MAP_SIZE.height
 ): { tiles: Tile[]; state: RNGState } {
   let rng = typeof seed === 'string' ? seedFrom(seed) : seed;
 

@@ -7,8 +7,14 @@ const RightProductionPanel = React.lazy(() => import('./right-production-panel')
 type PanelProperties = { open: boolean; onClose: () => void };
 
 export default function OverlayUI() {
+  const { state, dispatch } = useGame();
   const [showRight, setShowRight] = React.useState(false);
   const [showLeft, setShowLeft] = React.useState(false);
+  
+  // Sync with game state
+  const researchPanelOpen = state.ui.openPanels.researchPanel || showLeft;
+  const cityPanelOpen = !!state.ui.openPanels.cityPanel || showRight;
+  
   // Prefetch likely-next chunks shortly after mount (warm-up without blocking):
   React.useEffect(() => {
     const id = setTimeout(() => {
@@ -20,13 +26,32 @@ export default function OverlayUI() {
 
   return (
     <>
-      <TopMenu onOpenResearch={() => setShowLeft(true)} onOpenCities={() => setShowRight(true)} />
+      <TopMenu 
+        onOpenResearch={() => {
+          setShowLeft(true);
+          dispatch({ type: 'OPEN_RESEARCH_PANEL', payload: {} });
+        }} 
+        onOpenCities={() => {
+          setShowRight(true);
+          // Open first city for now - in real implementation would show city list
+          const firstCity = state.contentExt && Object.keys(state.contentExt.cities)[0];
+          if (firstCity) {
+            dispatch({ type: 'OPEN_CITY_PANEL', payload: { cityId: firstCity } });
+          }
+        }} 
+      />
       <StatsBar />
       <React.Suspense fallback={<LazySpinner />}>
-        <LeftCivicPanel open={showLeft} onClose={() => setShowLeft(false)} />
+        <LeftCivicPanel open={researchPanelOpen} onClose={() => {
+          setShowLeft(false);
+          dispatch({ type: 'CLOSE_RESEARCH_PANEL', payload: {} });
+        }} />
       </React.Suspense>
       <React.Suspense fallback={<LazySpinner />}>
-        <RightProductionPanel open={showRight} onClose={() => setShowRight(false)} />
+        <RightProductionPanel open={cityPanelOpen} onClose={() => {
+          setShowRight(false);
+          dispatch({ type: 'CLOSE_CITY_PANEL', payload: {} });
+        }} />
       </React.Suspense>
     </>
   );
@@ -39,6 +64,8 @@ function TopMenu({
   onOpenResearch: () => void;
   onOpenCities: () => void;
 }) {
+  const { dispatch } = useGame();
+  
   const Item = (p: React.PropsWithChildren<{ onClick?: () => void }>) => (
     <button className="ui-topmenu-item" onClick={p.onClick}>
       {p.children}
@@ -64,7 +91,9 @@ function TopMenu({
         <Item>Manual</Item>
       </div>
       <div className="ui-topmenu-right">
-        <button className="ui-turn">Turn Done</button>
+        <button className="ui-turn" onClick={() => dispatch({ type: 'END_TURN' })}>
+          Turn Done
+        </button>
       </div>
     </div>
   );

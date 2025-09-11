@@ -56,6 +56,16 @@ export interface GameLogEntry {
   payload?: any;
 }
 
+export interface UIState {
+  selectedUnitId?: string;
+  selectedCityId?: string;
+  previewPath?: string[];
+  openPanels: {
+    cityPanel?: string; // cityId if open
+    researchPanel?: boolean;
+  };
+}
+
 export interface GameState {
   schemaVersion: number;
   seed: string;
@@ -68,6 +78,8 @@ export interface GameState {
   aiPerf?: { total: number; count: number };
   mode: 'standard' | 'ai-sim';
   autoSim: boolean;
+  // UI state for selections and interactions
+  ui: UIState;
   // Optional extension for spec-driven content (biomes/units/cities/tech system)
   // This keeps the main GameState backward compatible while allowing incremental rollout.
   contentExt?: import('./content/types').GameStateExt;

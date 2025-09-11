@@ -29,6 +29,9 @@ export const initialState = (): GameState => ({
   aiPerf: { total: 0, count: 0 },
   mode: 'standard',
   autoSim: false,
+  ui: {
+    openPanels: {},
+  },
   contentExt: createContentExtension(),
 });
 
