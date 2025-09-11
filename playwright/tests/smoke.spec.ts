@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('smoke: start, advance 2 turns, save, load', async ({ page, context }) => {
+test('smoke: start, advance 2 turns, save, load', async ({ page }) => {
   await page.goto('/');
 
   // Ensure initial UI visible
@@ -33,4 +33,3 @@ test('a11y: axe-core scan', async ({ page }) => {
   // Integration presence check - do not fail build on baseline issues yet
   expect(Array.isArray(results.violations)).toBe(true);
 });
-

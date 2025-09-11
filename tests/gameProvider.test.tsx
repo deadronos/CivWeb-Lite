@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
-import { GameProvider } from '../src/contexts/GameProvider';
-import { useGame } from '../src/hooks/useGame';
+import { GameProvider } from "..\\src\\contexts\\game-provider";
+import { useGame } from "..\\src\\hooks\\use-game";
 
 function Consumer() {
   const { state, dispatch } = useGame();
@@ -10,8 +10,8 @@ function Consumer() {
     <div>
       <div data-testid="turn">{state.turn}</div>
       <button onClick={() => dispatch({ type: 'END_TURN' })}>end</button>
-    </div>
-  );
+    </div>);
+
 }
 
 describe('GameProvider', () => {
@@ -23,7 +23,7 @@ describe('GameProvider', () => {
     );
 
     // initial effect will dispatch INIT; wait a tick
-    await act(async () => Promise.resolve());
+    await act(async () => {});
 
     const turn = screen.getByTestId('turn');
     expect(turn).toBeDefined();

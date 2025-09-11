@@ -4,7 +4,7 @@ import { loadTechs, validateDAG, loadUnits, loadBuildings, loadLeaders } from '.
 describe('Data loader', () => {
   it('loads techs and validates DAG, with both trees present', async () => {
     const techs = await loadTechs();
-    const trees = new Set(techs.map(t => t.tree));
+    const trees = new Set(techs.map((t) => t.tree));
     expect(trees.has('science')).toBe(true);
     expect(trees.has('culture')).toBe(true);
     // at least 6 per tree
@@ -24,4 +24,3 @@ describe('Data loader', () => {
     expect(leaders.length).toBeGreaterThanOrEqual(3);
   });
 });
-

@@ -17,7 +17,7 @@ export interface ResearchOrder {
 }
 
 // UI component prop helpers (optional convenience types)
-export interface UnitSelectionOverlayProps {
+export interface UnitSelectionOverlayProperties {
   selectedUnitId: string | null;
   computedRangeTiles: string[];
   computedPath?: string[];
@@ -26,7 +26,7 @@ export interface UnitSelectionOverlayProps {
   onCancel: () => void;
 }
 
-export interface CityPanelProps {
+export interface CityPanelProperties {
   cityId: string;
   productionQueue: ProductionOrder[];
   availableItems: { id: string; type: ProductionOrderType; label: string; cost?: number }[];
@@ -36,7 +36,7 @@ export interface CityPanelProps {
   onCancelOrder: (index: number) => void;
 }
 
-export interface ResearchPanelProps {
+export interface ResearchPanelProperties {
   playerId: string;
   currentResearch: { techId: string; progress: number } | null;
   queue: string[];

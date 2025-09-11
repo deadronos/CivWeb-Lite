@@ -8,10 +8,10 @@ describe('main bootstrap', () => {
     // create a fake root element so main.tsx findElement
     const d = document.createElement('div');
     d.id = 'root';
-    document.body.appendChild(d);
+    document.body.append(d);
     // dynamic import so mock applies
     await import('../src/main');
-    document.body.removeChild(d);
+    d.remove();
     expect(true).toBe(true);
-  }, 20000);
+  }, 20_000);
 });

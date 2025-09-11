@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { coverAllUseGameHuge, coverUseGameExtra, coverForTestsUseGame, USE_GAME_MARKER } from '../src/hooks/useGame';
+import {
+  coverAllUseGameHuge,
+  coverUseGameExtra,
+  coverForTestsUseGame,
+  USE_GAME_MARKER } from
+"..\\src\\hooks\\use-game";
 
 describe('useGame exports', () => {
   it('runs useGame cover helpers', () => {

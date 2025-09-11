@@ -1,5 +1,10 @@
 import { it, describe, expect } from 'vitest';
-import { coverForTestsUseGame, coverUseGameInlinePaths, coverUseGameThrowExplicitly, coverAllUseGameHuge } from '../src/hooks/useGame';
+import {
+  coverForTestsUseGame,
+  coverUseGameInlinePaths,
+  coverUseGameThrowExplicitly,
+  coverAllUseGameHuge } from
+"..\\src\\hooks\\use-game";
 
 describe('useGame helper coverage', () => {
   it('coverForTestsUseGame simulates throw path', () => {
@@ -14,8 +19,8 @@ describe('useGame helper coverage', () => {
   });
 
   it('coverUseGameThrowExplicitly returns the thrown message', () => {
-    const msg = coverUseGameThrowExplicitly();
-    expect(msg).toContain('useGame must be used within GameProvider');
+    const message = coverUseGameThrowExplicitly();
+    expect(message).toContain('useGame must be used within GameProvider');
   });
 
   it('coverAllUseGameHuge runs without error', () => {

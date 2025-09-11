@@ -18,11 +18,11 @@ function stats(values: number[]) {
   return { mean, median, p95, count: sorted.length };
 }
 
-function makePlayer(id: string, leaderIdx: number): PlayerState {
+function makePlayer(id: string, leaderIndex: number): PlayerState {
   return {
     id,
     isHuman: false,
-    leader: LEADER_PERSONALITIES[leaderIdx % LEADER_PERSONALITIES.length],
+    leader: LEADER_PERSONALITIES[leaderIndex % LEADER_PERSONALITIES.length],
     sciencePoints: 0,
     culturePoints: 0,
     researchedTechIds: [],
@@ -30,10 +30,10 @@ function makePlayer(id: string, leaderIdx: number): PlayerState {
   };
 }
 
-function makeInitialState(seed: string, width: number, height: number, numAI: number): GameState {
+function makeInitialState(seed: string, width: number, height: number, numberAI: number): GameState {
   const world = generateWorld(seed, width, height);
   const players = [] as PlayerState[];
-  for (let i = 0; i < numAI; i++) players.push(makePlayer(`AI-${i + 1}`, i));
+  for (let index = 0; index < numberAI; index++) players.push(makePlayer(`AI-${index + 1}`, index));
   const techCatalog: TechNode[] = [];
   return {
     schemaVersion: 1,
@@ -49,8 +49,8 @@ function makeInitialState(seed: string, width: number, height: number, numAI: nu
   };
 }
 
-async function runOnce(seed: string, width: number, height: number, numAI: number) {
-  const state = makeInitialState(seed, width, height, numAI);
+async function runOnce(seed: string, width: number, height: number, numberAI: number) {
+  const state = makeInitialState(seed, width, height, numberAI);
   const perCall: number[] = [];
   for (const p of state.players) {
     const t0 = nowMs();
@@ -65,14 +65,14 @@ async function runOnce(seed: string, width: number, height: number, numAI: numbe
 async function runBenchmark() {
   const seeds = ['bench-seed-1', 'bench-seed-2', 'bench-seed-3'];
   const mapSizes = [30, 50];
-  const numAI = 5;
+  const numberAI = 5;
   const iterations = 5;
   const results: any = {};
   for (const size of mapSizes) {
     const allTimes: number[] = [];
     for (let it = 0; it < iterations; it++) {
       const seed = seeds[it % seeds.length];
-      const times = await runOnce(seed, size, size, numAI);
+      const times = await runOnce(seed, size, size, numberAI);
       allTimes.push(...times);
     }
     results[`map_${size}`] = stats(allTimes);
@@ -80,7 +80,7 @@ async function runBenchmark() {
   console.log(JSON.stringify(results, null, 2));
 }
 
-runBenchmark().catch(err => {
-  console.error('Benchmark failed', err);
-  throw err;
+runBenchmark().catch((error) => {
+  console.error('Benchmark failed', error);
+  throw error;
 });

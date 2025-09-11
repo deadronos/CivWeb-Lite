@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 // Mock heavy or external side-effect modules used by GameProvider
 vi.doMock('../src/game/ai/ai', () => ({ evaluateAI: () => [] }));
 vi.doMock('../src/game/events', () => ({ globalGameBus: { emit: () => {} } }));
 
-import { GameProvider, GAME_PROVIDER_MARKER } from '../src/contexts/GameProvider';
-import { useGame } from '../src/hooks/useGame';
+import { GameProvider, GAME_PROVIDER_MARKER } from "..\\src\\contexts\\game-provider";
+import { useGame } from "..\\src\\hooks\\use-game";
 
 describe('GameProvider mount and context', () => {
   it('mounts provider and exposes context to children', async () => {
@@ -26,8 +26,8 @@ describe('GameProvider mount and context', () => {
       </GameProvider>
     );
 
-    const el = await findByTestId('turn');
-    expect(el).toBeTruthy();
+    const element = await findByTestId('turn');
+    expect(element).toBeTruthy();
     // provider marker should be true
     expect(GAME_PROVIDER_MARKER).toBe(true);
   });

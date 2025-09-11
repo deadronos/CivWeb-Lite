@@ -18,9 +18,5 @@ export function neighbors(c: HexCoord): HexCoord[] {
 }
 
 export function distance(a: HexCoord, b: HexCoord): number {
-  return (
-    Math.abs(a.q - b.q) +
-    Math.abs(a.q + a.r - b.q - b.r) +
-    Math.abs(a.r - b.r)
-  ) / 2;
+  return (Math.abs(a.q - b.q) + Math.abs(a.q + a.r - b.q - b.r) + Math.abs(a.r - b.r)) / 2;
 }

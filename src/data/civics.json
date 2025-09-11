@@ -1,8 +1,50 @@
 [
-  { "id": "folklore", "name": "Folklore", "era": "ancient", "culture_cost": 20, "prereqs": [], "unlocks": {} },
-  { "id": "code-of-laws", "name": "Code of Laws", "era": "ancient", "culture_cost": 25, "prereqs": ["folklore"], "unlocks": { "buildings": ["monument"] } },
-  { "id": "craftsmanship", "name": "Craftsmanship", "era": "ancient", "culture_cost": 30, "prereqs": ["code-of-laws"], "unlocks": {} },
-  { "id": "foreign-trade", "name": "Foreign Trade", "era": "ancient", "culture_cost": 30, "prereqs": ["code-of-laws"], "unlocks": {} },
-  { "id": "state-workforce", "name": "State Workforce", "era": "ancient", "culture_cost": 35, "prereqs": ["craftsmanship"], "unlocks": { "improvements": ["road"] } },
-  { "id": "early-empire", "name": "Early Empire", "era": "ancient", "culture_cost": 35, "prereqs": ["foreign-trade"], "unlocks": {} }
+  {
+    "id": "folklore",
+    "name": "Folklore",
+    "era": "ancient",
+    "culture_cost": 20,
+    "prereqs": [],
+    "unlocks": {}
+  },
+  {
+    "id": "code-of-laws",
+    "name": "Code of Laws",
+    "era": "ancient",
+    "culture_cost": 25,
+    "prereqs": ["folklore"],
+    "unlocks": { "buildings": ["monument"] }
+  },
+  {
+    "id": "craftsmanship",
+    "name": "Craftsmanship",
+    "era": "ancient",
+    "culture_cost": 30,
+    "prereqs": ["code-of-laws"],
+    "unlocks": {}
+  },
+  {
+    "id": "foreign-trade",
+    "name": "Foreign Trade",
+    "era": "ancient",
+    "culture_cost": 30,
+    "prereqs": ["code-of-laws"],
+    "unlocks": {}
+  },
+  {
+    "id": "state-workforce",
+    "name": "State Workforce",
+    "era": "ancient",
+    "culture_cost": 35,
+    "prereqs": ["craftsmanship"],
+    "unlocks": { "improvements": ["road"] }
+  },
+  {
+    "id": "early-empire",
+    "name": "Early Empire",
+    "era": "ancient",
+    "culture_cost": 35,
+    "prereqs": ["foreign-trade"],
+    "unlocks": {}
+  }
 ]

@@ -31,7 +31,14 @@ export type BuildingJson = {
   name: string;
   cost: number;
   requires: string | null | string;
-  yields?: { food?: number; production?: number; gold?: number; science?: number; culture?: number; faith?: number };
+  yields?: {
+    food?: number;
+    production?: number;
+    gold?: number;
+    science?: number;
+    culture?: number;
+    faith?: number;
+  };
   effects?: string[];
 };
 
@@ -40,7 +47,14 @@ export type LeaderJson = {
   name: string;
   historical_note: string;
   preferred_victory: string[];
-  weights: { aggression: number; expansion: number; science: number; culture: number; trade: number; diplomacy: number };
+  weights: {
+    aggression: number;
+    expansion: number;
+    science: number;
+    culture: number;
+    trade: number;
+    diplomacy: number;
+  };
 };
 
 export async function loadTechs(): Promise<TechJson[]> {

@@ -1,11 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { coverForTestsUseGame, coverUseGameThrowExplicitly, coverAllUseGameHuge, coverUseGameInlinePaths, coverUseGameInlinePathsTuple, coverUseGameExtra } from '../src/hooks/useGame';
+import {
+  coverForTestsUseGame,
+  coverUseGameThrowExplicitly,
+  coverAllUseGameHuge,
+  coverUseGameInlinePaths,
+  coverUseGameInlinePathsTuple,
+  coverUseGameExtra } from
+"..\\src\\hooks\\use-game";
 
 describe('useGame coverage helpers', () => {
   it('ensureGameContext throws when missing', () => {
     // call the explicit throw helper
-    const msg = coverUseGameThrowExplicitly();
-    expect(msg).toContain('useGame must be used within GameProvider');
+    const message = coverUseGameThrowExplicitly();
+    expect(message).toContain('useGame must be used within GameProvider');
     const res = coverForTestsUseGame(true);
     expect(res).toBe('threw');
   });

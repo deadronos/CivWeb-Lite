@@ -1,5 +1,9 @@
 import { describe, test, expect, vi } from 'vitest';
-import { simulateAdvanceTurn, initialStateForTests, coverGameProviderEffects } from '../src/contexts/GameProvider';
+import {
+  simulateAdvanceTurn,
+  initialStateForTests,
+  coverGameProviderEffects } from
+"..\\src\\contexts\\game-provider";
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider extra behaviors', () => {
@@ -7,9 +11,9 @@ describe('GameProvider extra behaviors', () => {
     const s = initialStateForTests();
     // add one AI and one human player
     s.players = [
-      { id: 'p1', isHuman: false, leader: 'alpha', name: 'AI' } as any,
-      { id: 'p2', isHuman: true, leader: 'beta', name: 'Human' } as any,
-    ];
+    { id: 'p1', isHuman: false, leader: 'alpha', name: 'AI' } as any,
+    { id: 'p2', isHuman: true, leader: 'beta', name: 'Human' } as any];
+
     s.turn = 5;
     const dispatched: any[] = [];
     const dispatch = (a: any) => dispatched.push(a);
@@ -21,7 +25,7 @@ describe('GameProvider extra behaviors', () => {
     // should have emitted turn:start
     expect(spyEmit).toHaveBeenCalled();
     // END_TURN should be dispatched
-    expect(dispatched.find(d => d.type === 'END_TURN')).toBeTruthy();
+    expect(dispatched.find((d) => d.type === 'END_TURN')).toBeTruthy();
     spyEmit.mockRestore();
   });
 

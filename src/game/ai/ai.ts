@@ -2,14 +2,23 @@ import { GameAction } from '../actions';
 import { GameState, PlayerState, TechNode } from '../types';
 
 function chooseNextTech(player: PlayerState, state: GameState): TechNode | undefined {
-  const prefTree =
-    player.leader.scienceFocus >= player.leader.cultureFocus ? 'science' : 'culture';
-  const candidates = state.techCatalog.filter(t =>
-    t.tree === prefTree &&
-    !player.researchedTechIds.includes(t.id) &&
-    t.prerequisites.every(p => player.researchedTechIds.includes(p))
-  );
-  return candidates[0];
+  // be defensive: tests may provide partial player shapes
+  const leader = (player.leader as any) || { scienceFocus: 0, cultureFocus: 0 };
+  const researched: string[] = Array.isArray((player as any).researchedTechIds)
+    ? (player as any).researchedTechIds
+    : [];
+  const prefTree = leader.scienceFocus >= leader.cultureFocus ? 'science' : 'culture';
+  const candidate = state.techCatalog.find((t) => {
+    const prereqs: string[] = Array.isArray((t as any).prerequisites)
+      ? (t as any).prerequisites
+      : [];
+    return (
+      t.tree === prefTree &&
+      !researched.includes(t.id) &&
+      prereqs.every((p) => researched.includes(p))
+    );
+  });
+  return candidate;
 }
 
 export function evaluateAI(player: PlayerState, state: GameState): GameAction[] {

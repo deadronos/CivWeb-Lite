@@ -8,4 +8,3 @@ HUD UI components
 - ContextPanel: presentational panel for selected context and actions.
 
 Styles: tokens live in `src/styles.css` under CSS variables (`--color-*`).
-

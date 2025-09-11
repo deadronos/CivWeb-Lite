@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 import { evaluateAI } from '../../src/game/ai/ai';
 import { GameState, PlayerState } from '../../src/game/types';
-import { techCatalog } from '../../src/game/tech/techCatalog';
+import { techCatalog } from "..\\..\\src\\game\\tech\\tech-catalog";
 import { LEADER_PERSONALITIES } from '../../src/game/ai/leaders';
 
 function baseState(player: PlayerState): GameState {
@@ -15,26 +15,26 @@ function baseState(player: PlayerState): GameState {
     rngState: undefined,
     log: [],
     mode: 'standard',
-    autoSim: false,
+    autoSim: false
   };
 }
 
 describe('AI benchmark', () => {
   it('measures average evaluateAI time across leaders', () => {
     const leaders = LEADER_PERSONALITIES.slice(0, 4);
-    const players: PlayerState[] = leaders.map((leader, i) => ({
-      id: `p${i}`,
+    const players: PlayerState[] = leaders.map((leader, index) => ({
+      id: `p${index}`,
       isHuman: false,
       leader,
       sciencePoints: 10,
       culturePoints: 10,
       researchedTechIds: [],
-      researching: null,
+      researching: null
     }));
 
     const iterations = 300; // controlled iteration count for CI speed
     let totalMs = 0;
-    for (let i = 0; i < iterations; i++) {
+    for (let index = 0; index < iterations; index++) {
       for (const p of players) {
         const state = baseState(p);
         const start = performance.now();
@@ -45,8 +45,10 @@ describe('AI benchmark', () => {
     }
     const avgMsPerCall = totalMs / (iterations * players.length);
     // Log summary so it's visible in test output
-    // eslint-disable-next-line no-console
-    console.info(`AI benchmark: avg evaluateAI ${avgMsPerCall.toFixed(4)} ms over ${iterations * players.length} calls`);
+
+    console.info(
+      `AI benchmark: avg evaluateAI ${avgMsPerCall.toFixed(4)} ms over ${iterations * players.length} calls`
+    );
     // Keep test non-blocking — assert that it's a number and not NaN
     if (!Number.isFinite(avgMsPerCall)) throw new Error('Invalid benchmark result');
   });

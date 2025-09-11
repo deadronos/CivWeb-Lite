@@ -51,6 +51,7 @@ This specification defines the high-level architecture, scope, requirements, dat
 ## 1. Purpose & Scope
 
 The purpose of this document is to establish a shared, unambiguous foundation for implementing the core game loop, world representation, AI systems, technology progression, and persistence (save/load). Scope includes:
+
 - Procedurally (or seed) generated hex tile world with multiple biomes.
 - Turn-based progression with deterministic state advancement.
 - Player vs AI and AI-only simulation modes.
@@ -63,6 +64,7 @@ The purpose of this document is to establish a shared, unambiguous foundation fo
 Out of scope (initial version): networking/multiplayer, complex animations, full UI theming system, robust modding pipeline (may be future enhancements).
 
 Assumptions:
+
 - Single-process browser execution; no server authority initially.
 - Deterministic pseudo-randomness achievable via seedable RNG.
 - Performance target: smooth interaction on mid‑range laptop (≤ 5 ms average logic tick for standard map size: 50x50 hexes).
@@ -71,24 +73,25 @@ Audience: engineers, testers, AI assistance agents, technical stakeholders.
 
 ## 2. Definitions
 
-| Term | Definition |
-|------|------------|
-| Hex Tile | Single cell in axial or offset coordinate hex grid representing terrain & biome. |
-| Biome | Categorization of terrain (e.g., Grassland, Desert, Forest, Mountain, Ocean, Tundra). |
-| Game State | Canonical immutable snapshot of entire simulation at a turn boundary. |
-| Turn | Atomic game phase in which each active entity (player/AI) resolves actions. |
-| Leader Personality | Parameter set influencing AI priorities (expansion, science, culture, aggression). |
-| Tech Tree | Directed acyclic dependency graph of technology nodes unlocking effects. |
-| Save Slot | Serialized JSON blob persisted to localStorage or downloaded file. |
-| Seed | Initial numeric/string value used to drive procedural generation and deterministic RNG streams. |
-| Fog of War (FoW) | Visibility masking mechanic (future/optional). |
-| Deterministic | Same input state + action sequence => same resulting state. |
-| Action | Declarative intent by a player/AI processed by the engine to produce new state. |
-| Simulation Tick | Single advancement operation (in this design = one turn). |
+| Term               | Definition                                                                                      |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| Hex Tile           | Single cell in axial or offset coordinate hex grid representing terrain & biome.                |
+| Biome              | Categorization of terrain (e.g., Grassland, Desert, Forest, Mountain, Ocean, Tundra).           |
+| Game State         | Canonical immutable snapshot of entire simulation at a turn boundary.                           |
+| Turn               | Atomic game phase in which each active entity (player/AI) resolves actions.                     |
+| Leader Personality | Parameter set influencing AI priorities (expansion, science, culture, aggression).              |
+| Tech Tree          | Directed acyclic dependency graph of technology nodes unlocking effects.                        |
+| Save Slot          | Serialized JSON blob persisted to localStorage or downloaded file.                              |
+| Seed               | Initial numeric/string value used to drive procedural generation and deterministic RNG streams. |
+| Fog of War (FoW)   | Visibility masking mechanic (future/optional).                                                  |
+| Deterministic      | Same input state + action sequence => same resulting state.                                     |
+| Action             | Declarative intent by a player/AI processed by the engine to produce new state.                 |
+| Simulation Tick    | Single advancement operation (in this design = one turn).                                       |
 
 ## 3. Requirements, Constraints & Guidelines
 
 Functional Requirements:
+
 - **REQ-001**: The system SHALL generate a hex map with configurable width, height, and seed.
 - **REQ-002**: The system SHALL support at least 6 base biomes with biome assignment rules.
 - **REQ-003**: The system SHALL maintain a turn counter starting at 0 and incrementing after all actors resolve.
@@ -111,21 +114,25 @@ Functional Requirements:
 - **REQ-020**: The system SHOULD emit structured events/logs for debugging (turn start, turn end, action resolution, tech unlocked).
 
 Security & Integrity:
+
 - **SEC-001**: The system SHALL sanitize and validate imported JSON (schema + unknown property stripping or rejection).
 - **SEC-002**: The system SHALL avoid executing code embedded in save data (pure data only).
 - **SEC-003**: The system SHOULD defend against excessively large save imports (size limit e.g., 2 MB) to prevent memory abuse.
 
 Performance & Scalability:
+
 - **PER-001**: Logic tick (turn resolution) target ≤ 16 ms for baseline; hard cap 50 ms.
 - **PER-002**: Rendering SHALL avoid re-rendering entire map each React commit—use memorization / instancing.
 - **PER-003**: Map size up to 100x100 tiles SHOULD remain interactive (camera pan/zoom) at ≥ 30 FPS.
 
 Constraints:
+
 - **CON-001**: Frontend-only (no backend). Persistence limited to in-browser or file export/import.
 - **CON-002**: Technology stack limited to React, TypeScript, Vite, @react-three/fiber, minimal additional deps.
 - **CON-003**: Must remain readable and approachable (educational/demonstration quality > feature saturation).
 
 Guidelines:
+
 - **GUD-001**: Keep simulation pure and stateless (functions returning new state) where feasible.
 - **GUD-002**: Use seed-based RNG wrappers; avoid direct `Math.random()` in core logic.
 - **GUD-003**: Introduce new biome or tech types via declarative config objects rather than scattered constants.
@@ -133,18 +140,20 @@ Guidelines:
 - **GUD-005**: Keep React components presentational; delegate decisions to simulation/services.
 
 Patterns:
+
 - **PAT-001**: Entity-Component-Lite: Keep Player/Tile/Tech as simple data objects; extend via registries.
 - **PAT-002**: Command / Action pattern for turn actions enabling logging and undo (future).
 - **PAT-003**: Observer (event bus) for state change notifications (UI instrumentation).
 - **PAT-004**: Strategy pattern for AI decision heuristics per leader personality.
-- **PAT-005**: Factory for world generation (seed → map). 
+- **PAT-005**: Factory for world generation (seed → map).
 
 Future / Optional Features (Non-binding recommendations):
+
 - **FUT-001**: Fog of War (visibility map per player).
 - **FUT-002**: Resource system (food, production, science, culture yields per tile).
 - **FUT-003**: City founding & growth mechanics.
 - **FUT-004**: Diplomacy stances (ally, neutral, hostile).
-- **FUT-005**: Combat / unit movement with pathfinding (A* on hex grid).
+- **FUT-005**: Combat / unit movement with pathfinding (A\* on hex grid).
 - **FUT-006**: Achievements / milestones.
 - **FUT-007**: Procedural naming (cities/leaders/events).
 - **FUT-008**: Replay / timeline viewer.
@@ -152,24 +161,32 @@ Future / Optional Features (Non-binding recommendations):
 ## 4. Interfaces & Data Contracts
 
 ### 4.1 Core TypeScript Interfaces (Conceptual)
+
 ```ts
 type HexCoord = { q: number; r: number }; // Axial coordinates
 
-enum BiomeType { Grassland='grass', Desert='desert', Forest='forest', Mountain='mountain', Ocean='ocean', Tundra='tundra' }
+enum BiomeType {
+  Grassland = 'grass',
+  Desert = 'desert',
+  Forest = 'forest',
+  Mountain = 'mountain',
+  Ocean = 'ocean',
+  Tundra = 'tundra',
+}
 
 interface Tile {
-  id: string;           // stable
+  id: string; // stable
   coord: HexCoord;
   biome: BiomeType;
-  elevation: number;    // normalized 0..1
-  moisture: number;     // normalized 0..1
+  elevation: number; // normalized 0..1
+  moisture: number; // normalized 0..1
   exploredBy: string[]; // player IDs (future fog-of-war)
 }
 
 interface LeaderPersonality {
   id: string;
   name: string;
-  aggression: number;   // 0..1
+  aggression: number; // 0..1
   scienceFocus: number; // 0..1
   cultureFocus: number; // 0..1
   expansionism: number; // 0..1
@@ -179,9 +196,9 @@ interface TechNode {
   id: string;
   tree: 'science' | 'culture';
   name: string;
-  cost: number;             // base cost
-  prerequisites: string[];  // TechNode ids
-  effects: string[];        // semantic effect descriptors
+  cost: number; // base cost
+  prerequisites: string[]; // TechNode ids
+  effects: string[]; // semantic effect descriptors
 }
 
 interface PlayerState {
@@ -195,70 +212,82 @@ interface PlayerState {
 }
 
 interface GameState {
-  schemaVersion: number;      // increment when schema changes
-  seed: string;               // RNG seed
+  schemaVersion: number; // increment when schema changes
+  seed: string; // RNG seed
   turn: number;
   map: { width: number; height: number; tiles: Tile[] };
   players: PlayerState[];
-  techCatalog: TechNode[];    // static during session
-  rngState?: unknown;         // optional internal RNG snapshot
-  log: GameLogEntry[];        // recent events
+  techCatalog: TechNode[]; // static during session
+  rngState?: unknown; // optional internal RNG snapshot
+  log: GameLogEntry[]; // recent events
   mode: 'standard' | 'ai-sim';
 }
 
-interface GameLogEntry { timestamp: number; turn: number; type: string; payload?: any; }
+interface GameLogEntry {
+  timestamp: number;
+  turn: number;
+  type: string;
+  payload?: any;
+}
 ```
 
 ### 4.2 Save File JSON Schema (Draft)
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "CivWebLiteSave",
   "type": "object",
-  "required": ["schemaVersion","seed","turn","map","players","techCatalog"],
+  "required": ["schemaVersion", "seed", "turn", "map", "players", "techCatalog"],
   "properties": {
-    "schemaVersion": {"type": "integer","minimum": 1},
-    "seed": {"type": "string","minLength": 1},
-    "turn": {"type": "integer","minimum": 0},
-    "mode": {"type": "string","enum": ["standard","ai-sim"]},
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "seed": { "type": "string", "minLength": 1 },
+    "turn": { "type": "integer", "minimum": 0 },
+    "mode": { "type": "string", "enum": ["standard", "ai-sim"] },
     "map": {
       "type": "object",
-      "required": ["width","height","tiles"],
+      "required": ["width", "height", "tiles"],
       "properties": {
-        "width": {"type": "integer","minimum": 1},
-        "height": {"type": "integer","minimum": 1},
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
         "tiles": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id","coord","biome"],
+            "required": ["id", "coord", "biome"],
             "properties": {
-              "id": {"type": "string"},
-              "coord": {"type": "object","required": ["q","r"],"properties": {"q": {"type": "integer"},"r": {"type": "integer"}}},
-              "biome": {"type": "string"},
-              "elevation": {"type": "number"},
-              "moisture": {"type": "number"},
-              "exploredBy": {"type": "array","items": {"type": "string"}}
+              "id": { "type": "string" },
+              "coord": {
+                "type": "object",
+                "required": ["q", "r"],
+                "properties": { "q": { "type": "integer" }, "r": { "type": "integer" } }
+              },
+              "biome": { "type": "string" },
+              "elevation": { "type": "number" },
+              "moisture": { "type": "number" },
+              "exploredBy": { "type": "array", "items": { "type": "string" } }
             }
           }
         }
       }
     },
-    "players": {"type": "array","items": {"type": "object"}},
-    "techCatalog": {"type": "array","items": {"type": "object"}},
-    "log": {"type": "array","items": {"type": "object"}},
-    "rngState": {"type": ["object","string","null"]}
+    "players": { "type": "array", "items": { "type": "object" } },
+    "techCatalog": { "type": "array", "items": { "type": "object" } },
+    "log": { "type": "array", "items": { "type": "object" } },
+    "rngState": { "type": ["object", "string", "null"] }
   }
 }
 ```
 
 ### 4.3 Public Hook Contract
+
 `useGame(): { state: GameState; dispatch(action: GameAction): void; save(): string; load(json: string): LoadResult; }`
 
 ### 4.4 Action Interface (Conceptual)
+
 ```ts
 interface GameAction {
-  type: string;           // e.g., 'END_TURN','SET_RESEARCH','ADVANCE_RESEARCH'
+  type: string; // e.g., 'END_TURN','SET_RESEARCH','ADVANCE_RESEARCH'
   playerId?: string;
   payload?: any;
   clientTimestamp?: number;
@@ -267,7 +296,7 @@ interface GameAction {
 
 ## 5. Acceptance Criteria
 
-- **AC-001 (REQ-001)**: Given a seed and map dimensions, when world generation runs, then the map contains exactly width*height unique tile IDs with valid axial coordinates.
+- **AC-001 (REQ-001)**: Given a seed and map dimensions, when world generation runs, then the map contains exactly width\*height unique tile IDs with valid axial coordinates.
 - **AC-002 (REQ-002)**: Given generation defaults, when the map is created, then at least 5 of the 6 defined biomes appear unless constrained by size (< 5 tiles).
 - **AC-003 (REQ-003)**: Given turn N, when all players resolve and end turn, then turn becomes N+1.
 - **AC-004 (REQ-007)**: Given a running game, when save() is invoked, then the returned JSON validates against schema and reloads to an equivalent state (deep structural equality ignoring transient fields like timestamps).
@@ -300,21 +329,27 @@ interface GameAction {
 ## 8. Dependencies & External Integrations
 
 ### External Systems
+
 - **EXT-001**: (Optional future) Cloud storage or share service (not in initial scope).
 
 ### Third-Party Services
+
 - **SVC-001**: None required initially.
 
 ### Infrastructure Dependencies
+
 - **INF-001**: Browser localStorage API for persistence (fallback to download when size > quota or disabled).
 
 ### Data Dependencies
+
 - **DAT-001**: Procedural noise (simplex/perlin) library (optional) for biome distribution — else fallback to deterministic pseudo distribution.
 
 ### Technology Platform Dependencies
+
 - **PLT-001**: Node 18+/ES2022 for build tooling; browser ES2020+ environment.
 
 ### Compliance Dependencies
+
 - **COM-001**: None (no PII stored). If user-generated naming introduced later, sanitize input.
 
 ## 9. Examples & Edge Cases
@@ -330,24 +365,54 @@ interface GameAction {
     "width": 2,
     "height": 2,
     "tiles": [
-      {"id":"t0","coord":{"q":0,"r":0},"biome":"grass"},
-      {"id":"t1","coord":{"q":1,"r":0},"biome":"forest"},
-      {"id":"t2","coord":{"q":0,"r":1},"biome":"ocean"},
-      {"id":"t3","coord":{"q":1,"r":1},"biome":"desert"}
-    ]
+      { "id": "t0", "coord": { "q": 0, "r": 0 }, "biome": "grass" },
+      { "id": "t1", "coord": { "q": 1, "r": 0 }, "biome": "forest" },
+      { "id": "t2", "coord": { "q": 0, "r": 1 }, "biome": "ocean" },
+      { "id": "t3", "coord": { "q": 1, "r": 1 }, "biome": "desert" },
+    ],
   },
   "players": [
-    {"id":"P1","isHuman":true,"leader":{"id":"L1","name":"Ada","aggression":0.2,"scienceFocus":0.9,"cultureFocus":0.4,"expansionism":0.5},"sciencePoints":42,"culturePoints":12,"researchedTechIds":["wheel"],"researching":{"techId":"writing","progress":10}}
+    {
+      "id": "P1",
+      "isHuman": true,
+      "leader": {
+        "id": "L1",
+        "name": "Ada",
+        "aggression": 0.2,
+        "scienceFocus": 0.9,
+        "cultureFocus": 0.4,
+        "expansionism": 0.5,
+      },
+      "sciencePoints": 42,
+      "culturePoints": 12,
+      "researchedTechIds": ["wheel"],
+      "researching": { "techId": "writing", "progress": 10 },
+    },
   ],
   "techCatalog": [
-    {"id":"wheel","tree":"science","name":"Wheel","cost":30,"prerequisites":[],"effects":["unlock:movement+1"]},
-    {"id":"writing","tree":"science","name":"Writing","cost":40,"prerequisites":["wheel"],"effects":["unlock:library"]}
+    {
+      "id": "wheel",
+      "tree": "science",
+      "name": "Wheel",
+      "cost": 30,
+      "prerequisites": [],
+      "effects": ["unlock:movement+1"],
+    },
+    {
+      "id": "writing",
+      "tree": "science",
+      "name": "Writing",
+      "cost": 40,
+      "prerequisites": ["wheel"],
+      "effects": ["unlock:library"],
+    },
   ],
-  "log": []
+  "log": [],
 }
 ```
 
 Edge Cases:
+
 - Empty map request (width=0) → reject (CON-001, schema constraint).
 - Loading save with unknown biome string → reject with validation error.
 - Player ID collision in save → reject.
@@ -357,14 +422,14 @@ Edge Cases:
 
 ## 10. Validation Criteria
 
-| Criterion | Method | Pass Condition |
-|-----------|--------|----------------|
-| Deterministic replay | Unit test w/ recorded actions | Hash(state) stable across runs |
-| Save/load fidelity | Roundtrip test | Deep equality (excluding transient) |
-| Performance baseline | Benchmark harness | Avg turn ≤ 50 ms (30x30, 5 AI) |
-| Schema validation | JSON schema test | 100% valid samples pass; invalid fail |
-| Hook immutability | Unit test (object identity) | Previous state refs unchanged |
-| Biome coverage | World gen statistical test | ≥ 5 biomes appear (standard size) |
+| Criterion            | Method                        | Pass Condition                        |
+| -------------------- | ----------------------------- | ------------------------------------- |
+| Deterministic replay | Unit test w/ recorded actions | Hash(state) stable across runs        |
+| Save/load fidelity   | Roundtrip test                | Deep equality (excluding transient)   |
+| Performance baseline | Benchmark harness             | Avg turn ≤ 50 ms (30x30, 5 AI)        |
+| Schema validation    | JSON schema test              | 100% valid samples pass; invalid fail |
+| Hook immutability    | Unit test (object identity)   | Previous state refs unchanged         |
+| Biome coverage       | World gen statistical test    | ≥ 5 biomes appear (standard size)     |
 
 ## 11. Related Specifications / Further Reading
 
@@ -373,6 +438,7 @@ Edge Cases:
 - (Planned) `spec-process-testing-strategy.md` — Extended test/perf plan.
 
 ---
+
 END OF SPEC
 
 ## UI & HUD Requirements
@@ -383,11 +449,13 @@ presentational layer only and MUST not contain simulation logic; all actions dis
 HUD should use the public `useGame()` hook or provided action dispatchers.
 
 Goals:
+
 - Surface essential game status and controls without obscuring the main 3D map view.
 - Be keyboard- and screen-reader friendly (WCAG AA where practical).
 - Use design tokens for colors, spacing, and typography to enable theming.
 
 Placement and Components:
+
 - `TopBar` (component: `src/components/ui/TopBar.tsx`)
   - Shows current `turn`, per-player primary resource totals (e.g., science, culture, production), and per-turn deltas.
   - Contains a compact settings/menu affordance and a save/export button.
@@ -406,6 +474,7 @@ Placement and Components:
   - Displays action buttons relevant to the selection (e.g., Found City, Build Improvement) and delegates commands to `useGame()`.
 
 Design & Accessibility Requirements:
+
 - All components must be presentational and use `useGame()` or dispatchers to perform actions. No direct simulation mutations.
 - Keyboard navigation: tab order must move through TopBar → LeftPanel toggle → NextTurnControl → Minimap → ContextPanel.
 - ARIA: interactive elements must have clear ARIA labels/roles; tooltips should be accessible.
@@ -413,6 +482,7 @@ Design & Accessibility Requirements:
 - Responsive: HUD components should collapse gracefully on small viewports; Minimap may hide under a threshold.
 
 Acceptance Criteria (additional to those in section 5):
+
 - **AC-HUD-001**: The TopBar renders and displays current `turn` and at least one resource total when `useGame()` provides state.
 - **AC-HUD-002**: The NextTurnControl triggers the same state transition as calling the programmatic `endTurn()` dispatch (integration test required).
 - **AC-HUD-003**: The Minimap centers the main camera on click and is keyboard-focusable.
@@ -420,12 +490,14 @@ Acceptance Criteria (additional to those in section 5):
 - **AC-HUD-005**: The ContextPanel displays city or tile details when a city/tile is selected and correctly issues actions to the simulation.
 
 Testing Notes and Implementation Guidance:
+
 - Place presentational components under `src/components/ui/` and prefer small, testable units (e.g., `TopBar`, `ResourceBadge`, `NextTurnControl`).
 - Unit tests: mount components with mocked `useGame()` provider state and assert DOM output and dispatched actions.
 - Integration tests: use Vitest + jsdom to assert keyboard navigation and basic click flows. Use Playwright for an end-to-end scenario that opens a saved game, selects a city, issues an action, and advances a turn.
 - Accessibility tests: run axe-core scans on the top-level HUD layout and ensure no critical violations.
 
 Notes:
+
 - The HUD SHOULD be decoupled from Three.js rendering. Interactions that require camera control should use a camera controller utility exposed from the scene layer (for example, `useCamera()` hook) instead of manipulating renderer internals directly.
 - The HUD components must avoid import-time side-effects (do not import AJV or other heavy validators directly at module top-level). If validation/helpers are required, call runtime helpers that lazily initialize heavy dependencies.
 

@@ -1,11 +1,19 @@
 import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
+
+const reactIconsMd = fileURLToPath(new URL('tests/__mocks__/react-icons-md.ts', import.meta.url));
 
 export default defineConfig({
   test: {
-  globals: true,
+    globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'tests/**/*.spec.ts', 'tests/**/*.spec.tsx'],
+    include: [
+      'tests/**/*.test.ts',
+      'tests/**/*.test.tsx',
+      'tests/**/*.spec.ts',
+      'tests/**/*.spec.tsx',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
@@ -19,6 +27,11 @@ export default defineConfig({
           statements: 80,
         },
       },
+    },
+  },
+  resolve: {
+    alias: {
+      'react-icons/md': reactIconsMd,
     },
   },
 });

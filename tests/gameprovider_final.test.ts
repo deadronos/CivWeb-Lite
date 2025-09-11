@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { initialStateForTests, simulateAdvanceTurn, coverGameProviderEffects } from '../src/contexts/GameProvider';
+import {
+  initialStateForTests,
+  simulateAdvanceTurn,
+  coverGameProviderEffects } from
+"..\\src\\contexts\\game-provider";
 import { applyAction } from '../src/game/reducer';
 import { globalGameBus } from '../src/game/events';
 
@@ -7,8 +11,10 @@ describe('GameProvider focused coverage', () => {
   it('unlocks research on END_TURN and emits tech:unlocked', () => {
     const state = initialStateForTests();
 
-  // Add a simple tech catalog entry and make sure player researches it
-  state.techCatalog = [{ id: 'testtech', cost: 1, name: 'T', tree: 'science', prerequisites: [] }] as any;
+    // Add a simple tech catalog entry and make sure player researches it
+    state.techCatalog = [
+    { id: 'testtech', cost: 1, name: 'T', tree: 'science', prerequisites: [] }] as
+    any;
 
     const player = {
       id: 'p1',
@@ -17,24 +23,31 @@ describe('GameProvider focused coverage', () => {
       sciencePoints: 1,
       culturePoints: 0,
       researchedTechIds: [] as string[],
-      researching: { techId: 'testtech', progress: 0 },
+      researching: { techId: 'testtech', progress: 0 }
     } as any;
 
     state.players = [player];
 
-    const emissions: Array<{ ev: string; payload: any }> = [];
-    const unsub1 = globalGameBus.on('tech:unlocked', (p) => emissions.push({ ev: 'tech:unlocked', payload: p }));
-    const unsub2 = globalGameBus.on('turn:end', (p) => emissions.push({ ev: 'turn:end', payload: p }));
+    const emissions: Array<{ev: string;payload: any;}> = [];
+    const unsub1 = globalGameBus.on('tech:unlocked', (p) =>
+    emissions.push({ ev: 'tech:unlocked', payload: p })
+    );
+    const unsub2 = globalGameBus.on('turn:end', (p) =>
+    emissions.push({ ev: 'turn:end', payload: p })
+    );
 
     // Apply END_TURN via reducer to simulate progression
     const next = applyAction(state, { type: 'END_TURN' } as any);
 
-  // After END_TURN with cost 1 the player should have the tech unlocked
-  expect(next.players[0].researchedTechIds).toContain('testtech');
+    // After END_TURN with cost 1 the player should have the tech unlocked
+    expect(next.players[0].researchedTechIds).toContain('testtech');
 
-  // Emit check: ensure a tech:unlocked event was emitted for this player and tech
-  const techUnlocks = emissions.filter((e) => e.ev === 'tech:unlocked' && e.payload?.playerId === 'p1' && e.payload?.techId === 'testtech');
-  expect(techUnlocks.length).toBeGreaterThanOrEqual(1);
+    // Emit check: ensure a tech:unlocked event was emitted for this player and tech
+    const techUnlocks = emissions.filter(
+      (e) =>
+      e.ev === 'tech:unlocked' && e.payload?.playerId === 'p1' && e.payload?.techId === 'testtech'
+    );
+    expect(techUnlocks.length).toBeGreaterThanOrEqual(1);
 
     unsub1();
     unsub2();
@@ -51,7 +64,7 @@ describe('GameProvider focused coverage', () => {
       sciencePoints: 0,
       culturePoints: 0,
       researchedTechIds: [] as string[],
-      researching: null,
+      researching: null
     } as any;
 
     const ai = {
@@ -61,7 +74,7 @@ describe('GameProvider focused coverage', () => {
       sciencePoints: 0,
       culturePoints: 0,
       researchedTechIds: [] as string[],
-      researching: null,
+      researching: null
     } as any;
 
     state.players = [human, ai];

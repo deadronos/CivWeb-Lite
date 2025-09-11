@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import TopBar from '../src/components/ui/TopBar';
+import TopBar from "..\\src\\components\\ui\\top-bar";
 
 describe('TopBar', () => {
   it('renders turn and resources', () => {
@@ -9,4 +9,3 @@ describe('TopBar', () => {
     expect(screen.getByLabelText('resource culture')).toBeInTheDocument();
   });
 });
-

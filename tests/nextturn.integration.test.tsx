@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { GameProvider } from '../src/contexts/GameProvider';
-import TopBarContainer from '../src/components/ui/TopBarContainer';
-import NextTurnControlContainer from '../src/components/ui/NextTurnControlContainer';
+import { GameProvider } from '../src/contexts/game-provider';
+import TopBarContainer from '../src/components/ui/top-bar-container';
+import NextTurnControlContainer from '../src/components/ui/next-turn-control-container';
 
 describe('NextTurnControl integration', () => {
   it('advances turn via container + provider', () => {
-    const ui = render(
+    render(
       <GameProvider>
         <TopBarContainer />
         <NextTurnControlContainer />
@@ -20,4 +20,3 @@ describe('NextTurnControl integration', () => {
     expect(screen.getByLabelText('turn').textContent).toContain('2');
   });
 });
-

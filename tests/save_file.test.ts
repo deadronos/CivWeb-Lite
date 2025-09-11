@@ -1,20 +1,20 @@
 import { vi } from 'vitest';
 import { exportToFile, importFromFile, serializeState, SizeExceededError } from '../src/game/save';
-import { initialStateForTests } from '../src/contexts/GameProvider';
+import { initialStateForTests } from "..\\src\\contexts\\game-provider";
 
 describe('file save helpers', () => {
   test('exportToFile triggers download', () => {
     const a = { click: vi.fn(), set href(_v: string) {}, set download(_v: string) {} } as any;
     const create = vi.spyOn(document, 'createElement').mockReturnValue(a);
-    (global as any).URL.createObjectURL = () => 'blob:';
-    (global as any).URL.revokeObjectURL = () => {};
-    const obj = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:' as any);
+    (globalThis as any).URL.createObjectURL = () => 'blob:';
+    (globalThis as any).URL.revokeObjectURL = () => {};
+    const object = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:' as any);
     const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     exportToFile(initialStateForTests());
     expect(create).toHaveBeenCalledWith('a');
     expect(a.click).toHaveBeenCalled();
     create.mockRestore();
-    obj.mockRestore();
+    object.mockRestore();
     revoke.mockRestore();
   });
 

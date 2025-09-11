@@ -10,7 +10,7 @@ that integrates with `useGame()` and satisfies the acceptance criteria (AC-HUD-0
 
 ## Success Criteria
 
-- All AC-HUD-* acceptance criteria pass via unit/integration/E2E tests.
+- All AC-HUD-\* acceptance criteria pass via unit/integration/E2E tests.
 
 - Components live under `src/components/ui/` and are presentational (no simulation side-effects).
 
@@ -115,11 +115,13 @@ Acceptance: AC-HUD-003 satisfied.
 Acceptance: AC-HUD-005 satisfied.
 
 ### 7. Accessibility & Responsiveness (2-3 hours)
+
 - Run axe-core scans on rendered HUD components and fix any critical issues.
 - Ensure color tokens meet contrast (use tokens in CSS variables: `--color-bg`, `--color-fg`, `--accent`).
 - Add keyboard focus order tests for TopBar → LeftPanel toggle → NextTurnControl → Minimap → ContextPanel.
 
 Status:
+
 - [x] Color tokens and roles added in `src/styles.css` and components.
 - [ ] Axe-core scans not yet automated for unit level; Playwright smoke runs axe but does not assert zero violations.
 - [ ] Keyboard focus order test pending.
@@ -127,10 +129,12 @@ Status:
 Acceptance: axe shows no critical violations; keyboard navigation test passes.
 
 ### 8. CI and Final Verification (1-2 hours)
+
 - Add tests to `tests/` and ensure `npm test` passes locally and in CI.
 - Confirm linting and typecheck pass.
 
 Status:
+
 - [x] Tests added for new HUD.
 - [ ] CI execution pending; local npm install/test stability needs verification (Rollup optional dep issue noted).
 - [ ] Lint/typecheck to run in CI.
@@ -138,23 +142,29 @@ Status:
 Acceptance: All tests pass in CI; PR ready.
 
 ---
+
 Progress last updated: 2025-09-09.
 
 ## Risks & Mitigations
+
 - Risk: Import-time side-effects from third-party validators or heavy libs. Mitigation: use runtime/lazy helpers (already introduced for AJV in `src/game/save/validator.ts`).
 - Risk: Tight coupling between HUD and scene. Mitigation: keep camera control abstracted in `useCamera()`.
 - Risk: Performance — too many re-renders. Mitigation: memoize resource badges and use `React.memo` where needed.
 
 ## Estimated Timeline
+
 Total: ~18-24 hours of focused development (spread across multiple days). Prioritize TopBar + NextTurnControl + LeftPanel as an MVP (first 2–3 days).
 
 ## Owner & Review
+
 - Primary implementer: [you / team].
 - Reviewer: repo owner (`deadronos`) or assigned reviewer.
 
 ## Next Steps (immediate)
+
 - Create component skeleton files and minimal unit tests for `TopBar` and `NextTurnControl`.
 - Open a small PR with the skeletons + tests.
 
 ---
+
 Plan created on 2025-09-09.

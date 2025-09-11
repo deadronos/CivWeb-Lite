@@ -21,10 +21,10 @@ describe('reducer log and perf', () => {
 
   test('records log events with cap', () => {
     let state = base();
-    for (let i = 0; i < 55; i++) {
+    for (let index = 0; index < 55; index++) {
       const action: GameAction = {
         type: 'LOG_EVENT',
-        payload: { entry: { timestamp: i, turn: 0, type: 't' } },
+        payload: { entry: { timestamp: index, turn: 0, type: 't' } },
       };
       state = applyAction(state, action);
     }

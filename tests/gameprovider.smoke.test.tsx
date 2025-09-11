@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { GameProvider } from '../src/contexts/GameProvider';
-import { useGame } from '../src/hooks/useGame';
+import { GameProvider } from "..\\src\\contexts\\game-provider";
+import { useGame } from "..\\src\\hooks\\use-game";
 
 function TestConsumer() {
   const { state } = useGame();

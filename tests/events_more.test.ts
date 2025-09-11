@@ -5,8 +5,10 @@ describe('GameEventBus additional', () => {
   it('off removes listener', () => {
     const bus = new GameEventBus<any>();
     let called = 0;
-    const fn = () => { called++; };
-  const off = bus.on('turn:end', fn);
+    const function_ = () => {
+      called++;
+    };
+    const off = bus.on('turn:end', function_);
     bus.emit('turn:end', { turn: 1 } as any);
     expect(called).toBe(1);
     off();
@@ -16,7 +18,9 @@ describe('GameEventBus additional', () => {
 
   it('does not throw when listener throws', () => {
     const bus = new GameEventBus<any>();
-  bus.on('turn:end', () => { throw new Error('boom'); });
+    bus.on('turn:end', () => {
+      throw new Error('boom');
+    });
     expect(() => bus.emit('turn:end', { turn: 3 } as any)).not.toThrow();
   });
 });

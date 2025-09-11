@@ -3,4 +3,3 @@
   { "id": "mine", "yield": { "production": 2 }, "buildTime": 3 },
   { "id": "road", "yield": { "gold": 0.1 }, "buildTime": 1 }
 ]
-
