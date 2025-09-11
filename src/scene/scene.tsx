@@ -177,9 +177,9 @@ export function ConnectedScene() {
       if (z < minZ) minZ = z;
       if (z > maxZ) maxZ = z;
     }
-    const pad = DEFAULT_HEX_SIZE * 4;
-    const width = Math.max(1, maxX - minX + pad * 2);
-    const height = Math.max(1, maxZ - minZ + pad * 2);
+    const pad = DEFAULT_HEX_SIZE * 10;
+    const width = Math.max(1, maxX - minX + pad * 2)*64;
+    const height = Math.max(1, maxZ - minZ + pad * 2)*64;
     const centerX = (minX + maxX) / 2;
     const centerZ = (minZ + maxZ) / 2;
     return { width, height, centerX, centerZ };

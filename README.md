@@ -6,6 +6,9 @@
 
 CivWeb-Lite is a lightweight, extensible implementation of a Civ-like, turn-based simulation built with React, TypeScript, Vite, and Three.js (via @react-three/fiber).
 
+<img src=".demo.png" alt="Demo screenshot" width="600"/>
+
+
 This repository is for an evolving deterministic simulation: procedural hex-world generation, a turn engine, tech progression, and AI players. The work here is intended to be modular, testable, and easy to extend.
 
 Key goals:
