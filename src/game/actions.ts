@@ -31,6 +31,8 @@ export type GameAction =
   | { type: 'REORDER_PRODUCTION_QUEUE'; payload: { cityId: string; newQueue: ProductionOrder[] } }
   | { type: 'CANCEL_ORDER'; payload: { cityId: string; orderIndex: number } }
   | { type: 'OPEN_RESEARCH_PANEL'; payload?: {} }
+  | { type: 'CLOSE_RESEARCH_PANEL'; payload?: {} }
+  | { type: 'CLOSE_CITY_PANEL'; payload?: {} }
   | { type: 'START_RESEARCH'; payload: { playerId: string; techId: string } }
   | { type: 'QUEUE_RESEARCH'; payload: { playerId: string; techId: string } }
   | { type: 'BEGIN_TURN'; payload: { playerId: string } }
@@ -79,6 +81,8 @@ export const GAME_ACTION_TYPES = [
   'REORDER_PRODUCTION_QUEUE',
   'CANCEL_ORDER',
   'OPEN_RESEARCH_PANEL',
+  'CLOSE_RESEARCH_PANEL',
+  'CLOSE_CITY_PANEL',
   'START_RESEARCH',
   'QUEUE_RESEARCH',
   'BEGIN_TURN',

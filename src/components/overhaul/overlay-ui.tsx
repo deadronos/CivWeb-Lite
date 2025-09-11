@@ -42,10 +42,16 @@ export default function OverlayUI() {
       />
       <StatsBar />
       <React.Suspense fallback={<LazySpinner />}>
-        <LeftCivicPanel open={researchPanelOpen} onClose={() => setShowLeft(false)} />
+        <LeftCivicPanel open={researchPanelOpen} onClose={() => {
+          setShowLeft(false);
+          dispatch({ type: 'CLOSE_RESEARCH_PANEL', payload: {} });
+        }} />
       </React.Suspense>
       <React.Suspense fallback={<LazySpinner />}>
-        <RightProductionPanel open={cityPanelOpen} onClose={() => setShowRight(false)} />
+        <RightProductionPanel open={cityPanelOpen} onClose={() => {
+          setShowRight(false);
+          dispatch({ type: 'CLOSE_CITY_PANEL', payload: {} });
+        }} />
       </React.Suspense>
     </>
   );

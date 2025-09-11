@@ -138,7 +138,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const width = action.payload?.width ?? draft.map.width;
         const height = action.payload?.height ?? draft.map.height;
         draft.seed = seed;
-        const world = generateWorld(seed, width as number, height as number);
+        const world = generateWorld(seed, width, height);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
         // ensure extension state exists
@@ -153,9 +153,13 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         // Reset core state
         draft.turn = 0;
         draft.seed = seed;
-        const world = generateWorld(seed, width as number, height as number);
+        const world = generateWorld(seed, width, height);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
+        // Reset UI state to clear any stale selections
+        draft.ui = {
+          openPanels: {},
+        };
         // Players
         const total = Math.max(1, Math.min(6, action.payload.totalPlayers));
         const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
@@ -483,21 +487,49 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           const { unitId, path, confirmCombat } = action.payload;
           const unit = draft.contentExt.units[unitId];
           if (unit && path.length > 0) {
-            // For now, implement simple move to first tile in path
-            const targetTileId = path[path.length - 1];
-            if (extensionMoveUnit(draft.contentExt, unitId, targetTileId)) {
+            const extension = draft.contentExt;
+            
+            // Helper to check for enemies at a tile
+            const enemyAt = (tileId: string): boolean => {
+              const t = extension.tiles[tileId];
+              if (!t) return false;
+              if (t.occupantCityId) {
+                const c = extension.cities[t.occupantCityId];
+                if (c && c.ownerId !== unit.ownerId) return true;
+              }
+              for (const other of Object.values(extension.units)) {
+                if (other.id !== unit.id && other.location === tileId && other.ownerId !== unit.ownerId)
+                  return true;
+              }
+              return false;
+            };
+            
+            // Move through the path step by step with proper validation
+            let moved = false;
+            for (const tileId of path) {
+              if (enemyAt(tileId) && !confirmCombat) {
+                break; // require confirmCombat to proceed into enemy tile
+              }
+              const before = unit.location;
+              const ok = extensionMoveUnit(extension, unit.id, tileId);
+              if (!ok) break;
+              if (unit.location === before) break; // no progress safeguard
+              moved = true;
+            }
+            
+            if (moved) {
               globalGameBus.emit('actionAccepted', { 
                 requestId: `move_${unitId}_${Date.now()}`, 
                 appliedAtTick: draft.turn 
               });
               globalGameBus.emit('actionsResolved', { 
                 tick: draft.turn, 
-                results: [{ unitId, action: 'move', location: targetTileId }] 
+                results: [{ unitId, action: 'move', location: unit.location }] 
               });
             } else {
               globalGameBus.emit('actionRejected', { 
                 requestId: `move_${unitId}_${Date.now()}`, 
-                reason: 'Invalid move target' 
+                reason: 'Invalid move target or path blocked' 
               });
             }
           }
@@ -557,6 +589,14 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       }
       case 'OPEN_RESEARCH_PANEL': {
         draft.ui.openPanels.researchPanel = true;
+        break;
+      }
+      case 'CLOSE_RESEARCH_PANEL': {
+        draft.ui.openPanels.researchPanel = false;
+        break;
+      }
+      case 'CLOSE_CITY_PANEL': {
+        draft.ui.openPanels.cityPanel = undefined;
         break;
       }
       case 'START_RESEARCH': {
