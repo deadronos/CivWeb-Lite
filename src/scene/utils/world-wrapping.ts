@@ -28,16 +28,16 @@ export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
  */
 export function getWorldBounds(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
   const leftEdge = 0;
-  // Horizontal spacing between axial columns we use for wrapping math.
-  // Keep consistent with tests that assume 3/2 * size per column.
-  const rightEdge = hexSize * (3 / 2) * (config.worldWidth - 1);
+  // Horizontal spacing between axial columns in pointy-top layout is √3 * size
+  const rightEdge = Math.sqrt(3) * hexSize * (config.worldWidth - 1);
   const worldSpan = rightEdge - leftEdge;
-  
+
   return {
     leftEdge,
     rightEdge,
     worldSpan,
-    wrapBufferWidth: hexSize * (3 / 2) * config.wrapBuffer,
+    // Width spanned by the buffer columns on either side
+    wrapBufferWidth: Math.sqrt(3) * hexSize * config.wrapBuffer,
   };
 }
 
@@ -58,7 +58,7 @@ export function generateWrappedPositions(
   config: WrappingConfig,
   hexSize = DEFAULT_HEX_SIZE
 ): Array<[number, number, number]> {
-  const { wrapBufferWidth } = getWorldBounds(config, hexSize);
+  // Precompute wrap distance for duplicating edge columns
   const wrapDelta = getHorizontalWrapDelta(config, hexSize);
   const wrappedPositions = [...originalPositions];
 
