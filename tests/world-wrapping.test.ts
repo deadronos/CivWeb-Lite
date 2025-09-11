@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { 
-  getWorldBounds, 
-  generateWrappedPositions, 
+import {
+  getWorldBounds,
+  generateWrappedPositions,
   checkCameraTeleport,
-  DEFAULT_WRAPPING_CONFIG 
+  DEFAULT_WRAPPING_CONFIG
 } from '../src/scene/utils/world-wrapping';
+import { axialToWorld } from '../src/scene/utils/coords';
 
 describe('world wrapping', () => {
   const config = { ...DEFAULT_WRAPPING_CONFIG, worldWidth: 10, worldHeight: 8 };
@@ -12,27 +13,26 @@ describe('world wrapping', () => {
   it('calculates world bounds correctly', () => {
     const bounds = getWorldBounds(config, 0.5);
     expect(bounds.leftEdge).toBe(0);
-    expect(bounds.rightEdge).toBe(0.5 * (3 / 2) * 9); // (width - 1) * spacing
+    // (width - 1) * √3 * size
+    expect(bounds.rightEdge).toBeCloseTo(0.5 * Math.sqrt(3) * 9);
     expect(bounds.worldSpan).toBeGreaterThan(0);
   });
 
   it('generates wrapped positions', () => {
-    const originalPositions: Array<[number, number, number]> = [
-      [0, 0, 0],    // q=0, r=0
-      [0.75, 0, 0], // q=1, r=0  
-      [1.5, 0, 0],  // q=2, r=0
-    ];
-    
-    const tiles = [
-      { coord: { q: 0, r: 0 } },
-      { coord: { q: 1, r: 0 } },
-      { coord: { q: 2, r: 0 } },
-    ];
+    const size = 0.5;
+    const positions: Array<[number, number, number]> = [];
+    const tiles = [] as Array<{ coord: { q: number; r: number } }>;
 
-    const wrappedPositions = generateWrappedPositions(originalPositions, tiles, config, 0.5);
-    
+    for (let q = 0; q < 3; q++) {
+      const [x, z] = axialToWorld(q, 0, size);
+      positions.push([x, 0, z]);
+      tiles.push({ coord: { q, r: 0 } });
+    }
+
+    const wrappedPositions = generateWrappedPositions(positions, tiles, config, size);
+
     // Should have original positions plus wrapped edge positions
-    expect(wrappedPositions.length).toBeGreaterThan(originalPositions.length);
+    expect(wrappedPositions.length).toBeGreaterThan(positions.length);
   });
 
   it('detects when camera needs teleporting', () => {
