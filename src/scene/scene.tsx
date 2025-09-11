@@ -4,6 +4,7 @@ import TileMesh from "./tile-mesh";
 import InstancedTiles from "./instanced-tiles";
 import CameraControls from "./drei/camera-controls";
 import DevStats from "./drei/dev-stats";
+import InstancedProbe from "./instanced-probe";
 import HtmlLabel from "./drei/html-label";
 import BillboardLabel from "./drei/billboard-label";
 import { isDevOrTest as isDevelopmentOrTest } from '../utils/env';
@@ -52,6 +53,15 @@ export function ConnectedScene() {
 
   // Procedural biome colors with subtle variation by elevation/moisture
   const colors = useMemo(() => state.map.tiles.map((t) => colorForTile(t as any)), [state.map.tiles]);
+
+  // Feature flag: enable per-instance colors only when explicitly requested.
+  // By default we use stable per-biome uniform colors for instanced groups to
+  // avoid driver/material quirks that can cause black tiles on some setups.
+  const enablePerInstanceColors = useMemo(() => {
+    if (globalThis.window === undefined) return false;
+    const qp = new URLSearchParams(globalThis.window.location.search);
+    return qp.get('pic') === '1';
+  }, []);
 
   // Group tiles by biome for robust instanced rendering without per-instance colors
   // Small stable hash: mirrors the one used for procedural color jitter
@@ -152,6 +162,7 @@ export function ConnectedScene() {
 
       })()}
       {isDevelopmentOrTest() && state.contentExt && <UnitMarkers />}
+  {(isDevelopmentOrTest() || (globalThis.window !== undefined && new URLSearchParams(globalThis.window.location.search).get('probe') === '1')) && <InstancedProbe />}
       {/* Units (procedural by default, GLTF behind flag) */}
       {state.contentExt && (
         <React.Suspense fallback={null}>
@@ -193,7 +204,7 @@ export function ConnectedScene() {
             key={g.biome + ':' + gi}
             positions={g.positions}
             color={g.color}
-            colors={g.colors}
+            colors={enablePerInstanceColors ? g.colors : undefined}
             elevations={g.elevations}
             size={DEFAULT_HEX_SIZE}
             onPointerMove={(e) => {

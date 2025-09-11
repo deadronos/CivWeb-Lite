@@ -41,6 +41,12 @@ npm run preview
 
 This project follows a canonical `src/` layout. The structure below is authoritative — it should inform where new code goes. If you need to deviate, open a short proposal and update the `spec/` and `plan/` documents with the rationale.
 
+### Runtime flags (dev/testing)
+
+- Per-instance tile colors (experimental): append `?pic=1` to the URL. Default rendering uses uniform per-biome colors for cross-driver stability.
+- Instancing probe: append `?probe=1` to show a tiny red/green two-instance mesh near the origin (sanity check for instancing colors).
+- Verbose instancing logs: in devtools console, run `window.__CWL_DEBUG = true` and refresh to enable detailed `[debug] InstancedTiles` logs. Set to `false` (or reload) to silence.
+
 ```text
 src/
 ├── assets/
