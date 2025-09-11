@@ -10,19 +10,19 @@ describe('computePath wrap-around', () => {
     s.map.height = 1;
     s = applyAction(s, {
       type: 'EXT_ADD_TILE',
-      payload: { tile: { id: 'a', q: 0, r: 0, biome: 'grassland' } }
+      payload: { tile: { id: 'a', q: 0, r: 0, biome: 'grassland' } },
     });
     s = applyAction(s, {
       type: 'EXT_ADD_TILE',
-      payload: { tile: { id: 'b', q: 1, r: 0, biome: 'grassland' } }
+      payload: { tile: { id: 'b', q: 1, r: 0, biome: 'grassland' } },
     });
     s = applyAction(s, {
       type: 'EXT_ADD_TILE',
-      payload: { tile: { id: 'c', q: 2, r: 0, biome: 'grassland' } }
+      payload: { tile: { id: 'c', q: 2, r: 0, biome: 'grassland' } },
     });
     s = applyAction(s, {
       type: 'EXT_ADD_UNIT',
-      payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' }
+      payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' },
     });
     const res = computePath(s.contentExt!, 'u1', 'c', s.map.width, s.map.height);
     if ('path' in res && res.path) {

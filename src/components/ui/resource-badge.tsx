@@ -8,7 +8,8 @@ export type ResourceBadgeProps = {
 
 export default function ResourceBadge({ name, value, delta }: ResourceBadgeProps) {
   const sign = typeof delta === 'number' && delta !== 0 ? (delta > 0 ? '+' : '−') : '';
-  const deltaText = typeof delta === 'number' && delta !== 0 ? `${sign}${Math.abs(delta)}` : undefined;
+  const deltaText =
+    typeof delta === 'number' && delta !== 0 ? `${sign}${Math.abs(delta)}` : undefined;
   const isPositive = typeof delta === 'number' && delta > 0;
   return (
     <div
@@ -19,7 +20,7 @@ export default function ResourceBadge({ name, value, delta }: ResourceBadgeProps
     >
       <span className="res-name">{name}</span>
       <span className="res-value">{value}</span>
-  {deltaText && <span className={`res-delta ${isPositive ? 'up' : 'down'}`}>{deltaText}</span>}
+      {deltaText && <span className={`res-delta ${isPositive ? 'up' : 'down'}`}>{deltaText}</span>}
     </div>
   );
 }

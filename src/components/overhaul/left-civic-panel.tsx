@@ -10,10 +10,22 @@ export default function LeftCivicPanel({ open, onClose }: { open: boolean; onClo
     <aside className="ui-leftpanel" aria-label="research chooser">
       <div className="panel-header">
         <div className="tabs">
-          <button className={tab === 'culture' ? 'tab active' : 'tab'} onClick={() => setTab('culture')}>Civics</button>
-          <button className={tab === 'science' ? 'tab active' : 'tab'} onClick={() => setTab('science')}>Science</button>
+          <button
+            className={tab === 'culture' ? 'tab active' : 'tab'}
+            onClick={() => setTab('culture')}
+          >
+            Civics
+          </button>
+          <button
+            className={tab === 'science' ? 'tab active' : 'tab'}
+            onClick={() => setTab('science')}
+          >
+            Science
+          </button>
         </div>
-        <button className="close" onClick={onClose}>×</button>
+        <button className="close" onClick={onClose}>
+          ×
+        </button>
       </div>
       <div className="panel-body">
         {list.slice(0, 30).map((it: any) => (

@@ -44,7 +44,7 @@ function findSuitableSpawnPosition(
   searchRadius: number = 5
 ): string | null {
   // First try the preferred position
-  const preferredTile = tiles.find(t => t.coord.q === preferredQ && t.coord.r === preferredR);
+  const preferredTile = tiles.find((t) => t.coord.q === preferredQ && t.coord.r === preferredR);
   if (preferredTile && isSuitableSpawnTerrain(preferredTile.biome)) {
     return preferredTile.id;
   }
@@ -52,13 +52,13 @@ function findSuitableSpawnPosition(
   // Search in expanding circles around the preferred position
   for (let radius = 1; radius <= searchRadius; radius++) {
     const candidates: Tile[] = [];
-    
+
     // Find all tiles at this radius that are suitable
     for (const tile of tiles) {
       const dq = tile.coord.q - preferredQ;
       const dr = tile.coord.r - preferredR;
       const distance = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dq + dr));
-      
+
       if (distance === radius && isSuitableSpawnTerrain(tile.biome)) {
         candidates.push(tile);
       }
@@ -66,21 +66,21 @@ function findSuitableSpawnPosition(
 
     if (candidates.length > 0) {
       // Prefer grassland and forest over other suitable terrain
-      const preferred = candidates.filter(t => 
-        t.biome === BiomeType.Grassland || t.biome === BiomeType.Forest
+      const preferred = candidates.filter(
+        (t) => t.biome === BiomeType.Grassland || t.biome === BiomeType.Forest
       );
-      
+
       if (preferred.length > 0) {
         return preferred[0].id;
       }
-      
+
       // Return any suitable terrain if no preferred terrain found
       return candidates[0].id;
     }
   }
 
   // Fallback: return any suitable tile if nothing found in search radius
-  const fallback = tiles.find(t => isSuitableSpawnTerrain(t.biome));
+  const fallback = tiles.find((t) => isSuitableSpawnTerrain(t.biome));
   return fallback ? fallback.id : null;
 }
 
@@ -204,33 +204,39 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           const preferredR = index < 2 ? pad : Math.max(pad, height - pad - 1);
           return findSuitableSpawnPosition(draft.map.tiles, preferredQ, preferredR, width, height);
         };
-        
+
         for (let index = 0; index < draft.players.length; index++) {
           const ownerId = draft.players[index].id;
           const tileId = findStartPosition(index);
-          
+
           if (!tileId) {
             console.warn(`Could not find suitable spawn position for player ${ownerId}`);
             continue; // Skip this player if no suitable position found
           }
-          
+
           // Find the actual tile from the map to get its real biome
-          const mapTile = draft.map.tiles.find(t => t.id === tileId);
+          const mapTile = draft.map.tiles.find((t) => t.id === tileId);
           if (!mapTile) {
             console.warn(`Map tile ${tileId} not found for player ${ownerId}`);
             continue;
           }
-          
+
           // Create or update tile in extension store based on the real map tile
           if (!extension.tiles[tileId]) {
             extension.tiles[tileId] = {
               id: tileId,
               q: mapTile.coord.q,
               r: mapTile.coord.r,
-              biome: mapTile.biome === BiomeType.Grassland ? 'grassland' : 
-                     mapTile.biome === BiomeType.Forest ? 'forest' :
-                     mapTile.biome === BiomeType.Desert ? 'desert' : 
-                     mapTile.biome === BiomeType.Tundra ? 'tundra' : 'grassland',
+              biome:
+                mapTile.biome === BiomeType.Grassland
+                  ? 'grassland'
+                  : mapTile.biome === BiomeType.Forest
+                    ? 'forest'
+                    : mapTile.biome === BiomeType.Desert
+                      ? 'desert'
+                      : mapTile.biome === BiomeType.Tundra
+                        ? 'tundra'
+                        : 'grassland',
               elevation: mapTile.elevation,
               features: [],
               improvements: [],
@@ -282,10 +288,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             if (tech) {
               const points = tech.tree === 'science' ? player.sciencePoints : player.culturePoints;
               player.researching.progress += points;
-        if (player.researching.progress >= tech.cost) {
-          player.researchedTechIds.push(tech.id);
-          player.researching = null;
-          globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+              if (player.researching.progress >= tech.cost) {
+                player.researchedTechIds.push(tech.id);
+                player.researching = null;
+                globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
               }
             }
           }
@@ -418,7 +424,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       case 'EXT_ISSUE_MOVE_PATH': {
         const extension = (draft.contentExt ||= createContentExtension());
         const u = extension.units[action.payload.unitId];
-  if (u && action.payload.path && action.payload.path.length > 0) {
+        if (u && action.payload.path && action.payload.path.length > 0) {
           const enemyAt = (tileId: string): boolean => {
             const t = extension.tiles[tileId];
             if (!t) return false;

@@ -1,4 +1,3 @@
- 
 // Filename is PascalCase to mirror the exported React component name. A repo-wide
 // filename rename will be done in a dedicated refactor to avoid touching many imports.
 import React from 'react';
@@ -7,7 +6,11 @@ import { useGLTF } from '@react-three/drei';
 export type GLTFModelProperties = {
   url: string;
   // optional transform and presentation props forwarded to the primitive
-  transform?: { position?: [number, number, number]; scale?: number | [number, number, number]; rotation?: [number, number, number] };
+  transform?: {
+    position?: [number, number, number];
+    scale?: number | [number, number, number];
+    rotation?: [number, number, number];
+  };
 } & Record<string, any>;
 
 export const GLTFModel: React.FC<GLTFModelProperties> = ({ url, transform, ...rest }) => {
@@ -26,7 +29,7 @@ export const GLTFModel: React.FC<GLTFModelProperties> = ({ url, transform, ...re
   const gltf: any = useGLTF(url);
   const scene = gltf.scene || gltf;
   return <primitive object={scene} {...transform} {...rest} />;
-}
+};
 
 export default GLTFModel;
 

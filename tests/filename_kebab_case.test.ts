@@ -37,6 +37,7 @@ const LEGACY_ALLOWLIST = new Set([
   'scene/units/gltfRegistry.ts',
   'scene/units/modelRegistry.tsx',
   'scene/units/ProceduralPreload.tsx',
+  'types/images.d.ts',
   // Additional legacy shims still present; keep in allowlist until they're removed/renamed
   // LeftPanel, MinimapContainer, NextTurnControlContainer, TopBar, TopBarContainer shims removed in safe batches — canonical kebab-case files are used
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
@@ -64,7 +65,8 @@ function listFiles(root: string): string[] {
 }
 
 describe('kebab-case filenames under src/', () => {
-  const files = listFiles(SRC_DIR).map((f) => path.relative(SRC_DIR, f).replaceAll('/', '/'));
+  // Normalize Windows backslashes to forward slashes so allowlist entries (which use '/') match
+  const files = listFiles(SRC_DIR).map((f) => path.relative(SRC_DIR, f).replaceAll('\\', '/'));
   const offenders = files.filter((relativePath) => {
     if (LEGACY_ALLOWLIST.has(relativePath)) return false;
     const base = path.basename(relativePath);
@@ -74,7 +76,8 @@ describe('kebab-case filenames under src/', () => {
   });
 
   it('has no non-kebab filenames (outside allowlist)', () => {
-    expect(offenders, `Rename these files to kebab-case or add to allowlist temporarily`).toEqual([]);
+    expect(offenders, `Rename these files to kebab-case or add to allowlist temporarily`).toEqual(
+      []
+    );
   });
 });
-

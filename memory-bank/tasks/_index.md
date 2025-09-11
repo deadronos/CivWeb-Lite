@@ -2,7 +2,7 @@
 
 ## In Progress
 
-- [TASK001] Refactor scene and game provider - Modularize and clean up
+- [TASK001] Refactor scene and game provider - Modularize and clean up (see `memory-bank/tasks/TASK001-refactor-scene-and-game-provider.md`)
 
 ## Pending
 

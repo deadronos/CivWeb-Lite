@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 import { evaluateAI } from '../../src/game/ai/ai';
 import { GameState, PlayerState } from '../../src/game/types';
-import { techCatalog } from "../../src/game/tech/tech-catalog";
+import { techCatalog } from '../../src/game/tech/tech-catalog';
 import { LEADER_PERSONALITIES } from '../../src/game/ai/leaders';
 
 function baseState(player: PlayerState): GameState {
@@ -15,7 +15,7 @@ function baseState(player: PlayerState): GameState {
     rngState: undefined,
     log: [],
     mode: 'standard',
-    autoSim: false
+    autoSim: false,
   };
 }
 
@@ -29,7 +29,7 @@ describe('AI benchmark', () => {
       sciencePoints: 10,
       culturePoints: 10,
       researchedTechIds: [],
-      researching: null
+      researching: null,
     }));
 
     const iterations = 300; // controlled iteration count for CI speed

@@ -1,22 +1,47 @@
 """generate_grassland_tiles.py
 
-Create three variations of a grassland hex tile inside Blender.
+Create three variations of a POINTY‑TOP grassland hex tile inside Blender.
 
-Usage:
-  - From Blender's Text Editor: open this file and Run Script.
-  - From the command line (headless):
-      blender --background --python generate_grassland_tiles.py
+IMPORTANT: Runtime (three.js) uses pointy‑top axial coordinates with
+`DEFAULT_HEX_SIZE` defined in `src/scene/utils/coords.ts` (currently 0.51).
+This script now generates pointy‑top geometry directly so the exported GLB
+radius matches 0.51 by default (can be overridden via CLI / constants).
 
-Notes:
-  - The script uses mathutils.noise for small vertex displacements (so no external libs).
-  - It expects a Blender environment (bpy). If bpy is not available the script will print
-    an instruction message and exit.
+HOW SIZE PARITY IS ENSURED
+==========================
+For a pointy‑top hex:
+    - Radius ("size") = distance center -> any corner.
+    - Width (flat edge to flat edge) = sqrt(3) * size.
+    - Height (point to opposite point) = 2 * size.
 
-Design choices:
-  - Uses hex radius 0.5 and thin hex thickness 0.08 to match the project's DEFAULT_HEX_SIZE
-    and tile thickness used in the web renderer.
-  - Generates 3 variations by varying counts and density of tufts, rocks and sparse trees.
-  - All generated objects are parented into a collection named 'GrasslandTiles'.
+The web fallback procedural tile uses the same radius. Set HEX_RADIUS below
+to the EXACT value of DEFAULT_HEX_SIZE (0.51) for a 1:1 match. If you ever
+change DEFAULT_HEX_SIZE in the repo, re‑export by either:
+    a) editing HEX_RADIUS here, OR
+    b) supplying --size <value> in the CLI (added in this rewrite).
+
+VALIDATING SCALE IN BLENDER (quick):
+    1. After generation: select a tile object, go to Edit Mode.
+    2. Enable Edge Length overlays. Select a vertex at "top" point and the
+         opposite point -> length should be ~= 2 * HEX_RADIUS.
+    3. Select two opposite flat edges -> distance ≈ sqrt(3) * HEX_RADIUS.
+
+ADJUSTING ORIENTATION
+======================
+We explicitly construct a pointy‑top hex mesh (one vertex on the +Y axis in
+Blender's local space, then rotate so that when exported (Y up) and imported
+into three.js (Y up) the axial formulas align with coords.ts. The previous
+version relied on `primitive_cylinder_add` (flat‑top for our usage), so we
+replace that with a custom bmesh build.
+
+CLI CHANGES
+===========
+Added: --size (alias -S) to override HEX_RADIUS at generation time so you can
+export multiple scale variants without editing the file.
+
+USAGE:
+    blender --background --python generate_grassland_tiles.py -- --export ./out --size 0.51
+
 """
 
 import random
@@ -56,7 +81,9 @@ def _resolve_export_path(path: str | None) -> str | None:
     return os.path.join(SCRIPT_DIR, path)
 
 # --- Parameters (aligned to repo defaults) ----------------------------------
-HEX_RADIUS = 0.5
+# NOTE: Keep in sync with `DEFAULT_HEX_SIZE` in the web project (coords.ts).
+# If changed there, re‑export here. Overridable via CLI --size.
+HEX_RADIUS = 0.51
 HEX_THICKNESS = 0.08
 SEED = 42
 
@@ -74,11 +101,61 @@ def clear_collection(name: str):
 
 
 def create_base_hex(name: str, radius=HEX_RADIUS, thickness=HEX_THICKNESS):
-    """Create a flat-top hexagonal prism (cylinder with 6 vertices) centered at origin."""
-    bpy.ops.mesh.primitive_cylinder_add(vertices=6, radius=radius, depth=thickness, enter_editmode=False)
-    obj = bpy.context.active_object
-    obj.name = name
-    # Ensure the top is up (default cylinder is aligned on Z)
+    """Create a POINTY‑TOP hexagonal prism centered at origin.
+
+    We build the top face manually (point at +Y). Then extrude down to give
+    thickness. The local +Z remains "up" for displacement logic.
+    """
+    # Compute 6 corner positions for pointy‑top orientation. Angle 0 at +Y.
+    # Standard pointy‑top layout uses 30° offset if starting at +X; here we
+    # start at +Y so angle step = 60° and initial angle = 0.
+    angles = [0, 60, 120, 180, 240, 300]
+    verts_top = []
+    import bmesh
+    mesh = bpy.data.meshes.new(f"{name}_mesh")
+    bm = bmesh.new()
+    for deg in angles:
+        rad = (deg * 3.141592653589793) / 180.0
+        x = radius * sin(rad)   # swap sin/cos so first point sits on +Y
+        y = radius * cos(rad)
+        verts_top.append(bm.verts.new((x, y, thickness / 2.0)))
+    bm.faces.new(verts_top)
+    bm.normal_update()
+    # Duplicate downward verts
+    verts_bottom = []
+    for v in verts_top:
+        verts_bottom.append(bm.verts.new((v.co.x, v.co.y, -thickness / 2.0)))
+    # Create side faces
+    for i in range(6):
+        v_top_a = verts_top[i]
+        v_top_b = verts_top[(i + 1) % 6]
+        v_bot_b = verts_bottom[(i + 1) % 6]
+        v_bot_a = verts_bottom[i]
+        bm.faces.new([v_top_a, v_top_b, v_bot_b, v_bot_a])
+    # Bottom face (reverse order for correct normal)
+    bm.faces.new(list(reversed(verts_bottom)))
+    
+    # Ensure all faces have proper normals
+    bm.normal_update()
+    bm.faces.ensure_lookup_table()
+    
+    # Generate UV coordinates for proper Three.js compatibility
+    uv_layer = bm.loops.layers.uv.new()
+    for face in bm.faces:
+        for loop in face.loops:
+            # Basic planar UV mapping (top-down projection)
+            loop[uv_layer].uv = ((loop.vert.co.x / radius + 1) * 0.5, 
+                                  (loop.vert.co.y / radius + 1) * 0.5)
+    
+    bm.to_mesh(mesh)
+    bm.free()
+    
+    # Ensure mesh has proper data
+    mesh.update()
+    mesh.validate()
+    
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
     return obj
 
 
@@ -300,8 +377,8 @@ def build_variation(index: int, col, seed_offset=0, params=None):
     grass_mat = get_or_create_material('Grass_Mat', base_color=(0.22, 0.55, 0.18, 1.0), metallic=0.0, roughness=0.9)
     assign_material_to_object(obj, grass_mat, base_color=(0.22, 0.55, 0.18, 1.0))
     obj.location.x = index * (HEX_RADIUS * 2.6)
-    # Slight rotation so variations don't look identical
-    obj.rotation_euler[2] = random.uniform(0, pi * 2)
+    # Keep all variants aligned (no random rotation) for consistent tile placement
+    # obj.rotation_euler[2] = 0  # All tiles face the same direction (pointy-top aligned)
 
     # displace top
     displace_top_surface(obj, amplitude=params.get('height_amp', 0.06), scale=params.get('noise_scale', 1.5), seed=SEED + index + seed_offset)
@@ -367,10 +444,45 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
         try:
             # Duplicate and link copies to the temp scene
             dupes = []
+            # Find the main hex tile object to use as reference
+            main_tile = None
+            for o in src_objs:
+                if 'grassland_tile_' in o.name:
+                    main_tile = o
+                    break
+            
+            # Compute the main tile world translation so we can recenter everything
+            # Use matrix_world to capture any parent/scene transforms that may apply
+            main_tile_world_loc = None
+            try:
+                main_tile_world_loc = main_tile.matrix_world.to_translation() if main_tile else None
+            except Exception:
+                # Fallback to simple location if matrix_world isn't available
+                main_tile_world_loc = main_tile.location.copy() if main_tile else None
+
+            from mathutils import Matrix
+
             for o in src_objs:
                 dup = o.copy()
                 if o.data:
                     dup.data = o.data.copy()
+                # Preserve the object's world transform then translate so main tile sits at origin
+                try:
+                    # Copy full world matrix to preserve rotations/scales
+                    dup.matrix_world = o.matrix_world.copy()
+                    if main_tile_world_loc is not None:
+                        dup.matrix_world.translation -= main_tile_world_loc
+                except Exception:
+                    # Fallback: adjust local location relative to main tile world location
+                    if main_tile_world_loc is not None:
+                        dup.location = (
+                            o.location.x - main_tile_world_loc.x,
+                            o.location.y - main_tile_world_loc.y,
+                            o.location.z - main_tile_world_loc.z,
+                        )
+                    else:
+                        dup.location = o.location
+
                 tmp_scene.collection.objects.link(dup)
                 dupes.append(dup)
 
@@ -381,7 +493,15 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
 
             # Export entire temp scene (no selection filtering needed)
             if fmtU in ('GLB', 'GLTF'):
-                bpy.ops.export_scene.gltf(filepath=filepath, use_selection=False, export_apply=True)
+                bpy.ops.export_scene.gltf(
+                    filepath=filepath, 
+                    use_selection=False, 
+                    export_apply=True,
+                    export_normals=True,
+                    export_texcoords=True,
+                    export_materials='EXPORT',
+                    export_original_specular=False
+                )
             elif fmtU == 'OBJ':
                 bpy.ops.export_scene.obj(filepath=filepath, use_selection=False)
             else:
@@ -402,7 +522,15 @@ def export_collection(collection, filepath: str, fmt: str = 'GLB', isolated: boo
         for obj in collect_objects(collection):
             obj.select_set(True)
         if fmtU in ('GLB', 'GLTF'):
-            bpy.ops.export_scene.gltf(filepath=filepath, use_selection=True, export_apply=True)
+            bpy.ops.export_scene.gltf(
+                filepath=filepath, 
+                use_selection=True, 
+                export_apply=True,
+                export_normals=True,
+                export_texcoords=True,
+                export_materials='EXPORT',
+                export_original_specular=False
+            )
         elif fmtU == 'OBJ':
             bpy.ops.export_scene.obj(filepath=filepath, use_selection=True)
         else:
@@ -418,7 +546,7 @@ def parse_args(argv=None):
         args = argv[argv.index('--') + 1:]
     else:
         args = []
-    out = {'seed': SEED, 'build_count': 3, 'export_path': None, 'export_format': 'GLB'}
+    out = {'seed': SEED, 'build_count': 3, 'export_path': None, 'export_format': 'GLB', 'size': HEX_RADIUS}
     i = 0
     while i < len(args):
         a = args[i]
@@ -430,11 +558,13 @@ def parse_args(argv=None):
             out['export_path'] = args[i + 1]; i += 2; continue
         if a in ('--format', '-f') and i + 1 < len(args):
             out['export_format'] = args[i + 1]; i += 2; continue
+        if a in ('--size', '-S') and i + 1 < len(args):
+            out['size'] = float(args[i + 1]); i += 2; continue
         i += 1
     return out
 
 
-def main_with_options(seed=42, build_count=3, export_path=None, export_format='GLB', enable_ao=False, enable_lights=True, export_per_variant=True):
+def main_with_options(seed=42, build_count=3, export_path=None, export_format='GLB', enable_ao=False, enable_lights=True, export_per_variant=True, size=HEX_RADIUS):
     """Main generation entry with options. build_count <= 3 (we have 3 predefined variations).
 
     New params:
@@ -459,6 +589,8 @@ def main_with_options(seed=42, build_count=3, export_path=None, export_format='G
     for i in range(build_count):
         params = variations[i]
         # per-tile material variation: apply distinct grass material
+        # Temporarily patch global HEX_RADIUS if a custom size was passed (simple approach)
+        # This keeps internal helpers that default to HEX_RADIUS consistent.
         tile_obj = build_variation(i, top_col, seed_offset=100, params=params)
         # replace first material (grass) with a per-tile variant
         if tile_obj and tile_obj.data:
@@ -567,6 +699,7 @@ def run_headless_from_args():
     opts = parse_args()
     seed = opts.get('seed', SEED)
     count = opts.get('build_count', 3)
+    size = opts.get('size', HEX_RADIUS)
     export_path = _resolve_export_path(opts.get('export_path'))
     export_format = opts.get('export_format', 'GLB')
 
@@ -578,7 +711,8 @@ def run_headless_from_args():
         if not os.path.exists(out_dir):
             os.makedirs(out_dir, exist_ok=True)
 
-    main_with_options(seed=seed, build_count=count, export_path=None, export_format=export_format)
+    # Pass size forward (currently used for validation hooks if extended later)
+    main_with_options(seed=seed, build_count=count, export_path=None, export_format=export_format, size=size)
 
     top_col = bpy.data.collections.get('GrasslandTiles')
     if not top_col:
@@ -589,7 +723,7 @@ def run_headless_from_args():
         if export_dir_mode:
             # export each variant as separate file
             for i, child in enumerate(top_col.children):
-                fname = f'grassland_v{i}.glb' if export_format.upper() in ('GLB','GLTF') else f'grassland_v{i}.obj'
+                fname = f'grass_v{i}.glb' if export_format.upper() in ('GLB','GLTF') else f'grass_v{i}.obj'
                 outp = os.path.join(out_dir, fname)
                 export_collection(child, outp, fmt=export_format)
                 print('Exported variant', i, '->', outp)

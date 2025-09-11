@@ -1,16 +1,16 @@
 import React from 'react';
-import { useGame } from "../../hooks/use-game";
+import { useGame } from '../../hooks/use-game';
 import { importFromFile, deserializeState } from '../../game/save';
 
 export default function LoadModal({
   open,
   onClose,
-  autoFocusText
-
-
-
-
-}: {open: boolean;onClose: () => void;autoFocusText?: boolean;}) {
+  autoFocusText,
+}: {
+  open: boolean;
+  onClose: () => void;
+  autoFocusText?: boolean;
+}) {
   const { dispatch } = useGame();
   const [text, setText] = React.useState('');
   const [error, setError] = React.useState<string | undefined>();
@@ -64,16 +64,19 @@ export default function LoadModal({
             value={text}
             onChange={(event) => setText(event.target.value)}
             rows={8}
-            style={{ width: '100%' }} />
+            style={{ width: '100%' }}
+          />
 
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={onPasteLoad}>Load from Text</button>
-            <button onClick={() => {
-              const input = document.querySelector('#load-file-input');
-              if (input instanceof HTMLInputElement) {
-                input.click();
-              }
-            }}>
+            <button
+              onClick={() => {
+                const input = document.querySelector('#load-file-input');
+                if (input instanceof HTMLInputElement) {
+                  input.click();
+                }
+              }}
+            >
               Choose File…
             </button>
             <input
@@ -81,18 +84,18 @@ export default function LoadModal({
               type="file"
               accept="application/json"
               style={{ display: 'none' }}
-              onChange={onFileChange} />
-
+              onChange={onFileChange}
+            />
           </div>
-          {error &&
-          <div role="alert" style={{ color: 'salmon', marginTop: 8 }}>
+          {error && (
+            <div role="alert" style={{ color: 'salmon', marginTop: 8 }}>
               {error}
             </div>
-          }
+          )}
         </div>
       </div>
-    </div>);
-
+    </div>
+  );
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -103,7 +106,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 2000
+    zIndex: 2000,
   },
   panel: {
     width: 520,
@@ -111,6 +114,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--color-fg, #f0f0f0)',
     padding: 16,
     borderRadius: 8,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
-  }
+    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+  },
 };

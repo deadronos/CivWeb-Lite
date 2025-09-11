@@ -20,30 +20,40 @@ export default function OverlayUI() {
 
   return (
     <>
-      <TopMenu
-        onOpenResearch={() => setShowLeft(true)}
-        onOpenCities={() => setShowRight(true)}
-      />
+      <TopMenu onOpenResearch={() => setShowLeft(true)} onOpenCities={() => setShowRight(true)} />
       <StatsBar />
-      <React.Suspense fallback={<LazySpinner /> }>
+      <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={showLeft} onClose={() => setShowLeft(false)} />
       </React.Suspense>
-      <React.Suspense fallback={<LazySpinner /> }>
+      <React.Suspense fallback={<LazySpinner />}>
         <RightProductionPanel open={showRight} onClose={() => setShowRight(false)} />
       </React.Suspense>
     </>
   );
 }
 
-function TopMenu({ onOpenResearch, onOpenCities }: { onOpenResearch: () => void; onOpenCities: () => void }) {
+function TopMenu({
+  onOpenResearch,
+  onOpenCities,
+}: {
+  onOpenResearch: () => void;
+  onOpenCities: () => void;
+}) {
   const Item = (p: React.PropsWithChildren<{ onClick?: () => void }>) => (
     <button className="ui-topmenu-item" onClick={p.onClick}>
       {p.children}
     </button>
   );
   return (
-    <div className="ui-topmenu" role="navigation" aria-label="top menu"
-      onMouseEnter={() => { import('./left-civic-panel'); import('./right-production-panel'); }}>
+    <div
+      className="ui-topmenu"
+      role="navigation"
+      aria-label="top menu"
+      onMouseEnter={() => {
+        import('./left-civic-panel');
+        import('./right-production-panel');
+      }}
+    >
       <div className="ui-topmenu-left">
         <Item>Map</Item>
         <Item>Government</Item>
@@ -73,12 +83,20 @@ function StatsBar() {
   return (
     <div className="ui-statsbar" aria-label="empire stats">
       <span>Turn {state.turn}</span>
-      <div className="stat"><b>Science</b> +{science}/t</div>
-      <div className="stat"><b>Culture</b> +{culture}/t</div>
-      <div className="stat"><b>Gold</b> +{gold}/t</div>
+      <div className="stat">
+        <b>Science</b> +{science}/t
+      </div>
+      <div className="stat">
+        <b>Culture</b> +{culture}/t
+      </div>
+      <div className="stat">
+        <b>Gold</b> +{gold}/t
+      </div>
       <div className="stat sep" />
       {resources.map((r) => (
-        <div key={r.key} className="stat res">{r.key}: {r.qty}</div>
+        <div key={r.key} className="stat res">
+          {r.key}: {r.qty}
+        </div>
       ))}
     </div>
   );

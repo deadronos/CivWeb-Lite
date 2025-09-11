@@ -113,18 +113,19 @@ function GameHUDInner() {
     };
   }, []);
 
-  const playersSummary = state.players.length > 0 ? (
-    <div aria-label="game summary" style={{ margin: '6px 0', opacity: 0.85 }}>
-      Players:{' '}
-      {state.players
-        .map((p) => {
-          const pv = (p.leader.preferredVictory || []) as string[];
-          const badge = pv.length > 0 ? ` [${pv.map((v) => victoryBadge(v)).join('')}]` : '';
-          return `${p.id}: ${p.leader.name}${badge}`;
-        })
-        .join(' · ')}
-    </div>
-  ) : null;
+  const playersSummary =
+    state.players.length > 0 ? (
+      <div aria-label="game summary" style={{ margin: '6px 0', opacity: 0.85 }}>
+        Players:{' '}
+        {state.players
+          .map((p) => {
+            const pv = (p.leader.preferredVictory || []) as string[];
+            const badge = pv.length > 0 ? ` [${pv.map((v) => victoryBadge(v)).join('')}]` : '';
+            return `${p.id}: ${p.leader.name}${badge}`;
+          })
+          .join(' · ')}
+      </div>
+    ) : null;
 
   return (
     <div
@@ -275,12 +276,20 @@ function SpecControls() {
         ([ulist, blist, clist]) => {
           if (on)
             setCatalogUnits(
-              ulist.map((u) => ({ id: u.id, name: u.name, requires: (u as any).requires ?? undefined }))
+              ulist.map((u) => ({
+                id: u.id,
+                name: u.name,
+                requires: (u as any).requires ?? undefined,
+              }))
             );
           if (on && ulist.length > 0 && !spawnUnitType) setSpawnUnitType(ulist[0].id);
           if (on)
             setCatalogBuildings(
-              blist.map((b) => ({ id: b.id, name: b.name, requires: (b as any).requires ?? undefined }))
+              blist.map((b) => ({
+                id: b.id,
+                name: b.name,
+                requires: (b as any).requires ?? undefined,
+              }))
             );
           if (on && blist.length > 0 && !queueBuildingId) setQueueBuildingId(blist[0].id);
           if (on && clist)
@@ -452,7 +461,9 @@ function SpecControls() {
               Choose...
             </option>
             {cultureCivics
-              .filter((c) => (extension.playerState.researchedCivics ?? []).every((id) => id !== c.id))
+              .filter((c) =>
+                (extension.playerState.researchedCivics ?? []).every((id) => id !== c.id)
+              )
               .filter((c) =>
                 c.prereqs.every((p) => (extension.playerState.researchedCivics ?? []).includes(p))
               )
@@ -470,12 +481,14 @@ function SpecControls() {
             value={queueBuildingId}
             onChange={(e) => setQueueBuildingId(e.target.value)}
           >
-        {catalogBuildings.map((b) => {
-          // Avoid side-effects during render: don't call ensureDemoCity() here
-          // which may dispatch and trigger "update a component while rendering" errors.
-          const demoCityId = Object.keys(extension.cities)[0] ?? null;
-          const built = demoCityId ? (extension.cities[demoCityId]?.buildings ?? []).includes(b.id) : false;
-          const request = b.requires;
+            {catalogBuildings.map((b) => {
+              // Avoid side-effects during render: don't call ensureDemoCity() here
+              // which may dispatch and trigger "update a component while rendering" errors.
+              const demoCityId = Object.keys(extension.cities)[0] ?? null;
+              const built = demoCityId
+                ? (extension.cities[demoCityId]?.buildings ?? []).includes(b.id)
+                : false;
+              const request = b.requires;
               const canBuild =
                 !request ||
                 extension.playerState.researchedTechs.includes(request) ||
@@ -483,7 +496,7 @@ function SpecControls() {
               return (
                 <option key={b.id} value={b.id} disabled={!canBuild || built}>
                   {b.name}
-                  {built ? ' (built)' : (canBuild ? '' : ' (locked)')}
+                  {built ? ' (built)' : canBuild ? '' : ' (locked)'}
                 </option>
               );
             })}

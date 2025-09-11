@@ -28,16 +28,16 @@ export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
  */
 export function getWorldBounds(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
   const leftEdge = 0;
-  // Horizontal spacing between axial columns we use for wrapping math.
-  // Keep consistent with tests that assume 3/2 * size per column.
-  const rightEdge = hexSize * (3 / 2) * (config.worldWidth - 1);
+  // Horizontal spacing between axial columns in pointy-top layout is √3 * size
+  const rightEdge = Math.sqrt(3) * hexSize * (config.worldWidth - 1);
   const worldSpan = rightEdge - leftEdge;
-  
+
   return {
     leftEdge,
     rightEdge,
     worldSpan,
-    wrapBufferWidth: hexSize * (3 / 2) * config.wrapBuffer,
+    // Width spanned by the buffer columns on either side
+    wrapBufferWidth: Math.sqrt(3) * hexSize * config.wrapBuffer,
   };
 }
 
@@ -58,14 +58,14 @@ export function generateWrappedPositions(
   config: WrappingConfig,
   hexSize = DEFAULT_HEX_SIZE
 ): Array<[number, number, number]> {
-  const { wrapBufferWidth } = getWorldBounds(config, hexSize);
+  // Precompute wrap distance for duplicating edge columns
   const wrapDelta = getHorizontalWrapDelta(config, hexSize);
   const wrappedPositions = [...originalPositions];
 
   // Add left wrap buffer - render rightmost columns on the left side
   for (let q = config.worldWidth - config.wrapBuffer; q < config.worldWidth; q++) {
     for (let r = 0; r < config.worldHeight; r++) {
-      const tileIndex = tiles.findIndex(t => t.coord.q === q && t.coord.r === r);
+      const tileIndex = tiles.findIndex((t) => t.coord.q === q && t.coord.r === r);
       if (tileIndex >= 0) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
         // Shift to left side by exact wrap delta
@@ -74,10 +74,10 @@ export function generateWrappedPositions(
     }
   }
 
-  // Add right wrap buffer - render leftmost columns on the right side  
+  // Add right wrap buffer - render leftmost columns on the right side
   for (let q = 0; q < config.wrapBuffer; q++) {
     for (let r = 0; r < config.worldHeight; r++) {
-      const tileIndex = tiles.findIndex(t => t.coord.q === q && t.coord.r === r);
+      const tileIndex = tiles.findIndex((t) => t.coord.q === q && t.coord.r === r);
       if (tileIndex >= 0) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
         // Shift to right side by exact wrap delta
@@ -107,7 +107,7 @@ export function generateWrappedBiomeGroups(
   hexSize = DEFAULT_HEX_SIZE
 ) {
   const wrapDelta = getHorizontalWrapDelta(config, hexSize);
-  const wrappedGroups = originalBiomeGroups.map(group => ({
+  const wrappedGroups = originalBiomeGroups.map((group) => ({
     ...group,
     positions: [...group.positions],
     elevations: [...group.elevations],
@@ -130,14 +130,10 @@ export function generateWrappedBiomeGroups(
         const tileData = tileMap.get(tileKey);
         if (tileData && String(tileData.tile.biome).toLowerCase() === group.biome) {
           // Find the exact original index by (q,r) match instead of approximate X
-          const origIndex = group.hexCoords.findIndex(h => h.q === q && h.r === r);
+          const origIndex = group.hexCoords.findIndex((h) => h.q === q && h.r === r);
           if (origIndex >= 0) {
             const [origX, origY, origZ] = group.positions[origIndex];
-            wrappedGroups[groupIndex].positions.push([
-              origX - wrapDelta, 
-              origY, 
-              origZ
-            ]);
+            wrappedGroups[groupIndex].positions.push([origX - wrapDelta, origY, origZ]);
             wrappedGroups[groupIndex].elevations.push(group.elevations[origIndex]);
             wrappedGroups[groupIndex].hexCoords.push(group.hexCoords[origIndex]);
             if (group.colors) {
@@ -154,14 +150,10 @@ export function generateWrappedBiomeGroups(
         const tileKey = `${q},${r}`;
         const tileData = tileMap.get(tileKey);
         if (tileData && String(tileData.tile.biome).toLowerCase() === group.biome) {
-          const origIndex = group.hexCoords.findIndex(h => h.q === q && h.r === r);
+          const origIndex = group.hexCoords.findIndex((h) => h.q === q && h.r === r);
           if (origIndex >= 0) {
             const [origX, origY, origZ] = group.positions[origIndex];
-            wrappedGroups[groupIndex].positions.push([
-              origX + wrapDelta, 
-              origY, 
-              origZ
-            ]);
+            wrappedGroups[groupIndex].positions.push([origX + wrapDelta, origY, origZ]);
             wrappedGroups[groupIndex].elevations.push(group.elevations[origIndex]);
             wrappedGroups[groupIndex].hexCoords.push(group.hexCoords[origIndex]);
             if (group.colors) {
@@ -209,7 +201,7 @@ export function wrapCameraPosition(
   hexSize = DEFAULT_HEX_SIZE
 ): number {
   const wrapDelta = getHorizontalWrapDelta(config, hexSize);
-  
+
   // Normalize camera position to the main world bounds
   while (cameraX < 0) {
     cameraX += wrapDelta;
@@ -217,6 +209,6 @@ export function wrapCameraPosition(
   while (cameraX > wrapDelta) {
     cameraX -= wrapDelta;
   }
-  
+
   return cameraX;
 }

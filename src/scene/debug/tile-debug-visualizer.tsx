@@ -15,20 +15,20 @@ export function TileDebugVisualizer() {
     <group>
       {tiles.slice(0, 20).map((tile, index) => {
         const [x, z] = axialToWorld(tile.coord.q, tile.coord.r, DEFAULT_HEX_SIZE);
-        
+
         // Color based on biome for easy identification
         const colors = {
-          'Grassland': '#4CAF50',
-          'Ocean': '#2196F3', 
-          'Forest': '#388E3C',
-          'Desert': '#FF9800',
-          'Mountain': '#795548',
-          'Tundra': '#607D8B',
-          'Ice': '#E3F2FD',
+          Grassland: '#4CAF50',
+          Ocean: '#2196F3',
+          Forest: '#388E3C',
+          Desert: '#FF9800',
+          Mountain: '#795548',
+          Tundra: '#607D8B',
+          Ice: '#E3F2FD',
         };
-        
+
         const color = colors[String(tile.biome)] || '#FF0000'; // Red for unknown biomes
-        
+
         return (
           <mesh key={tile.id} position={[x, 0.1, z]}>
             <boxGeometry args={[0.4, 0.2, 0.4]} />
@@ -36,7 +36,7 @@ export function TileDebugVisualizer() {
           </mesh>
         );
       })}
-      
+
       {/* Reference grid for coordinate system verification */}
       <group>
         {Array.from({ length: 5 }, (_, i) => (
@@ -52,7 +52,7 @@ export function TileDebugVisualizer() {
           </mesh>
         ))}
       </group>
-      
+
       {/* Origin marker */}
       <mesh position={[0, 0.2, 0]}>
         <sphereGeometry args={[0.2]} />

@@ -116,3 +116,110 @@ test('start research unlocks improvement', () => {
 - UI should always read authoritative state from `useGame()` or `GameProvider` and use optimistic UI only with caution. For single-player prototype, optimistic updates are acceptable.
 
 End of UI interactions spec
+
+## Game loop & turn actions
+
+This section describes how a single-player or hotseat/AI turn can play out, the canonical turn structure, player and AI actions, the action payloads passed to the game core, and acceptance tests that validate the full-loop behavior.
+
+1. Turn structure (canonical)
+
+- startTurn(playerId)
+  - System: advance game clock to player's turn, refresh movement/production/resources, process start-of-turn events (e.g., unit heals, city growth).
+- playerActionPhase(playerId)
+  - Player/AI: issue any number of legal actions (movement, attack, build, research, diplomacy) until they either end turn or run out of actionable inputs.
+- endTurn(playerId)
+  - System: validate queued actions, process movement/combat resolution, consume production, advance tech progress, run end-of-turn triggers, then pass control to next player or AI.
+
+1. Player & AI actions (user stories + payloads)
+
+2.1 Move/Action Resolution
+
+User story: When a player issues an action (move, attack, build), those actions are validated and applied deterministically in the order submitted. The UI shows previews and final outcomes.
+
+Payloads (canonical):
+
+- issueActions: { playerId: string, actions: GameAction[] }
+  - GameAction is a tagged union with shapes like:
+    - { type: 'move', unitId: string, path: string[] }
+    - { type: 'attack', unitId: string, targetUnitId: string, confirm?: boolean }
+    - { type: 'build', cityId: string, itemId: string, targetTileId?: string }
+    - { type: 'research', playerId: string, techId: string }
+    - { type: 'endTurn' }
+
+Events emitted by the engine (for UI and replay):
+
+- actionAccepted: { requestId: string, appliedAtTick: number }
+- actionRejected: { requestId: string, reason: string }
+- actionsResolved: { tick: number, results: ActionResult[] }
+
+Acceptance tests:
+
+- Submitting a valid move action results in actionAccepted and later an actionsResolved event where the unit's final position equals the end of the submitted path.
+- Submitting an illegal action (e.g., move through impassable tile) results in actionRejected with a human-friendly reason.
+
+2.2 Turn-based AI Behavior
+
+User story: AI players construct a list of actions during their playerActionPhase and submit them as a single batch. The engine should apply AI actions in the same deterministic way as human player actions.
+
+Payloads:
+
+- aiComputeAndSubmit: { aiId: string, playerId: string, computedActions: GameAction[] }
+
+Acceptance tests:
+
+- Deterministic AI: given a fixed random seed and fixed game state, calling aiComputeAndSubmit should produce the same computedActions on repeated runs.
+- AI parity: For a given valid action sequence computed by AI, the engine returns actionAccepted and actionsResolved and the resulting state is equivalent to a human-submitted action sequence with the same actions.
+
+2.3 Production & Queue Resolution
+
+User story: During the endTurn phase, cities consume production to advance their current queue items. If production finishes, the new unit/building is spawned or the improvement order is flagged for worker assignment.
+
+Payloads and events:
+
+- applyProductionTick: { tick: number }
+- productionCompleted: { cityId: string, itemId: string, spawnedEntityId?: string }
+
+Acceptance tests:
+
+- A city with exactly enough production finishes the item during endTurn and emits productionCompleted with spawnedEntityId set.
+- If a queued improvement requires a target tile and no valid tile exists at endTurn, the order is marked as failed and a productionFailure event is emitted.
+
+2.4 Combat & Resolution
+
+User story: When movement or attack actions result in combat, combat should be resolved during the resolution step. Combat may be instant or multi-round depending on unit rules. All combat results are emitted as structured events so the UI can animate them.
+
+Payloads and events:
+
+- combatResolved: { tick: number, combats: CombatEvent[] }
+
+Acceptance tests:
+
+- Initiating an attack action against an enemy unit results in a combatResolved event where the defender or attacker is removed or has updated HP according to deterministic combat rules.
+- If simultaneous movement causes unit collisions, the engine resolves collisions deterministically (document the collision policy: mover-first or simultaneous) and emits appropriate actionResults.
+
+2.5 Resource & Tech Tick
+
+User story: At the start or end of turn (project chooses standard), resource generation (gold, science, food) and research progress must be applied consistently.
+
+Payloads and events:
+
+- applyResourceTick: { tick: number }
+- researchProgress: { playerId: string, techId: string, progress: number, completed?: boolean }
+
+Acceptance tests:
+
+- Resource accumulation matches the sums of yields from tiles and city modifiers for the player at each applyResourceTick.
+- Completing a tech emits researchProgress with completed=true and the player's availableUnits/Improvements update accordingly.
+
+1. Failure modes & edge cases
+
+- Partially-applied action batches: If some actions in a batch are invalid, the engine may (A) reject the entire batch, (B) accept a prefix up to the first invalid action, or (C) apply valid actions and reject invalid ones. The project should pick one policy; tests should assert the chosen policy.
+- Interleaved AI & Player turns (asynchronous): For hotseat or simultaneous turns with AI concurrently computing, ensure action timestamps and ordering are well-defined; use a tick/sequence number to sequence actions.
+- Rollback and replays: All action events must include a requestId and deterministic inputs so replays and rollback are possible for debugging and AI training.
+
+1. UI contracts and replay
+
+- The UI should listen for engine events (actionAccepted, actionsResolved, combatResolved, productionCompleted, researchProgress) and render safe, consistent animations.
+- For replays or deterministic testing, the UI can replay the event stream; events must contain enough information to reproduce state changes (e.g., unit id, before/after HP, positions).
+
+End of Game loop & turn actions

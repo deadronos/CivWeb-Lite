@@ -1,7 +1,11 @@
 import React from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 
-export default function LazySpinner({ corner = 'bottom-right' }: { corner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
+export default function LazySpinner({
+  corner = 'bottom-right',
+}: {
+  corner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+}) {
   const base: React.CSSProperties = {
     position: 'fixed',
     zIndex: 100,

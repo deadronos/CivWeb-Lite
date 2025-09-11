@@ -158,45 +158,45 @@ export function tickCityProduction(state: GameStateExtension, city: City): void 
   head.turnsRemaining -= reduction;
   if (head.turnsRemaining <= 0) {
     switch (head.type) {
-    case 'unit': {
-      // spawn unit on city tile
-      const udef = UNIT_TYPES[head.item];
-      if (udef) {
-        const id = `${head.item}_${Object.keys(state.units).length + 1}`;
-        state.units[id] = {
-          id,
-          type: head.item,
-          ownerId: city.ownerId,
-          location: city.location,
-          hp: udef.base.hp ?? 100,
-          movement: udef.base.movement,
-          movementRemaining: udef.base.movement,
-          attack: udef.base.attack,
-          defense: udef.base.defense,
-          sight: udef.base.sight,
-          state: 'idle',
-          abilities: udef.abilities ?? [],
-        };
+      case 'unit': {
+        // spawn unit on city tile
+        const udef = UNIT_TYPES[head.item];
+        if (udef) {
+          const id = `${head.item}_${Object.keys(state.units).length + 1}`;
+          state.units[id] = {
+            id,
+            type: head.item,
+            ownerId: city.ownerId,
+            location: city.location,
+            hp: udef.base.hp ?? 100,
+            movement: udef.base.movement,
+            movementRemaining: udef.base.movement,
+            attack: udef.base.attack,
+            defense: udef.base.defense,
+            sight: udef.base.sight,
+            state: 'idle',
+            abilities: udef.abilities ?? [],
+          };
+        }
+
+        break;
       }
-    
-    break;
-    }
-    case 'improvement': {
-      const tile = state.tiles[city.location];
-      if (tile && !tile.improvements.includes(head.item)) {
-        tile.improvements.push(head.item);
+      case 'improvement': {
+        const tile = state.tiles[city.location];
+        if (tile && !tile.improvements.includes(head.item)) {
+          tile.improvements.push(head.item);
+        }
+
+        break;
       }
-    
-    break;
-    }
-    case 'building': {
-      // add building to city
-      if (!city.buildings) city.buildings = [];
-      if (!city.buildings.includes(head.item)) city.buildings.push(head.item);
-    
-    break;
-    }
-    // No default
+      case 'building': {
+        // add building to city
+        if (!city.buildings) city.buildings = [];
+        if (!city.buildings.includes(head.item)) city.buildings.push(head.item);
+
+        break;
+      }
+      // No default
     }
     city.productionQueue.shift();
   }

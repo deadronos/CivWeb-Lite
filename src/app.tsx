@@ -5,7 +5,9 @@ import { Canvas } from '@react-three/fiber';
 // succeed. Guarded by NODE_ENV to avoid affecting normal runtime.
 import { Stats } from '@react-three/drei';
 import { GameProvider } from './contexts/game-provider';
-const Scene = React.lazy(() => import('./scene/scene').then((m) => ({ default: m.ConnectedScene })));
+const Scene = React.lazy(() =>
+  import('./scene/scene').then((m) => ({ default: m.ConnectedScene }))
+);
 const OverlayUI = React.lazy(() => import('./components/overhaul/overlay-ui'));
 import LazySpinner from './components/common/lazy-spinner';
 import { CameraProvider } from './hooks/use-camera';
@@ -29,13 +31,30 @@ export default function App() {
             <LoadListener onLoaded={() => setStarted(true)} />
             <ErrorBoundary
               fallback={({ error, reset }) => (
-                <div role="alert" style={{ padding: 12, position: 'fixed', left: 12, bottom: 180, zIndex: 1000, background: 'rgba(20,20,25,0.8)', color: '#fff', borderRadius: 6 }}>
+                <div
+                  role="alert"
+                  style={{
+                    padding: 12,
+                    position: 'fixed',
+                    left: 12,
+                    bottom: 180,
+                    zIndex: 1000,
+                    background: 'rgba(20,20,25,0.8)',
+                    color: '#fff',
+                    borderRadius: 6,
+                  }}
+                >
                   <div style={{ fontWeight: 600, marginBottom: 6 }}>3D view crashed</div>
                   <div style={{ fontSize: 12, opacity: 0.9, maxWidth: 560 }}>
                     {String(error?.message || error)}
                   </div>
                   <div style={{ marginTop: 8 }}>
-                    <button onClick={() => { setCanvasKey(k => k + 1); reset(); }}>
+                    <button
+                      onClick={() => {
+                        setCanvasKey((k) => k + 1);
+                        reset();
+                      }}
+                    >
                       Reload 3D Scene
                     </button>
                   </div>
@@ -45,18 +64,20 @@ export default function App() {
               <Canvas key={canvasKey} camera={{ position: [8, 12, 12], fov: 50 }}>
                 <ambientLight intensity={0.8} />
                 {/** Soft sky/ground fill to improve tile readability regardless of view angle */}
-                <hemisphereLight skyColor={"#99bbff"} groundColor={"#222533"} intensity={0.5} />
+                <hemisphereLight skyColor={'#99bbff'} groundColor={'#222533'} intensity={0.5} />
                 <directionalLight position={[5, 10, 5]} intensity={0.75} />
                 {/** Do not render DOM inside Canvas; use a Three primitive as fallback */}
-                <React.Suspense fallback={<group /> }>
+                <React.Suspense fallback={<group />}>
                   <Scene />
                 </React.Suspense>
               </Canvas>
             </ErrorBoundary>
             {/* Render hidden Stats only in tests to satisfy unit tests that mock drei */}
-            {process.env.NODE_ENV === 'test' ? <Stats data-testid="stats" style={{ display: 'none' }} /> : null}
+            {process.env.NODE_ENV === 'test' ? (
+              <Stats data-testid="stats" style={{ display: 'none' }} />
+            ) : null}
             {/* New overlay UI replacing demo HUD */}
-            <React.Suspense fallback={<LazySpinner corner="top-right" /> }>
+            <React.Suspense fallback={<LazySpinner corner="top-right" />}>
               <OverlayUI />
             </React.Suspense>
             <div

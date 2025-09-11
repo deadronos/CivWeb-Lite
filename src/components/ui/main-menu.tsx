@@ -1,15 +1,27 @@
 import React from 'react';
-import { useGame } from "../../hooks/use-game";
+import { useGame } from '../../hooks/use-game';
 import leaders from '../../data/leaders.json';
 import { MAP_PRESETS } from '../../game/world/config';
 const LS_KEY = 'civweblite:newgame';
 
 type MapSizeKey = 'small' | 'medium' | 'large' | 'xlarge';
-const MAP_SIZES: Record<MapSizeKey, {width: number;height: number;label: string;}> = {
-  small: { ...MAP_PRESETS.small, label: `Small (${MAP_PRESETS.small.width}x${MAP_PRESETS.small.height})` },
-  medium: { ...MAP_PRESETS.medium, label: `Medium (${MAP_PRESETS.medium.width}x${MAP_PRESETS.medium.height})` },
-  large: { ...MAP_PRESETS.large, label: `Large (${MAP_PRESETS.large.width}x${MAP_PRESETS.large.height})` },
-  xlarge: { ...MAP_PRESETS.xlarge, label: `XL (${MAP_PRESETS.xlarge.width}x${MAP_PRESETS.xlarge.height})` },
+const MAP_SIZES: Record<MapSizeKey, { width: number; height: number; label: string }> = {
+  small: {
+    ...MAP_PRESETS.small,
+    label: `Small (${MAP_PRESETS.small.width}x${MAP_PRESETS.small.height})`,
+  },
+  medium: {
+    ...MAP_PRESETS.medium,
+    label: `Medium (${MAP_PRESETS.medium.width}x${MAP_PRESETS.medium.height})`,
+  },
+  large: {
+    ...MAP_PRESETS.large,
+    label: `Large (${MAP_PRESETS.large.width}x${MAP_PRESETS.large.height})`,
+  },
+  xlarge: {
+    ...MAP_PRESETS.xlarge,
+    label: `XL (${MAP_PRESETS.xlarge.width}x${MAP_PRESETS.xlarge.height})`,
+  },
 };
 
 type StartConfig = {
@@ -21,15 +33,15 @@ type StartConfig = {
   selectedLeaders?: Array<string | 'random' | undefined>;
 };
 
-export default function MainMenu({ onStart }: {onStart(config: StartConfig): void;}) {
+export default function MainMenu({ onStart }: { onStart(config: StartConfig): void }) {
   const { dispatch } = useGame();
   const [size, setSize] = React.useState<MapSizeKey>('medium');
   const [seed, setSeed] = React.useState<string>('');
   const [players, setPlayers] = React.useState<number>(2);
   const humanPlayers = 1; // MVP: one human
   const [selectedLeaders, setSelectedLeaders] = React.useState<
-    Array<string | 'random' | undefined>>(
-    ['random', 'random', 'random', 'random', 'random', 'random']);
+    Array<string | 'random' | undefined>
+  >(['random', 'random', 'random', 'random', 'random', 'random']);
 
   // hydrate from localStorage
   React.useEffect(() => {
@@ -42,9 +54,9 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
       if (typeof cfg.players === 'number') setPlayers(cfg.players);
       if (Array.isArray(cfg.selectedLeaders)) setSelectedLeaders(cfg.selectedLeaders);
     } catch {
-
       // ignore JSON parse/localStorage errors during hydrate in browsers without storage
-    }}, []);
+    }
+  }, []);
 
   const start = (event: React.FormEvent) => {
     event.preventDefault();
@@ -55,7 +67,7 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
       seed: seed || undefined,
       totalPlayers: players,
       humanPlayers,
-      selectedLeaders: selectedLeaders.slice(0, players)
+      selectedLeaders: selectedLeaders.slice(0, players),
     };
     // Defensive: drop any persisted save slots in localStorage before starting a fresh map
     try {
@@ -69,8 +81,8 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
     try {
       localStorage.setItem(LS_KEY, JSON.stringify({ size, seed, players, selectedLeaders }));
     } catch {
-
-      /* ignore quota errors or storage issues */}
+      /* ignore quota errors or storage issues */
+    }
   };
 
   return (
@@ -79,12 +91,16 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
         <h1 style={{ marginTop: 0 }}>CivWeb‑Lite</h1>
         <div style={styles.field}>
           <label htmlFor="size">Map Size</label>
-          <select id="size" value={size} onChange={(event) => setSize(event.target.value as MapSizeKey)}>
-            {Object.entries(MAP_SIZES).map(([key, sizeObject]) =>
-            <option key={key} value={key}>
+          <select
+            id="size"
+            value={size}
+            onChange={(event) => setSize(event.target.value as MapSizeKey)}
+          >
+            {Object.entries(MAP_SIZES).map(([key, sizeObject]) => (
+              <option key={key} value={key}>
                 {sizeObject.label}
               </option>
-            )}
+            ))}
           </select>
         </div>
         <div style={styles.field}>
@@ -93,56 +109,56 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
             id="seed"
             value={seed}
             onChange={(event) => setSeed(event.target.value)}
-            placeholder="random if blank" />
-
+            placeholder="random if blank"
+          />
         </div>
         <div style={styles.field}>
           <label htmlFor="players">Players (total)</label>
-            <input
+          <input
             id="players"
             type="number"
             min={1}
             max={6}
             value={players}
-            onChange={(event) => setPlayers(Number.parseInt(event.target.value || '2', 10))} />
-
+            onChange={(event) => setPlayers(Number.parseInt(event.target.value || '2', 10))}
+          />
         </div>
         <div style={{ marginTop: 12 }}>
           <div style={{ marginBottom: 4, fontWeight: 600 }}>Leaders</div>
-          {Array.from({ length: players }).map((_, index) =>
-          <div
-            key={index}
-            style={{
-              display: 'flex',
-              gap: 8,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: 6
-            }}>
-
+          {Array.from({ length: players }).map((_, index) => (
+            <div
+              key={index}
+              style={{
+                display: 'flex',
+                gap: 8,
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: 6,
+              }}
+            >
               <label>Player {index + 1}</label>
               <select
-              aria-label={`Leader for player ${index + 1}`}
-              value={selectedLeaders[index] ?? 'random'}
-              onChange={(e) => {
-                const next = [...selectedLeaders];
-                next[index] = e.target.value as any;
-                setSelectedLeaders(next);
-              }}>
-
+                aria-label={`Leader for player ${index + 1}`}
+                value={selectedLeaders[index] ?? 'random'}
+                onChange={(e) => {
+                  const next = [...selectedLeaders];
+                  next[index] = e.target.value as any;
+                  setSelectedLeaders(next);
+                }}
+              >
                 <option value="random">Random</option>
-                {(leaders as any[]).map((leader) =>
-              <option
-                key={leader.id}
-                value={leader.id}
-                title={`${leader.historical_note || ''} | Victory: ${(leader.preferred_victory || []).join(', ')}`}>
-
+                {(leaders as any[]).map((leader) => (
+                  <option
+                    key={leader.id}
+                    value={leader.id}
+                    title={`${leader.historical_note || ''} | Victory: ${(leader.preferred_victory || []).join(', ')}`}
+                  >
                     {leader.name}
                   </option>
-              )}
+                ))}
               </select>
             </div>
-          )}
+          ))}
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
           <button type="submit">Start New Game</button>
@@ -151,8 +167,8 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
             onClick={() => {
               const element = document.querySelector('#load-input');
               if (element && element instanceof HTMLInputElement) element.click();
-            }}>
-
+            }}
+          >
             Load Save…
           </button>
           <input
@@ -160,15 +176,15 @@ export default function MainMenu({ onStart }: {onStart(config: StartConfig): voi
             type="file"
             accept="application/json"
             style={{ display: 'none' }}
-            onChange={onLoadFile} />
-
+            onChange={onLoadFile}
+          />
         </div>
         <p style={{ fontSize: 12, opacity: 0.8, marginTop: 12 }}>
           Tip: You can paste JSON in the in‑game load panel.
         </p>
       </form>
-    </div>);
-
+    </div>
+  );
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -179,7 +195,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1000
+    zIndex: 1000,
   },
   panel: {
     background: 'var(--color-bg, #1e1e1e)',
@@ -187,15 +203,15 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 20,
     borderRadius: 8,
     width: 360,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
   },
   field: {
     display: 'flex',
     gap: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8
-  }
+    marginTop: 8,
+  },
 };
 
 async function onLoadFile(event: React.ChangeEvent<HTMLInputElement>) {

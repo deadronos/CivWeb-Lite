@@ -2,7 +2,7 @@
 title: CivWeb-Lite Core Architecture & Product Vision Specification
 version: 1.0
 date_created: 2025-09-08
-last_updated: 2025-09-08
+last_updated: 2025-09-11
 owner: deadronos
 tags: [architecture, design, game, turn-based, react, threejs]
 ---
@@ -13,33 +13,25 @@ The project follows a single canonical source file structure which should guide 
 
 ```text
 src/
-├── assets/
-│   └── # Images, sounds, and other media
-├── components/
-│   ├── ui/
-│   │   └── # Reusable UI elements like Button.tsx, Modal.tsx, etc.
-│   └── game/
-│       └── # Game-specific components like CityInfo.tsx, UnitSprite.tsx
-├── constants/
-│   └── # Game constants, like technology costs or unit stats
-├── contexts/
-│   └── GameProvider.tsx  # Central state management
-├── hooks/
-│   └── # Custom hooks, e.g., useGame.ts to access game state
-├── scenes/
-│   ├── GameScene.tsx     # The main game view
-│   └── MainMenu.tsx    # A main menu, for example
-├── styles/
-│   └── # Global and shared styles
-├── types/
-│   └── index.ts          # TypeScript interfaces for game objects (e.g., City, Unit)
-├── game-logic/
-│   ├── systems/
-│   │   └── # Core game systems, e.g., technology.ts, combat.ts
-│   └── utils/
-│       └── # Helper functions
-├── App.tsx
-└── main.tsx
+├── app.tsx                # Application entry component (lowercase in repo)
+├── main.tsx               # React bootstrap / mount
+├── components/            # Presentational and HUD components
+│   ├── ui/                # Reusable UI widgets (TopBar, Minimap, NextTurnControl)
+│   ├── common/            # Shared small components used across HUD/overlays
+│   └── game-hud.tsx       # Top-level HUD composition
+├── contexts/              # React context providers (e.g., GameProvider)
+├── data/                  # Static data assets (tech catalogs, presets)
+├── game/                  # Core simulation logic and game systems
+│   └── # systems, utils, and pure simulation modules
+├── hooks/                 # Custom React hooks (e.g., useGame, useCamera)
+├── scene/                 # Three.js / @react-three/fiber scene and assets
+│   ├── assets/            # Scene-local media (e.g., background/dragonmap.png)
+│   ├── background/        # Decorative background images and metadata
+│   ├── hooks/             # Scene-specific hooks
+│   └── scene.tsx          # Scene composition and camera controllers
+├── styles.css             # Global stylesheet (small project)
+├── types/                 # TypeScript interfaces and shared types
+└── utils/                 # Small helpers and utilities
 ```
 
 Policy: This structure is the recommended default and should inform `src` layout for all new work. If a feature requires a different organization, open a short proposal, and upon approval, update this file and the relevant plan file to reflect the change.

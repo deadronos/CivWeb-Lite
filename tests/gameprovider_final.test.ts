@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   initialStateForTests,
   simulateAdvanceTurn,
-  coverGameProviderEffects } from
-"../src/contexts/game-provider";
+  coverGameProviderEffects,
+} from '../src/contexts/game-provider';
 import { applyAction } from '../src/game/reducer';
 import { globalGameBus } from '../src/game/events';
 
@@ -13,8 +13,8 @@ describe('GameProvider focused coverage', () => {
 
     // Add a simple tech catalog entry and make sure player researches it
     state.techCatalog = [
-    { id: 'testtech', cost: 1, name: 'T', tree: 'science', prerequisites: [] }] as
-    any;
+      { id: 'testtech', cost: 1, name: 'T', tree: 'science', prerequisites: [] },
+    ] as any;
 
     const player = {
       id: 'p1',
@@ -23,17 +23,17 @@ describe('GameProvider focused coverage', () => {
       sciencePoints: 1,
       culturePoints: 0,
       researchedTechIds: [] as string[],
-      researching: { techId: 'testtech', progress: 0 }
+      researching: { techId: 'testtech', progress: 0 },
     } as any;
 
     state.players = [player];
 
-    const emissions: Array<{ev: string;payload: any;}> = [];
+    const emissions: Array<{ ev: string; payload: any }> = [];
     const unsub1 = globalGameBus.on('tech:unlocked', (p) =>
-    emissions.push({ ev: 'tech:unlocked', payload: p })
+      emissions.push({ ev: 'tech:unlocked', payload: p })
     );
     const unsub2 = globalGameBus.on('turn:end', (p) =>
-    emissions.push({ ev: 'turn:end', payload: p })
+      emissions.push({ ev: 'turn:end', payload: p })
     );
 
     // Apply END_TURN via reducer to simulate progression
@@ -45,7 +45,7 @@ describe('GameProvider focused coverage', () => {
     // Emit check: ensure a tech:unlocked event was emitted for this player and tech
     const techUnlocks = emissions.filter(
       (e) =>
-      e.ev === 'tech:unlocked' && e.payload?.playerId === 'p1' && e.payload?.techId === 'testtech'
+        e.ev === 'tech:unlocked' && e.payload?.playerId === 'p1' && e.payload?.techId === 'testtech'
     );
     expect(techUnlocks.length).toBeGreaterThanOrEqual(1);
 
@@ -64,7 +64,7 @@ describe('GameProvider focused coverage', () => {
       sciencePoints: 0,
       culturePoints: 0,
       researchedTechIds: [] as string[],
-      researching: null
+      researching: null,
     } as any;
 
     const ai = {
@@ -74,7 +74,7 @@ describe('GameProvider focused coverage', () => {
       sciencePoints: 0,
       culturePoints: 0,
       researchedTechIds: [] as string[],
-      researching: null
+      researching: null,
     } as any;
 
     state.players = [human, ai];

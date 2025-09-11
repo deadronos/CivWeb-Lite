@@ -12,22 +12,22 @@ export const SCHEMA_VERSION = 1;
 // ensureValidator will compile the schema on first use
 
 export class VersionMismatchError extends Error {
-	constructor() {
-		super();
-		this.name = 'VersionMismatchError';
-	}
+  constructor() {
+    super();
+    this.name = 'VersionMismatchError';
+  }
 }
 export class ValidationError extends Error {
-	constructor() {
-		super();
-		this.name = 'ValidationError';
-	}
+  constructor() {
+    super();
+    this.name = 'ValidationError';
+  }
 }
 export class SizeExceededError extends Error {
-	constructor() {
-		super();
-		this.name = 'SizeExceededError';
-	}
+  constructor() {
+    super();
+    this.name = 'SizeExceededError';
+  }
 }
 
 export function serializeState(state: GameState): string {

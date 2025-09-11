@@ -26,12 +26,12 @@ Initialize CivWeb-Lite project structure and dependencies.
 
 ### Subtasks
 
-| ID | Description | Status | Updated | Notes |
-|----|-------------|--------|---------|-------|
-| 1.1 | Scaffold project | Complete | 2025-09-10 | |
-| 1.2 | Set up Three.js scene | Complete | 2025-09-10 | |
-| 1.3 | Add minimal UI/HUD | Complete | 2025-09-10 | |
-| 1.4 | Write initial tests | Complete | 2025-09-10 | |
+| ID  | Description           | Status   | Updated    | Notes |
+| --- | --------------------- | -------- | ---------- | ----- |
+| 1.1 | Scaffold project      | Complete | 2025-09-10 |       |
+| 1.2 | Set up Three.js scene | Complete | 2025-09-10 |       |
+| 1.3 | Add minimal UI/HUD    | Complete | 2025-09-10 |       |
+| 1.4 | Write initial tests   | Complete | 2025-09-10 |       |
 
 ## Progress Log
 
@@ -39,6 +39,7 @@ Initialize CivWeb-Lite project structure and dependencies.
 
 - Project scaffolded and dependencies added
 - Initial src/ structure created
+
 # TASK000 - Project setup
 
 **Status:** Completed  
@@ -67,12 +68,12 @@ Initialize CivWeb-Lite project structure and dependencies.
 
 ### Subtasks
 
-| ID | Description | Status | Updated | Notes |
-|----|-------------|--------|---------|-------|
-| 1.1 | Scaffold project | Complete | 2025-09-10 | |
-| 1.2 | Set up Three.js scene | Complete | 2025-09-10 | |
-| 1.3 | Add minimal UI/HUD | Complete | 2025-09-10 | |
-| 1.4 | Write initial tests | Complete | 2025-09-10 | |
+| ID  | Description           | Status   | Updated    | Notes |
+| --- | --------------------- | -------- | ---------- | ----- |
+| 1.1 | Scaffold project      | Complete | 2025-09-10 |       |
+| 1.2 | Set up Three.js scene | Complete | 2025-09-10 |       |
+| 1.3 | Add minimal UI/HUD    | Complete | 2025-09-10 |       |
+| 1.4 | Write initial tests   | Complete | 2025-09-10 |       |
 
 ## Progress Log
 

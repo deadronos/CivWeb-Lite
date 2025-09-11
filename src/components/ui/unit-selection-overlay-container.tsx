@@ -1,12 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { useGame } from "../../hooks/use-game";
-import { UnitSelectionOverlay } from "./unit-selection-overlay";
+import { useGame } from '../../hooks/use-game';
+import { UnitSelectionOverlay } from './unit-selection-overlay';
 import { computePath, computeMovementRange } from '../../game/pathfinder';
 
-export function UnitSelectionOverlayContainer({
-  selectedUnitId
-
-}: {selectedUnitId?: string;}) {
+export function UnitSelectionOverlayContainer({ selectedUnitId }: { selectedUnitId?: string }) {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;
   const [path, setPath] = useState<string[] | undefined>();
@@ -25,14 +22,20 @@ export function UnitSelectionOverlayContainer({
       computedPath={path}
       onPreviewPath={(targetTileId) => {
         if (!extension) return;
-        const result = computePath(extension, selectedUnitId, targetTileId, state.map.width, state.map.height);
-        if ('path' in result && result.path) setPath(result.path);else
-        setPath(undefined);
+        const result = computePath(
+          extension,
+          selectedUnitId,
+          targetTileId,
+          state.map.width,
+          state.map.height
+        );
+        if ('path' in result && result.path) setPath(result.path);
+        else setPath(undefined);
       }}
       onIssueMove={(payload) => dispatch({ type: 'EXT_ISSUE_MOVE_PATH', payload })}
-      onCancel={() => setPath(undefined)} />);
-
-
+      onCancel={() => setPath(undefined)}
+    />
+  );
 }
 
 export default UnitSelectionOverlayContainer;

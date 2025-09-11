@@ -36,7 +36,10 @@ test('render App default with mocked three deps', async () => {
   vi.doMock('@react-three/fiber', () => ({
     Canvas: ({ children }: any) => <div data-testid="canvas">{children}</div>,
     useThree: () => ({
-      camera: { position: { set: (_x: number, _y: number, _z: number) => {} }, lookAt: (_t: any) => {} },
+      camera: {
+        position: { set: (_x: number, _y: number, _z: number) => {} },
+        lookAt: (_t: any) => {},
+      },
       gl: { domElement: document.createElement('canvas') },
       scene: {},
       size: { width: 800, height: 600 },

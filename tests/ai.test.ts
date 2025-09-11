@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateAI } from '../src/game/ai/ai';
 import { GameState, PlayerState } from '../src/game/types';
-import { techCatalog } from "../src/game/tech/tech-catalog";
+import { techCatalog } from '../src/game/tech/tech-catalog';
 import { LEADER_PERSONALITIES } from '../src/game/ai/leaders';
 
 function mockState(player: PlayerState): GameState {
@@ -15,7 +15,7 @@ function mockState(player: PlayerState): GameState {
     rngState: undefined,
     log: [],
     mode: 'standard',
-    autoSim: false
+    autoSim: false,
   };
 }
 
@@ -28,7 +28,7 @@ describe('AI evaluation', () => {
       sciencePoints: 10,
       culturePoints: 10,
       researchedTechIds: [],
-      researching: null
+      researching: null,
     };
     const state = mockState(player);
     const snapshot = structuredClone(state);
@@ -46,7 +46,7 @@ describe('AI evaluation', () => {
       sciencePoints: 10,
       culturePoints: 10,
       researchedTechIds: [],
-      researching: null
+      researching: null,
     };
     const scientistAction = evaluateAI(scientist, mockState(scientist))[0];
     expect(scientistAction.payload.techId).toBe('pottery');
@@ -58,7 +58,7 @@ describe('AI evaluation', () => {
       sciencePoints: 10,
       culturePoints: 10,
       researchedTechIds: [],
-      researching: null
+      researching: null,
     };
     const culturalistAction = evaluateAI(culturalist, mockState(culturalist))[0];
     expect(culturalistAction.payload.techId).toBe('folklore');

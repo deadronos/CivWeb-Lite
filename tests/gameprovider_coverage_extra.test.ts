@@ -3,41 +3,42 @@ import {
   simulateAdvanceTurn,
   coverRemainingGameProviderPaths,
   coverGameProviderInlineExtras,
-  initialStateForTests } from
-"../src/contexts/game-provider";
+  initialStateForTests,
+} from '../src/contexts/game-provider';
 
 describe('GameProvider extra coverage helpers', () => {
   it('simulateAdvanceTurn with multiple AI players dispatches END_TURN and calls evaluateAI safely', () => {
     const s = initialStateForTests();
     // add two AI players and one human
     s.players = [
-    {
-      id: 'p1',
-      name: 'AI1',
-      isHuman: false,
-      research: null,
-      researching: false,
-      researchedTechIds: [],
-      leader: { scienceFocus: 1, cultureFocus: 0 }
-    } as any,
-    {
-      id: 'p2',
-      name: 'AI2',
-      isHuman: false,
-      research: null,
-      researching: false,
-      researchedTechIds: [],
-      leader: { scienceFocus: 0, cultureFocus: 1 }
-    } as any,
-    {
-      id: 'p3',
-      name: 'Human',
-      isHuman: true,
-      research: null,
-      researching: false,
-      researchedTechIds: [],
-      leader: { scienceFocus: 0, cultureFocus: 0 }
-    } as any];
+      {
+        id: 'p1',
+        name: 'AI1',
+        isHuman: false,
+        research: null,
+        researching: false,
+        researchedTechIds: [],
+        leader: { scienceFocus: 1, cultureFocus: 0 },
+      } as any,
+      {
+        id: 'p2',
+        name: 'AI2',
+        isHuman: false,
+        research: null,
+        researching: false,
+        researchedTechIds: [],
+        leader: { scienceFocus: 0, cultureFocus: 1 },
+      } as any,
+      {
+        id: 'p3',
+        name: 'Human',
+        isHuman: true,
+        research: null,
+        researching: false,
+        researchedTechIds: [],
+        leader: { scienceFocus: 0, cultureFocus: 0 },
+      } as any,
+    ];
 
     const dispatched: any[] = [];
     const dispatch = (a: any) => dispatched.push(a);
@@ -56,14 +57,15 @@ describe('GameProvider extra coverage helpers', () => {
 
     // Players path -> simulateAdvanceTurn called for AI
     s.players = [
-    {
-      id: 'p1',
-      name: 'AI1',
-      isHuman: false,
-      researching: false,
-      researchedTechIds: [],
-      leader: { scienceFocus: 1, cultureFocus: 0 }
-    } as any];
+      {
+        id: 'p1',
+        name: 'AI1',
+        isHuman: false,
+        researching: false,
+        researchedTechIds: [],
+        leader: { scienceFocus: 1, cultureFocus: 0 },
+      } as any,
+    ];
 
     dispatched.length = 0;
     coverRemainingGameProviderPaths(s as any, dispatch as any);
@@ -82,15 +84,16 @@ describe('GameProvider extra coverage helpers', () => {
 
     // single AI player
     s.players = [
-    {
-      id: 'p1',
-      name: 'AI1',
-      isHuman: false,
-      research: null,
-      researching: false,
-      researchedTechIds: [],
-      leader: { scienceFocus: 1, cultureFocus: 0 }
-    } as any];
+      {
+        id: 'p1',
+        name: 'AI1',
+        isHuman: false,
+        research: null,
+        researching: false,
+        researchedTechIds: [],
+        leader: { scienceFocus: 1, cultureFocus: 0 },
+      } as any,
+    ];
 
     dispatched.length = 0;
     coverGameProviderInlineExtras(s as any, dispatch as any);

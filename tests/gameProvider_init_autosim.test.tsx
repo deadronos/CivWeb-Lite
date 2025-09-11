@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { GameProvider } from "../src/contexts/game-provider";
-import { useGame } from "../src/hooks/use-game";
+import { GameProvider } from '../src/contexts/game-provider';
+import { useGame } from '../src/hooks/use-game';
 
 function TestConsumer() {
   const { state, dispatch } = useGame();
@@ -14,18 +14,18 @@ function TestConsumer() {
       </span>
       <button
         data-testid="init"
-        onClick={() => dispatch({ type: 'INIT', payload: { seed: 'x', width: 5, height: 6 } })}>
-
+        onClick={() => dispatch({ type: 'INIT', payload: { seed: 'x', width: 5, height: 6 } })}
+      >
         init
       </button>
       <button
         data-testid="autosim"
-        onClick={() => dispatch({ type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } })}>
-
+        onClick={() => dispatch({ type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } })}
+      >
         autosim
       </button>
-    </div>);
-
+    </div>
+  );
 }
 
 describe('GameProvider INIT and autoSim', () => {
@@ -61,7 +61,7 @@ describe('GameProvider INIT and autoSim', () => {
 
     // after autoSim toggled on, the mocked RAF should have executed once and advanced the turn
     await waitFor(() =>
-    expect(Number(screen.getByTestId('turn').textContent)).toBeGreaterThanOrEqual(1)
+      expect(Number(screen.getByTestId('turn').textContent)).toBeGreaterThanOrEqual(1)
     );
 
     // cleanup
