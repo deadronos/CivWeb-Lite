@@ -31,7 +31,7 @@ describe('computePath combat preview', () => {
       payload: { unitId: 'e1', type: 'warrior', ownerId: 'E', tileId: 'c' }
     });
 
-    const res: any = computePath(s.contentExt!, 'u1', 'c');
+    const res: any = computePath(s.contentExt!, 'u1', 'c', s.map.width, s.map.height);
     expect(res.path).toBeTruthy();
     expect(res.totalCost).toBeGreaterThanOrEqual(2);
     expect(res.combatPreview).toBeTruthy();

@@ -13,8 +13,8 @@ export function UnitSelectionOverlayContainer({
 
   const range = useMemo(() => {
     if (!extension || !selectedUnitId) return { reachable: [], cost: {} as Record<string, number> };
-    return computeMovementRange(extension, selectedUnitId);
-  }, [extension, selectedUnitId]);
+    return computeMovementRange(extension, selectedUnitId, state.map.width, state.map.height);
+  }, [extension, selectedUnitId, state.map.height, state.map.width]);
 
   if (!selectedUnitId || !extension) return;
 
@@ -25,7 +25,7 @@ export function UnitSelectionOverlayContainer({
       computedPath={path}
       onPreviewPath={(targetTileId) => {
         if (!extension) return;
-        const result = computePath(extension, selectedUnitId, targetTileId);
+        const result = computePath(extension, selectedUnitId, targetTileId, state.map.width, state.map.height);
         if ('path' in result && result.path) setPath(result.path);else
         setPath(undefined);
       }}

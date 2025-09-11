@@ -44,7 +44,7 @@ export function decodeBigIntMarkers<T>(object: T): T {
     const t = typeof v;
     if (t === 'string') {
       // match optional leading - then digits then 'n' marker
-      if (/^-?/d+n$/.test(v)) return BigInt(v.slice(0, -1));
+      if (/^-?\d+n$/.test(v)) return BigInt(v.slice(0, -1));
       return v;
     }
     if (t === 'object') {
