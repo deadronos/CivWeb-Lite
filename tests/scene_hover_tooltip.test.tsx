@@ -1,10 +1,10 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { GameProvider } from "..\\src\\contexts\\game-provider";
-import { SelectionProvider } from "..\\src\\contexts\\selection-context";
-import { HoverProvider } from "..\\src\\contexts\\hover-context";
-import { ConnectedScene as Scene } from "..\\src\\scene\\scene";
+import { GameProvider } from "../src/contexts/game-provider";
+import { SelectionProvider } from "../src/contexts/selection-context";
+import { HoverProvider } from "../src/contexts/hover-context";
+import { ConnectedScene as Scene } from "../src/scene/scene";
 
 describe('Scene hovered tile tooltip', () => {
   it('renders HtmlLabel at hovered tile via custom event', async () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from "..\\src\\contexts\\game-provider";
+import { initialState } from "../src/contexts/game-provider";
 import { computePath } from '../src/game/pathfinder';
 
 describe('computePath totalCost', () => {
@@ -26,7 +26,7 @@ describe('computePath totalCost', () => {
       type: 'EXT_ADD_UNIT',
       payload: { unitId: 'u1', type: 'warrior', ownerId: 'P', tileId: 'a' }
     });
-    const res = computePath(s.contentExt!, 'u1', 'c');
+    const res = computePath(s.contentExt!, 'u1', 'c', s.map.width, s.map.height);
     if ('path' in res && res.path) {
       expect(res.path[0]).toBe('a');
       expect(res.path.at(-1)).toBe('c');

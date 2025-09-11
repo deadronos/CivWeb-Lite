@@ -1,6 +1,6 @@
  
 import React from 'react';
-import HtmlLabel from "./drei\\html-label";
+import HtmlLabel from "./drei/html-label";
 import { useUnitPositions } from './hooks/use-unit-positions';
 
 export const UnitMarkers: React.FC = () => {

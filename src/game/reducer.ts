@@ -1,4 +1,4 @@
-import { GameState, PlayerState } from './types';
+import { GameState, PlayerState, BiomeType, Tile } from './types';
 import leadersCatalog from '../data/leaders.json';
 import { GameAction } from './actions';
 import { produceNextState } from './state';
@@ -15,6 +15,73 @@ import { UNIT_TYPES } from './content/registry';
 
 function findPlayer(players: PlayerState[], id: string) {
   return players.find((p) => p.id === id);
+}
+
+// Helper function to check if a biome is suitable for unit spawning
+function isSuitableSpawnTerrain(biome: BiomeType): boolean {
+  switch (biome) {
+    case BiomeType.Grassland:
+    case BiomeType.Forest:
+    case BiomeType.Desert:
+    case BiomeType.Tundra:
+      return true;
+    case BiomeType.Ocean:
+    case BiomeType.Ice:
+    case BiomeType.Mountain:
+      return false;
+    default:
+      return false;
+  }
+}
+
+// Helper function to find a suitable spawn position near a preferred location
+function findSuitableSpawnPosition(
+  tiles: Tile[],
+  preferredQ: number,
+  preferredR: number,
+  width: number,
+  height: number,
+  searchRadius: number = 5
+): string | null {
+  // First try the preferred position
+  const preferredTile = tiles.find(t => t.coord.q === preferredQ && t.coord.r === preferredR);
+  if (preferredTile && isSuitableSpawnTerrain(preferredTile.biome)) {
+    return preferredTile.id;
+  }
+
+  // Search in expanding circles around the preferred position
+  for (let radius = 1; radius <= searchRadius; radius++) {
+    const candidates: Tile[] = [];
+    
+    // Find all tiles at this radius that are suitable
+    for (const tile of tiles) {
+      const dq = tile.coord.q - preferredQ;
+      const dr = tile.coord.r - preferredR;
+      const distance = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dq + dr));
+      
+      if (distance === radius && isSuitableSpawnTerrain(tile.biome)) {
+        candidates.push(tile);
+      }
+    }
+
+    if (candidates.length > 0) {
+      // Prefer grassland and forest over other suitable terrain
+      const preferred = candidates.filter(t => 
+        t.biome === BiomeType.Grassland || t.biome === BiomeType.Forest
+      );
+      
+      if (preferred.length > 0) {
+        return preferred[0].id;
+      }
+      
+      // Return any suitable terrain if no preferred terrain found
+      return candidates[0].id;
+    }
+  }
+
+  // Fallback: return any suitable tile if nothing found in search radius
+  const fallback = tiles.find(t => isSuitableSpawnTerrain(t.biome));
+  return fallback ? fallback.id : null;
 }
 
 export function applyAction(state: GameState, action: GameAction): GameState {
@@ -130,24 +197,41 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         // Content extension reset
         draft.contentExt = createContentExtension();
         const extension = draft.contentExt;
-        // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal
-        const startPositions = (index: number): string => {
+        // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal on suitable terrain
+        const findStartPosition = (index: number): string | null => {
           const pad = 2;
-          const q = index % 2 === 0 ? pad : Math.max(pad, width - pad - 1);
-          const r = index < 2 ? pad : Math.max(pad, height - pad - 1);
-          return `${q},${r}`;
+          const preferredQ = index % 2 === 0 ? pad : Math.max(pad, width - pad - 1);
+          const preferredR = index < 2 ? pad : Math.max(pad, height - pad - 1);
+          return findSuitableSpawnPosition(draft.map.tiles, preferredQ, preferredR, width, height);
         };
+        
         for (let index = 0; index < draft.players.length; index++) {
           const ownerId = draft.players[index].id;
-          const tileId = startPositions(index);
-          // ensure tile exists in ext store and mark passable
+          const tileId = findStartPosition(index);
+          
+          if (!tileId) {
+            console.warn(`Could not find suitable spawn position for player ${ownerId}`);
+            continue; // Skip this player if no suitable position found
+          }
+          
+          // Find the actual tile from the map to get its real biome
+          const mapTile = draft.map.tiles.find(t => t.id === tileId);
+          if (!mapTile) {
+            console.warn(`Map tile ${tileId} not found for player ${ownerId}`);
+            continue;
+          }
+          
+          // Create or update tile in extension store based on the real map tile
           if (!extension.tiles[tileId]) {
             extension.tiles[tileId] = {
               id: tileId,
-              q: Number.parseInt(tileId.split(',')[0]!, 10),
-              r: Number.parseInt(tileId.split(',')[1]!, 10),
-              biome: 'grassland',
-              elevation: 0.1,
+              q: mapTile.coord.q,
+              r: mapTile.coord.r,
+              biome: mapTile.biome === BiomeType.Grassland ? 'grassland' : 
+                     mapTile.biome === BiomeType.Forest ? 'forest' :
+                     mapTile.biome === BiomeType.Desert ? 'desert' : 
+                     mapTile.biome === BiomeType.Tundra ? 'tundra' : 'grassland',
+              elevation: mapTile.elevation,
               features: [],
               improvements: [],
               occupantUnitId: null,

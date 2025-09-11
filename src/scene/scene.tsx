@@ -1,239 +1,251 @@
-import React, { useMemo } from 'react';
-import { useGame } from "..\\hooks\\use-game";
-import TileMesh from "./tile-mesh";
-import InstancedTiles from "./instanced-tiles";
-import CameraControls from "./drei/camera-controls";
-import DevStats from "./drei/dev-stats";
-import InstancedProbe from "./instanced-probe";
-import HtmlLabel from "./drei/html-label";
-import BillboardLabel from "./drei/billboard-label";
-import { isDevOrTest as isDevelopmentOrTest } from '../utils/env';
-import { useSelection } from "..\\contexts\\selection-context";
-import { useHoverTile } from "..\\contexts\\hover-context";
-import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
-import UnitMarkers from "./unit-markers";
-import { colorForTile, baseColorForBiome, colorForBiomeBucket } from './utils/biome-colors';
+import React from 'react';
+import { CylinderGeometry, MeshStandardMaterial, Color, BufferGeometry, Material } from 'three';
+import { useGame } from '../hooks/use-game';
+import { useSelection } from '../contexts/selection-context';
+import CameraControls from './drei/camera-controls';
+import HtmlLabel from './drei/html-label';
+import UnitMeshes from './unit-meshes';
+import UnitMarkers from './unit-markers';
+import InstancedModels, { InstanceTransform } from './instanced-models';
+import { axialToWorld, DEFAULT_HEX_SIZE } from './utils/coords';
+import { baseColorForBiome, colorForBiomeBucket } from './utils/biome-colors';
+import { BiomeType, Tile } from '../game/types';
 import { getVariantCount, getVariantAssets } from './assets/biome-variants-registry';
-import { loadBiomeVariants, BIOME_ASSETS_EVENT } from './assets/biome-assets';
-import InstancedModels from './instanced-models';
-import ReactLazy = React.lazy;
-const UnitMeshes = React.lazy(() => import('./unit-meshes'));
-const ProceduralPreload = React.lazy(() => import('./units/procedural-preload'));
+import { BIOME_ASSETS_EVENT, loadBiomeVariants } from './assets/biome-assets';
+import { DEFAULT_WRAPPING_CONFIG, generateWrappedBiomeGroups } from './utils/world-wrapping';
+import { useCameraWrapping } from './hooks/use-camera-wrapping';
 
-// Base Scene used by existing tests; remains minimal and provider-agnostic
-export default function Scene() {
-  return <group />;
-}
-
-// runtime marker for tests
+// Public runtime marker used by tests
 export const SCENE_RUNTIME_MARKER = true;
 
-// Connected variant that reads game state and renders tiles
-export function ConnectedScene() {
-  const { state } = useGame();
-  const { selectedUnitId } = useSelection();
-  const { index: hoverIndex, setHoverIndex } = useHoverTile();
-  const tiles = state.map.tiles;
-  const positions = useMemo(() => {
-    const pos: Array<[number, number, number]> = [];
-    for (const t of tiles) {
-      const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
-      pos.push([x, 0, z]);
+// Simple stable hash for variant selection from axial coords
+function variantIndexFor(q: number, r: number, count: number): number {
+  if (count <= 1) return 0;
+  let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
+  x = (x ^ (x >>> 13)) * 1_274_126_177;
+  x = x ^ (x >>> 16);
+  const f = (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
+  return Math.floor(f * count) % count;
+}
+
+// Fallback hex tile geometry (slightly oversized radius to avoid micro gaps)
+const FALLBACK_HEX_RADIUS = DEFAULT_HEX_SIZE;
+const FALLBACK_GEOMETRY = new CylinderGeometry(
+  FALLBACK_HEX_RADIUS,
+  FALLBACK_HEX_RADIUS,
+  1, // unit height, scaled per instance
+  6,
+  1,
+  false
+);
+// Rotate so a point faces +Z (pointy-top alignment) — CylinderGeometry default is fine for pointy-top; no rotation needed.
+
+// Prepare simple materials cache per biome bucket to keep GPU state changes minimal
+const materialCache = new Map<string, MeshStandardMaterial>();
+function materialForBiomeBucket(biome: BiomeType, bucket: number, total: number) {
+  const key = `${biome}:${bucket}/${total}`;
+  let m = materialCache.get(key);
+  if (!m) {
+    const color = colorForBiomeBucket(biome, bucket, total);
+    m = new MeshStandardMaterial({ color: new Color(color), roughness: 0.9, metalness: 0.02 });
+    materialCache.set(key, m);
+  }
+  return m;
+}
+
+type Bucket = {
+  biome: BiomeType;
+  variantIndex: number;
+  positions: Array<[number, number, number]>;
+  elevations: number[];
+  hexCoords: Array<{ q: number; r: number }>; // for debug/wrapping helpers
+};
+
+function buildBuckets(tiles: Tile[]): Bucket[] {
+  const buckets: Record<string, Bucket> = {};
+  for (const t of tiles) {
+    const count = Math.max(1, getVariantCount(t.biome));
+    const variantIndex = variantIndexFor(t.coord.q, t.coord.r, count);
+    const key = `${t.biome}:${variantIndex}`;
+    let b = buckets[key];
+    if (!b) {
+      b = buckets[key] = {
+        biome: t.biome,
+        variantIndex,
+        positions: [],
+        elevations: [],
+        hexCoords: [],
+      };
     }
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'test') {
-      return pos.slice(0, 100);
-    }
-    return pos;
-  }, [tiles]);
+    const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
+    b.positions.push([x, 0, z]);
+    b.elevations.push(t.elevation);
+    b.hexCoords.push({ q: t.coord.q, r: t.coord.r });
+  }
+  return Object.values(buckets);
+}
 
-  // Re-enable instancing; we will render per-biome instanced batches (no per-instance color).
-  const useInstanced = true;
+// Convert bucket positions/elevations into instanced transforms, scaling Y by elevation
+function transformsForBucket(bucket: Bucket): InstanceTransform[] {
+  const out: InstanceTransform[] = [];
+  const base = 0.06; // base tile height
+  const amp = 0.22; // elevation scale
+  for (let i = 0; i < bucket.positions.length; i++) {
+    const [x, , z] = bucket.positions[i];
+    const yScale = base + amp * bucket.elevations[i];
+    // position Y so tile rests on ground plane
+    const posY = yScale * 0.5;
+    out.push({ position: [x, posY, z], scale: [1, yScale, 1], rotationY: 0 });
+  }
+  return out;
+}
 
-  const elevations = useMemo(() => tiles.map((t) => (t as any).elevation ?? 0.5), [tiles]);
-
-  // Procedural biome colors with subtle variation by elevation/moisture
-  const colors = useMemo(() => state.map.tiles.map((t) => colorForTile(t as any)), [state.map.tiles]);
-
-  // Feature flag: enable per-instance colors only when explicitly requested.
-  // By default we use stable per-biome uniform colors for instanced groups to
-  // avoid driver/material quirks that can cause black tiles on some setups.
-  const enablePerInstanceColors = useMemo(() => {
-    if (globalThis.window === undefined) return false;
-    const qp = new URLSearchParams(globalThis.window.location.search);
-    return qp.get('pic') === '1';
-  }, []);
-
-  // Group tiles by biome for robust instanced rendering without per-instance colors
-  // Small stable hash: mirrors the one used for procedural color jitter
-  const hash2 = (q: number, r: number) => {
-    let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
-    x = (x ^ (x >>> 13)) * 1_274_126_177;
-    x = x ^ (x >>> 16);
-    return (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
-  };
-
-  const biomeGroups = useMemo(() => {
-    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; colors?: string[]; biome: string; variantIndex: number }>
-      = Object.create(null);
-    for (const [index, tile] of tiles.entries()) {
-      const t = tile as any;
-      const biome = String(t.biome).toLowerCase();
-      const variantCount = Math.max(1, getVariantCount(biome));
-      // Assign a deterministic variant bucket; if no assets, this will be 1.
-      const vIndex = Math.floor(hash2(t.coord.q, t.coord.r) * variantCount);
-      const key = `${biome}#${vIndex}`;
-      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), colors: [], biome, variantIndex: vIndex };
-      const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
-      map[key].positions.push([x, 0, z]);
-      map[key].elevations.push(elevations[index] ?? 0.5);
-      // record the per-instance procedural color so InstancedTiles can use instanceColor
-      map[key].colors!.push(colorForTile(t as any));
-    }
-    return Object.values(map);
-  }, [tiles, elevations]);
-
-  // Kick off loading biome assets once in browser; safe in dev/test
-  React.useEffect(() => {
-    // Load for known biome(s); extend as more assets appear
-    loadBiomeVariants('grass');
-  }, []);
-
-  // Force re-render when biome assets arrive
-  const [, force] = React.useReducer((x) => x + 1, 0);
-  React.useEffect(() => {
-    const handler = () => force();
-    if (globalThis.window !== undefined) {
-      globalThis.addEventListener(BIOME_ASSETS_EVENT, handler as any);
-      return () => globalThis.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
-    }
-    return;
-  }, []);
-
-  // Dev/test hook: allow tests to set hovered tile index via custom event
-  React.useEffect(() => {
-    if (!isDevelopmentOrTest()) return;
-    const handler = (e: any) => {
-      const index = typeof e?.detail?.index === 'number' ? e.detail.index : null;
-      setHoverIndex(index);
-    };
-    globalThis.addEventListener('civweblite:hoverTileIndex', handler as any);
-    return () => globalThis.removeEventListener('civweblite:hoverTileIndex', handler as any);
-  }, []);
-
+function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
+  // Attempt to render GLTF assets when available per variant; fallback to hex cylinders otherwise
   return (
-    <group>
-      <React.Suspense fallback={null}>
-        <ProceduralPreload />
-      </React.Suspense>
-      {/* Drei wrappers: camera controls and dev stats */}
-      <CameraControls />
-      <DevStats enabled={isDevelopmentOrTest()} />
-      {/* Phase 3 sample: dev-only labels */}
-      {isDevelopmentOrTest() &&
-      <>
-          <HtmlLabel position={[0, 1, 0]} data-testid="scene-label">
-            Tiles: {positions.length}
-          </HtmlLabel>
-          <BillboardLabel position={[0, 2, 0]} fontSize={0.25}>
-            CivWeb-Lite
-          </BillboardLabel>
-        </>
-      }
-      {selectedUnitId &&
-      state.contentExt?.units[selectedUnitId] &&
-      (() => {
-        const unit = state.contentExt!.units[selectedUnitId!];
-        const loc =
-        typeof unit.location === 'string' ?
-        state.contentExt!.tiles[unit.location] :
-        unit.location;
-        const q = (loc as any).q;
-        const r = (loc as any).r;
-        const biome = (loc as any).biome;
-        const world =
-        typeof unit.location === 'string' ?
-        tileIdToWorldFromExtension(state.contentExt as any, unit.location, DEFAULT_HEX_SIZE) :
-        axialToWorld(q, r, DEFAULT_HEX_SIZE);
-        const [x, z] = world as [number, number];
-        return (
-          <HtmlLabel position={[x, 1.5, z]} data-testid="selected-unit-label">
-              Unit: {unit.type} ({selectedUnitId}) • ({q},{r}) • {biome}
-            </HtmlLabel>);
-
-      })()}
-      {isDevelopmentOrTest() && state.contentExt && <UnitMarkers />}
-  {(isDevelopmentOrTest() || (globalThis.window !== undefined && new URLSearchParams(globalThis.window.location.search).get('probe') === '1')) && <InstancedProbe />}
-      {/* Units (procedural by default, GLTF behind flag) */}
-      {state.contentExt && (
-        <React.Suspense fallback={null}>
-          <UnitMeshes />
-        </React.Suspense>
-      )}
-      {hoverIndex != undefined &&
-      tiles[hoverIndex] &&
-      (() => {
-        const t = tiles[hoverIndex];
-        const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
-        return (
-          <HtmlLabel position={[x, 1.2, z]} data-testid="hovered-tile-label">
-              {t.id} ({t.coord.q},{t.coord.r}) • {t.biome}
-            </HtmlLabel>);
-
-      })()}
-      {useInstanced ?
-      biomeGroups.map((g, gi) => {
-        const assets = getVariantAssets(g.biome, g.variantIndex);
+    <group name="hex-buckets">
+      {buckets.map((b) => {
+        const assets = getVariantAssets(b.biome, b.variantIndex);
+        const transforms = transformsForBucket(b);
         if (assets && assets.geometry && assets.material) {
+          const geometry = assets.geometry as BufferGeometry;
+          const material = assets.material as Material | Material[];
           return (
             <InstancedModels
-              key={g.biome + ':' + gi}
-              geometry={assets.geometry as any}
-              material={assets.material as any}
-              positions={g.positions}
-              elevations={g.elevations}
-              size={DEFAULT_HEX_SIZE}
-              onPointerMove={(e: any) => {
-                const index = e?.instanceId;
-                if (typeof index === 'number') setHoverIndex(index);
-              }}
+              key={`${b.biome}:${b.variantIndex}:asset`}
+              geometry={geometry}
+              material={material}
+              transforms={transforms}
+              receiveShadow
+              castShadow
+              name={`bucket-${b.biome}-${b.variantIndex}`}
             />
           );
         }
+        // Fallback — procedural hex prism with per-bucket tinted material
+        const mat = materialForBiomeBucket(b.biome, b.variantIndex, Math.max(1, getVariantCount(b.biome)));
         return (
-          <InstancedTiles
-            key={g.biome + ':' + gi}
-            positions={g.positions}
-            color={g.color}
-            colors={enablePerInstanceColors ? g.colors : undefined}
-            elevations={g.elevations}
-            size={DEFAULT_HEX_SIZE}
-            onPointerMove={(e) => {
-              const index = (e as any).instanceId;
-              if (typeof index === 'number') setHoverIndex(index);
-            }} />
+          <InstancedModels
+            key={`${b.biome}:${b.variantIndex}:fallback`}
+            geometry={FALLBACK_GEOMETRY}
+            material={mat}
+            transforms={transforms}
+            receiveShadow
+            castShadow
+            name={`bucket-fallback-${b.biome}-${b.variantIndex}`}
+          />
         );
-      }) :
-
-
-      positions.map((p, index) =>
-      <TileMesh
-        key={index}
-        position={p}
-        color={colors[index]}
-        size={DEFAULT_HEX_SIZE}
-        onPointerMove={() => setHoverIndex(index)} />
-
-      )
-      }
-    </group>);
-
+      })}
+    </group>
+  );
 }
 
-// Coverage helper
-export function coverForTestsScene(): number {
-  let s = 0;
-  s += 1;
-  s += 2;
-  s += 3;
-  return s;
+// Main scene component
+export function ConnectedScene() {
+  const { state } = useGame();
+  const { selectedUnitId } = useSelection();
+  // Enable cylindrical camera wrapping
+  useCameraWrapping({ ...DEFAULT_WRAPPING_CONFIG, worldWidth: state.map.width, worldHeight: state.map.height });
+
+  // Kick off loading for known assets (grassland variants)
+  const [assetVersion, setAssetVersion] = React.useState(0);
+  React.useEffect(() => {
+    // Only on client
+    if (typeof window === 'undefined') return;
+    loadBiomeVariants('grass').catch(() => {});
+    const handler = () => setAssetVersion((v) => v + 1);
+    window.addEventListener(BIOME_ASSETS_EVENT, handler as any);
+    return () => window.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
+  }, []);
+
+  // Build buckets and apply cylindrical wrapping duplicates
+  const buckets = React.useMemo(() => {
+    const baseBuckets = buildBuckets(state.map.tiles);
+    const config = { ...DEFAULT_WRAPPING_CONFIG, worldWidth: state.map.width, worldHeight: state.map.height };
+    const wrapped = generateWrappedBiomeGroups(
+      baseBuckets.map((b) => ({
+        positions: b.positions,
+        elevations: b.elevations,
+        color: baseColorForBiome(b.biome),
+        biome: String(b.biome),
+        variantIndex: b.variantIndex,
+        hexCoords: b.hexCoords,
+      })),
+      state.map.tiles as any,
+      config,
+      DEFAULT_HEX_SIZE
+    );
+    // Map back into Bucket type
+    return wrapped.map((g) => ({
+      biome: g.biome as BiomeType,
+      variantIndex: g.variantIndex,
+      positions: g.positions,
+      elevations: g.elevations,
+      hexCoords: g.hexCoords,
+    }));
+  }, [state.map.tiles, state.map.width, state.map.height, assetVersion]);
+
+  // Hovered tile label via custom event (dev/test convenience)
+  const [hoverPos, setHoverPos] = React.useState<[number, number, number] | null>(null);
+  React.useEffect(() => {
+    const onHover = (e: any) => {
+      const index = e?.detail?.index ?? -1;
+      const t = state.map.tiles[index];
+      if (!t) { setHoverPos(null); return; }
+      const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
+      setHoverPos([x, 0.9, z]);
+    };
+    globalThis.addEventListener('civweblite:hoverTileIndex', onHover);
+    return () => globalThis.removeEventListener('civweblite:hoverTileIndex', onHover);
+  }, [state.map.tiles]);
+
+  // Selected unit label position
+  const [selectedUnitLabel, setSelectedUnitLabel] = React.useState<{ pos: [number, number, number]; id: string } | null>(null);
+  React.useEffect(() => {
+    if (!state.contentExt || !selectedUnitId) { setSelectedUnitLabel(null); return; }
+    const u = state.contentExt.units[selectedUnitId];
+    if (!u) { setSelectedUnitLabel(null); return; }
+    let xz: [number, number] | undefined;
+    if (typeof u.location === 'string') {
+      const tile = state.contentExt.tiles[u.location];
+      if (tile) xz = axialToWorld(tile.q, tile.r, DEFAULT_HEX_SIZE);
+    } else if (u.location && typeof (u.location as any).q === 'number') {
+      xz = axialToWorld((u.location as any).q, (u.location as any).r, DEFAULT_HEX_SIZE);
+    }
+    const [x, z] = (xz ?? [0, 0]) as [number, number];
+    setSelectedUnitLabel({ id: selectedUnitId, pos: [x, 1.2, z] });
+  }, [state.contentExt, selectedUnitId]);
+
+  return (
+    <group name="scene-root">
+      {/* Controls and lights are managed at App-level; this exposes movement */}
+      <CameraControls />
+
+      {/* Terrain */}
+      <HexBucketsInstanced buckets={buckets} />
+
+      {/* Units & labels */}
+      <UnitMeshes />
+      <UnitMarkers />
+
+      {/* Hovered tile */}
+      {hoverPos ? (
+        <HtmlLabel position={hoverPos} data-testid="hovered-tile-label" center>
+          hovered
+        </HtmlLabel>
+      ) : null}
+
+      {/* Selected unit label */}
+      {selectedUnitLabel ? (
+        <HtmlLabel position={selectedUnitLabel.pos} data-testid="selected-unit-label" center>
+          {selectedUnitLabel.id}
+        </HtmlLabel>
+      ) : null}
+    </group>
+  );
 }
+
+// Default export for convenience
+// Default export is a safe stub for tests that render the Scene without
+// providers. App imports ConnectedScene explicitly via dynamic import.
+export default function Scene() { return <group name="scene-stub" />; }

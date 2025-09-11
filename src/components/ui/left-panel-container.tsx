@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGame } from "..\\..\\hooks\\use-game";
+import { useGame } from "../../hooks/use-game";
 import LeftPanel from "./left-panel";
 
 export default function LeftPanelContainer() {

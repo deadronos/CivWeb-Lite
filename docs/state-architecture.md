@@ -17,6 +17,7 @@ Patterns
 - Structured logs: `GameLogEntry` with ring buffer policy (capacity 50 by default).
 
 Invariants
+https://www.redblobgames.com/grids/hexagons/#coordinates
 
 - `turn` increments only via `END_TURN`.
 - `map.tiles` is regenerated only by `INIT`.

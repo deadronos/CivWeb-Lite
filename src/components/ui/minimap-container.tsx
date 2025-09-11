@@ -1,9 +1,9 @@
 import React from 'react';
 import Minimap from './minimap';
-import { useGame } from "..\\..\\hooks\\use-game";
-import { useSelection } from "..\\..\\contexts\\selection-context";
+import { useGame } from "../../hooks/use-game";
+import { useSelection } from "../../contexts/selection-context";
 import { computeMovementRange } from '../../game/pathfinder';
-import { useCamera } from "..\\..\\hooks\\use-camera";
+import { useCamera } from "../../hooks/use-camera";
 
 export default function MinimapContainer() {
   const { state } = useGame();
@@ -24,13 +24,13 @@ export default function MinimapContainer() {
   );
   const extension = state.contentExt;
   const highlighted = React.useMemo(() => {
-  if (!extension || !selectedUnitId) return [] as string[];
+    if (!extension || !selectedUnitId) return [] as string[];
     try {
-      return computeMovementRange(extension, selectedUnitId).reachable;
+      return computeMovementRange(extension, selectedUnitId, state.map.width, state.map.height).reachable;
     } catch {
       return [] as string[];
     }
-  }, [extension, selectedUnitId]);
+  }, [extension, selectedUnitId, state.map.height, state.map.width]);
   return (
     <Minimap
       width={state.map.width}

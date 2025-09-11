@@ -64,7 +64,7 @@ function listFiles(root: string): string[] {
 }
 
 describe('kebab-case filenames under src/', () => {
-  const files = listFiles(SRC_DIR).map((f) => path.relative(SRC_DIR, f).replaceAll('\\', '/'));
+  const files = listFiles(SRC_DIR).map((f) => path.relative(SRC_DIR, f).replaceAll('/', '/'));
   const offenders = files.filter((relativePath) => {
     if (LEGACY_ALLOWLIST.has(relativePath)) return false;
     const base = path.basename(relativePath);
