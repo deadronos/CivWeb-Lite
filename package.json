@@ -41,6 +41,7 @@
     "@vitejs/plugin-react": "*",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "*",
+  "zod": "^3.23.0",
     "axe-core": "*",
     "eslint": "*",
     "eslint-config-prettier": "*",

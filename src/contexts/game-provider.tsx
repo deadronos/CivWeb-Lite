@@ -5,6 +5,8 @@ import { globalGameBus } from '../game/events';
 import { GameState, Tile, PlayerState } from '../game/types';
 import { createEmptyState as createContentExtension } from '../game/content/engine';
 import { GameAction } from '../game/actions';
+import { GameActionSchema, AnyActionSchema } from '../../schema/action.schema';
+import { ZodError } from 'zod';
 import { applyAction } from '../game/reducer';
 import { DEFAULT_MAP_SIZE } from '../game/world/config';
 import { techCatalog } from '../game/tech/tech-catalog';
@@ -31,12 +33,44 @@ export const initialState = (): GameState => ({
 });
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(applyAction, undefined, initialState);
+  const [state, dispatchBase] = useReducer(applyAction, undefined, initialState);
+
+  // validated dispatch wraps the reducer dispatch and validates payloads at runtime
+  const dispatch = useCallback<Dispatch>((action) => {
+    try {
+      // Try strict validation first
+      GameActionSchema.parse(action as any);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const first = error.issues && error.issues[0];
+        if (first && first.code === 'invalid_union_discriminator') {
+          // discriminator unknown to strict schema — try permissive schema that accepts any type/payload
+          try {
+            AnyActionSchema.parse(action as any);
+            // accepted by permissive schema — forward but avoid noisy repeated debug lines
+            // use console.info so it's visible when debugging but not spammy
+            console.info('[GameProvider] permissive action accepted', action.type);
+            dispatchBase(action as any);
+            return;
+          } catch (_error) {
+            // explicitly consume variable to satisfy lint
+            void _error;
+            // fall through to warn below
+          }
+        }
+      }
+      // validation failed for another reason - log and reject the action
+      console.warn('[GameProvider] action validation failed', error);
+      return;
+    }
+    // if valid, forward to the reducer
+    dispatchBase(action as any);
+  }, [dispatchBase]);
 
   const advanceTurn = useCallback(() => simulateAdvanceTurn(state, dispatch), [state, dispatch]);
 
   useEffect(() => {
-    dispatch({ type: 'INIT' });
+  dispatch({ type: 'INIT' });
   }, [dispatch]);
 
   useEffect(() => {
