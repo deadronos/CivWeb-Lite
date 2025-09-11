@@ -1,6 +1,6 @@
 import React from 'react';
 import { axialToWorld } from '../scene/utils/coords';
-import { useGame } from "..\\hooks\\use-game";
+import { useGame } from "../hooks/use-game";
 
 export type HoverState = {
   hoverIndex: number | undefined;

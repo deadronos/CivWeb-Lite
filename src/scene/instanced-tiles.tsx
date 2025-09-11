@@ -116,19 +116,19 @@ export function InstancedTiles({
                     const vs0 = shader.vertexShader;
                     const fs0 = shader.fragmentShader;
                     let vs = vs0
-                      .replace('#include <color_pars_vertex>', `#include <color_pars_vertex>\nattribute vec3 instanceColor;\nvarying vec3 vInstanceColor;`)
-                      .replace('#include <begin_vertex>', `#include <begin_vertex>\n vInstanceColor = instanceColor;`);
+                      .replace('#include <color_pars_vertex>', `#include <color_pars_vertex>/nattribute vec3 instanceColor;/nvarying vec3 vInstanceColor;`)
+                      .replace('#include <begin_vertex>', `#include <begin_vertex>/n vInstanceColor = instanceColor;`);
                     let fs = fs0
-                      .replace('#include <color_pars_fragment>', `#include <color_pars_fragment>\nvarying vec3 vInstanceColor;`)
-                      .replace('#include <color_fragment>', `#include <color_fragment>\n diffuseColor.rgb *= vInstanceColor;`);
+                      .replace('#include <color_pars_fragment>', `#include <color_pars_fragment>/nvarying vec3 vInstanceColor;`)
+                      .replace('#include <color_fragment>', `#include <color_fragment>/n diffuseColor.rgb *= vInstanceColor;`);
                     if (vs === vs0) {
                       const insertPoint = vs0.indexOf('void main()');
                       if (insertPoint !== -1) {
                         const braceIndex = vs0.indexOf('{', insertPoint);
                         if (braceIndex !== -1) {
-                          vs = `attribute vec3 instanceColor;\nvarying vec3 vInstanceColor;\n` +
+                          vs = `attribute vec3 instanceColor;/nvarying vec3 vInstanceColor;/n` +
                                vs0.slice(0, braceIndex + 1) +
-                               `\n vInstanceColor = instanceColor;\n` +
+                               `/n vInstanceColor = instanceColor;/n` +
                                vs0.slice(braceIndex + 1);
                         }
                       }
@@ -136,9 +136,9 @@ export function InstancedTiles({
                     if (fs === fs0) {
                       const lastBrace = fs0.lastIndexOf('}');
                       if (lastBrace > 0) {
-                        fs = `varying vec3 vInstanceColor;\n` +
+                        fs = `varying vec3 vInstanceColor;/n` +
                              fs0.slice(0, lastBrace) +
-                             `\n gl_FragColor.rgb *= vInstanceColor;\n` +
+                             `/n gl_FragColor.rgb *= vInstanceColor;/n` +
                              fs0.slice(lastBrace);
                       }
                     }
@@ -241,19 +241,19 @@ export function InstancedTiles({
                     const vs0 = shader.vertexShader;
                     const fs0 = shader.fragmentShader;
                     let vs = vs0
-                      .replace('#include <color_pars_vertex>', `#include <color_pars_vertex>\nattribute vec3 instanceColor;\nvarying vec3 vInstanceColor;`)
-                      .replace('#include <begin_vertex>', `#include <begin_vertex>\n vInstanceColor = instanceColor;`);
+                      .replace('#include <color_pars_vertex>', `#include <color_pars_vertex>/nattribute vec3 instanceColor;/nvarying vec3 vInstanceColor;`)
+                      .replace('#include <begin_vertex>', `#include <begin_vertex>/n vInstanceColor = instanceColor;`);
                     let fs = fs0
-                      .replace('#include <color_pars_fragment>', `#include <color_pars_fragment>\nvarying vec3 vInstanceColor;`)
-                      .replace('#include <color_fragment>', `#include <color_fragment>\n diffuseColor.rgb *= vInstanceColor;`);
+                      .replace('#include <color_pars_fragment>', `#include <color_pars_fragment>/nvarying vec3 vInstanceColor;`)
+                      .replace('#include <color_fragment>', `#include <color_fragment>/n diffuseColor.rgb *= vInstanceColor;`);
                     if (vs === vs0) {
                       const insertPoint = vs0.indexOf('void main()');
                       if (insertPoint !== -1) {
                         const braceIndex = vs0.indexOf('{', insertPoint);
                         if (braceIndex !== -1) {
-                          vs = `attribute vec3 instanceColor;\nvarying vec3 vInstanceColor;\n` +
+                          vs = `attribute vec3 instanceColor;/nvarying vec3 vInstanceColor;/n` +
                                vs0.slice(0, braceIndex + 1) +
-                               `\n vInstanceColor = instanceColor;\n` +
+                               `/n vInstanceColor = instanceColor;/n` +
                                vs0.slice(braceIndex + 1);
                         }
                       }
@@ -261,9 +261,9 @@ export function InstancedTiles({
                     if (fs === fs0) {
                       const lastBrace = fs0.lastIndexOf('}');
                       if (lastBrace > 0) {
-                        fs = `varying vec3 vInstanceColor;\n` +
+                        fs = `varying vec3 vInstanceColor;/n` +
                              fs0.slice(0, lastBrace) +
-                             `\n gl_FragColor.rgb *= vInstanceColor;\n` +
+                             `/n gl_FragColor.rgb *= vInstanceColor;/n` +
                              fs0.slice(lastBrace);
                       }
                     }
@@ -336,20 +336,20 @@ export function InstancedTiles({
                         const vs0 = shader.vertexShader;
                         const fs0 = shader.fragmentShader;
                         let vs = vs0
-                          .replace('#include <color_pars_vertex>', `#include <color_pars_vertex>\nattribute vec3 instanceColor;\nvarying vec3 vInstanceColor;`)
-                          .replace('#include <begin_vertex>', `#include <begin_vertex>\n vInstanceColor = instanceColor;`);
+                          .replace('#include <color_pars_vertex>', `#include <color_pars_vertex>/nattribute vec3 instanceColor;/nvarying vec3 vInstanceColor;`)
+                          .replace('#include <begin_vertex>', `#include <begin_vertex>/n vInstanceColor = instanceColor;`);
                         let fs = fs0
-                          .replace('#include <color_pars_fragment>', `#include <color_pars_fragment>\nvarying vec3 vInstanceColor;`)
-                          .replace('#include <color_fragment>', `#include <color_fragment>\n diffuseColor.rgb *= vInstanceColor;`);
+                          .replace('#include <color_pars_fragment>', `#include <color_pars_fragment>/nvarying vec3 vInstanceColor;`)
+                          .replace('#include <color_fragment>', `#include <color_fragment>/n diffuseColor.rgb *= vInstanceColor;`);
                         // Fallback if include markers not found
                         if (vs === vs0) {
                           const insertPoint = vs0.indexOf('void main()');
                           if (insertPoint !== -1) {
                             const braceIndex = vs0.indexOf('{', insertPoint);
                             if (braceIndex !== -1) {
-                              vs = `attribute vec3 instanceColor;\nvarying vec3 vInstanceColor;\n` +
+                              vs = `attribute vec3 instanceColor;/nvarying vec3 vInstanceColor;/n` +
                                    vs0.slice(0, braceIndex + 1) +
-                                   `\n vInstanceColor = instanceColor;\n` +
+                                   `/n vInstanceColor = instanceColor;/n` +
                                    vs0.slice(braceIndex + 1);
                             }
                           }
@@ -357,9 +357,9 @@ export function InstancedTiles({
                         if (fs === fs0) {
                           const lastBrace = fs0.lastIndexOf('}');
                           if (lastBrace > 0) {
-                            fs = `varying vec3 vInstanceColor;\n` +
+                            fs = `varying vec3 vInstanceColor;/n` +
                                  fs0.slice(0, lastBrace) +
-                                 `\n gl_FragColor.rgb *= vInstanceColor;\n` +
+                                 `/n gl_FragColor.rgb *= vInstanceColor;/n` +
                                  fs0.slice(lastBrace);
                           }
                         }

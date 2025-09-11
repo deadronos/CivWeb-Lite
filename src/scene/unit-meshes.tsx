@@ -1,6 +1,6 @@
  
 import React from 'react';
-import { useGame } from "..\\hooks\\use-game";
+import { useGame } from "../hooks/use-game";
 import { useUnitPositions } from './hooks/use-unit-positions';
 import { playerColor } from './utils/colors';
 import { UnitModelSwitch } from './units/unit-model-switch';

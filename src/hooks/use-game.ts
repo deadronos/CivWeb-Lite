@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { GameStateContext, GameDispatchContext, Dispatch } from "..\\contexts\\game-provider";
+import { GameStateContext, GameDispatchContext, Dispatch } from "../contexts/game-provider";
 import { GameState } from '../game/types';
 
 export function useGame(): {state: Readonly<GameState>;dispatch: Dispatch;} {

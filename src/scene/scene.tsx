@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useGame } from "..\\hooks\\use-game";
+import { useGame } from "../hooks/use-game";
 import TileMesh from "./tile-mesh";
 import InstancedTiles from "./instanced-tiles";
 import CameraControls from "./drei/camera-controls";
@@ -8,8 +8,8 @@ import InstancedProbe from "./instanced-probe";
 import HtmlLabel from "./drei/html-label";
 import BillboardLabel from "./drei/billboard-label";
 import { isDevOrTest as isDevelopmentOrTest } from '../utils/env';
-import { useSelection } from "..\\contexts\\selection-context";
-import { useHoverTile } from "..\\contexts\\hover-context";
+import { useSelection } from "../contexts/selection-context";
+import { useHoverTile } from "../contexts/hover-context";
 import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from './utils/coords';
 import UnitMarkers from "./unit-markers";
 import { colorForTile, baseColorForBiome, colorForBiomeBucket } from './utils/biome-colors';
@@ -46,7 +46,7 @@ export function ConnectedScene() {
     return pos;
   }, [tiles]);
 
-  // Re-enable instancing; we will render per-biome instanced batches (no per-instance color).
+  // Re-enable instancing to test the original issue
   const useInstanced = true;
 
   const elevations = useMemo(() => tiles.map((t) => (t as any).elevation ?? 0.5), [tiles]);
@@ -213,7 +213,6 @@ export function ConnectedScene() {
             }} />
         );
       }) :
-
 
       positions.map((p, index) =>
       <TileMesh
