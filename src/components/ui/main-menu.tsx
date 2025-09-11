@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGame } from "..\\..\\hooks\\use-game";
+import { useGame } from "../../hooks/use-game";
 import leaders from '../../data/leaders.json';
 import { MAP_PRESETS } from '../../game/world/config';
 const LS_KEY = 'civweblite:newgame';

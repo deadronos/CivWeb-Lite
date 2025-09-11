@@ -1,9 +1,9 @@
 import React from 'react';
 import Minimap from './minimap';
-import { useGame } from "..\\..\\hooks\\use-game";
-import { useSelection } from "..\\..\\contexts\\selection-context";
+import { useGame } from "../../hooks/use-game";
+import { useSelection } from "../../contexts/selection-context";
 import { computeMovementRange } from '../../game/pathfinder';
-import { useCamera } from "..\\..\\hooks\\use-camera";
+import { useCamera } from "../../hooks/use-camera";
 
 export default function MinimapContainer() {
   const { state } = useGame();

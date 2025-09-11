@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useGame } from "..\\..\\hooks\\use-game";
+import { useGame } from "../../hooks/use-game";
 import { UnitSelectionOverlay } from "./unit-selection-overlay";
 import { computePath, computeMovementRange } from '../../game/pathfinder';
 
