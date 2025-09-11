@@ -21,7 +21,7 @@ try {
   if (typeof extend === 'function') {
     extend({ Polyline, Svg });
   }
-} catch (err) {
+} catch {
   // Swallow errors — tests may provide a mock that doesn't include `extend`.
   // This is intentional: the shim is a runtime convenience and not required
   // for unit tests that mock rendering primitives.
