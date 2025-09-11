@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, test, expect } from 'vitest';
 
 test('main.tsx catches render errors when createRoot.render throws', async () => {
   // reset modules so we can re-import with mocks
