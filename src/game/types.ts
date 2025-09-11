@@ -47,6 +47,7 @@ export interface PlayerState {
   culturePoints: number;
   researchedTechIds: string[];
   researching?: { techId: string; progress: number } | null;
+  researchQueue?: string[]; // Queue of tech IDs to research after current completes
 }
 
 export interface GameLogEntry {

@@ -9,9 +9,10 @@ import {
   beginResearch as extensionBeginResearch,
   beginCultureResearch as extensionBeginCulture,
   moveUnit as extensionMoveUnit,
+  getCityYield,
 } from './content/rules';
 import { createEmptyState as createContentExtension } from './content/engine';
-import { UNIT_TYPES } from './content/registry';
+import { UNIT_TYPES, IMPROVEMENTS, BUILDINGS } from './content/registry';
 import { computePath } from './pathfinder';
 
 function findPlayer(players: PlayerState[], id: string) {
@@ -85,6 +86,20 @@ function findSuitableSpawnPosition(
   return fallback ? fallback.id : null;
 }
 
+// Helper to get item cost for production calculation
+function getItemCost(type: string, itemId: string): number {
+  switch (type) {
+    case 'unit':
+      return UNIT_TYPES[itemId]?.cost || 40;
+    case 'improvement':
+      return IMPROVEMENTS[itemId]?.cost || 20;
+    case 'building':
+      return BUILDINGS[itemId]?.cost || 60;
+    default:
+      return 10; // fallback
+  }
+}
+
 export function applyAction(state: GameState, action: GameAction): GameState {
   if (action.type === 'LOAD_STATE') {
     globalGameBus.emit('action:applied', { action });
@@ -130,6 +145,15 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           player.researchedTechIds.push(tech.id);
           player.researching = null as any;
           globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+          // Auto-advance from queue
+          if (player.researchQueue && player.researchQueue.length > 0) {
+            const nextId = player.researchQueue.shift()!;
+            const nextTech = draft.techCatalog.find((t) => t.id === nextId);
+            if (nextTech && nextTech.prerequisites.every((p) => player.researchedTechIds.includes(p))) {
+              player.researching = { techId: nextId, progress: 0 };
+              globalGameBus.emit('researchStarted', { playerId: techId: nextId });
+            }
+          }
         }
         break;
       }
@@ -297,6 +321,15 @@ export function applyAction(state: GameState, action: GameAction): GameState {
                 player.researchedTechIds.push(tech.id);
                 player.researching = null;
                 globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+                // Auto-advance from queue
+                if (player.researchQueue && player.researchQueue.length > 0) {
+                  const nextId = player.researchQueue.shift()!;
+                  const nextTech = draft.techCatalog.find((t) => t.id === nextId);
+                  if (nextTech && nextTech.prerequisites.every((p) => player.researchedTechIds.includes(p))) {
+                    player.researching = { techId: nextId, progress: 0 };
+                    globalGameBus.emit('researchStarted', { playerId: player.id, techId: nextId });
+                  }
+                }
               }
             }
           }
@@ -549,86 +582,126 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       }
       case 'CHOOSE_PRODUCTION_ITEM': {
         if (draft.contentExt) {
+          const extension = draft.contentExt;
           const { cityId, order } = action.payload;
-          const city = draft.contentExt.cities[cityId];
+          const city = extension.cities[cityId];
           if (city) {
-            city.productionQueue.push({
-              type: order.type,
-              item: order.itemId,
-              turnsRemaining: 5, // TODO: Calculate based on cost and production
-            });
-            globalGameBus.emit('productionQueued', { cityId, order });
+            // Replace existing top order if same type (queue length 1)
+            const top = city.productionQueue[0];
+            if (top && top.type === order.type) {
+              top.item = order.item;
+              top.turnsRemaining = order.turns;
+            } else {
+              city.productionQueue.unshift({
+                type: order.type,
+                item: order.item,
+                turnsRemaining: order.turns,
+              });
+            }
           }
         }
         break;
       }
-      case 'REORDER_PRODUCTION_QUEUE': {
+      case 'CANCEL_PRODUCTION_ORDER': {
         if (draft.contentExt) {
-          const { cityId, newQueue } = action.payload;
-          const city = draft.contentExt.cities[cityId];
-          if (city) {
-            // Convert UI ProductionOrder to internal CityProductionOrder
-            city.productionQueue = newQueue.map(order => ({
-              type: order.type,
-              item: order.itemId,
-              turnsRemaining: 5, // TODO: Calculate based on cost and production
-            }));
-          }
-        }
-        break;
-      }
-      case 'CANCEL_ORDER': {
-        if (draft.contentExt) {
+          const extension = draft.contentExt;
           const { cityId, orderIndex } = action.payload;
-          const city = draft.contentExt.cities[cityId];
-          if (city && orderIndex >= 0 && orderIndex < city.productionQueue.length) {
+          const city = extension.cities[cityId];
+          if (city && city.productionQueue[orderIndex]) {
             city.productionQueue.splice(orderIndex, 1);
           }
         }
         break;
       }
-      case 'OPEN_RESEARCH_PANEL': {
-        draft.ui.openPanels.researchPanel = true;
-        break;
-      }
-      case 'CLOSE_RESEARCH_PANEL': {
-        draft.ui.openPanels.researchPanel = false;
-        break;
-      }
-      case 'CLOSE_CITY_PANEL': {
-        draft.ui.openPanels.cityPanel = undefined;
-        break;
-      }
-      case 'START_RESEARCH': {
-        if (draft.contentExt) {
-          extensionBeginResearch(draft.contentExt, action.payload.techId);
-          globalGameBus.emit('researchStarted', { 
-            playerId: action.payload.playerId, 
-            techId: action.payload.techId 
-          });
+      case 'SET_TILE_IMPROVEMENT': {
+        const extension = (draft.contentExt ||= createContentExtension());
+        const { tileId, improvementId } = action.payload;
+        const tile = extension.tiles[tileId];
+        if (tile) {
+          // Remove existing improvements of the same type
+          tile.improvements = tile.improvements.filter((id) => id !== improvementId);
+          // Add the new improvement
+          tile.improvements.push(improvementId);
         }
         break;
       }
-      case 'QUEUE_RESEARCH': {
-        // TODO: Implement research queue when multiple techs can be queued
-        globalGameBus.emit('researchQueued', { 
-          playerId: action.payload.playerId, 
-          techId: action.payload.techId 
-        });
+      case 'REMOVE_TILE_IMPROVEMENT': {
+        const extension = (draft.contentExt ||= createContentExtension());
+        const { tileId, improvementId } = action.payload;
+        const tile = extension.tiles[tileId];
+        if (tile) {
+          tile.improvements = tile.improvements.filter((id) => id !== improvementId);
+        }
         break;
       }
-      case 'BEGIN_TURN': {
-        globalGameBus.emit('turn:playerStart', { playerId: action.payload.playerId, turn: draft.turn });
+      case 'SET_CITY_TILE': {
+        const extension = (draft.contentExt ||= createContentExtension());
+        const { cityId, tileId } = action.payload;
+        const city = extension.cities[cityId];
+        if (city) {
+          // Remove city from current tiles
+          for (const tid of city.tilesWorked) {
+            const t = extension.tiles[tid];
+            if (t) {
+              t.occupantCityId = null;
+            }
+          }
+          city.tilesWorked = [tileId];
+          const newTile = extension.tiles[tileId];
+          if (newTile) {
+            newTile.occupantCityId = cityId;
+          }
+        }
         break;
       }
-      case 'END_PLAYER_PHASE': {
-        globalGameBus.emit('turn:playerEnd', { playerId: action.payload.playerId, turn: draft.turn });
+      case 'SET_UNIT_STATE': {
+        const extension = (draft.contentExt ||= createContentExtension());
+        const { unitId, state } = action.payload;
+        const unit = extension.units[unitId];
+        if (unit) {
+          unit.state = state;
+        }
         break;
       }
-      default: {
+      case 'SET_UNIT_LOCATION': {
+        const extension = (draft.contentExt ||= createContentExtension());
+        const { unitId, tileId } = action.payload;
+        const unit = extension.units[unitId];
+        if (unit) {
+          // Find and update the tile if it exists
+          const newTile = extension.tiles[tileId];
+          if (newTile) {
+            unit.location = tileId;
+          }
+        }
+        break;
+      }
+      case 'SET_PLAYER_SCORES': {
+        const { players } = action.payload;
+        for (const p of players) {
+          const player = findPlayer(draft.players, p.id);
+          if (player) {
+            player.sciencePoints = p.sciencePoints;
+            player.culturePoints = p.culturePoints;
+          }
+        }
+        break;
+      }
+      case 'AI_PERFORM_ACTIONS': {
+        // Special case action for AI to perform its turn logic
+        const playerId = action.payload.playerId;
+        const player = findPlayer(draft.players, playerId);
+        if (player && !player.isHuman) {
+          globalGameBus.emit('ai:turnStart', { playerId, turn: draft.turn });
+          const aiActions = generateAIDecisions(draft, playerId);
+          for (const aiAction of aiActions) {
+            // Recursively apply AI sub-actions (but limit depth to avoid infinite loops)
+            applyAction(draft, aiAction);
+          }
+          globalGameBus.emit('ai:turnEnd', { playerId, turn: draft.turn });
+        }
         break;
       }
     }
-    globalGameBus.emit('action:applied', { action });
   });
 }

@@ -4,41 +4,50 @@ import { ResearchPanel } from './research-panel';
 
 export function ResearchPanelContainer({ playerId }: { playerId: string }) {
   const { state, dispatch } = useGame();
+  const player = state.players.find(p => p.id === playerId);
   const extension = state.contentExt;
   
-  if (!extension) return null;
+  if (!player || !extension) return undefined;
 
-  const currentResearch = extension.playerState.research;
+  const currentResearch = player.researching;
+  const queue = player.researchQueue || [];
   
-  // Mock available techs for now - in a real implementation this would filter based on prerequisites
-  const availableTechs = useMemo(() => [
-    { id: 'agriculture', label: 'Agriculture', cost: 20, prerequisites: [] },
-    { id: 'animal_husbandry', label: 'Animal Husbandry', cost: 25, prerequisites: [] },
-    { id: 'pottery', label: 'Pottery', cost: 25, prerequisites: [] },
-    { id: 'mining', label: 'Mining', cost: 35, prerequisites: [] },
-    { id: 'sailing', label: 'Sailing', cost: 50, prerequisites: ['pottery'] },
-    { id: 'bronze_working', label: 'Bronze Working', cost: 55, prerequisites: ['mining'] },
-  ], []);
+  const availableTechs = useMemo(() => 
+    state.techCatalog
+      .filter(tech => 
+        !player.researchedTechIds.includes(tech.id) &&
+        currentResearch?.techId !== tech.id &&
+        !queue.includes(tech.id) &&
+        tech.prerequisites.every(pr => player.researchedTechIds.includes(pr))
+      )
+      .map(tech => ({
+        id: tech.id,
+        label: tech.name,
+        cost: tech.cost,
+        prerequisites: tech.prerequisites,
+      }))
+  , [state.techCatalog, player.researchedTechIds, currentResearch, queue]);
 
-  // Mock queue for now - would need to implement queue system
-  const queue: string[] = [];
+  const handleAutoRecommend = () => {
+    if (availableTechs.length > 0) {
+      const recommended = availableTechs[0].id; // Simple: first available
+      dispatch({ type: 'START_RESEARCH', payload: { playerId, techId: recommended } });
+    }
+  };
 
   return (
     <ResearchPanel
       playerId={playerId}
-      currentResearch={currentResearch}
-      queue={queue}
+      currentResearch={currentResearch ? { id: currentResearch.techId, progress: currentResearch.progress } : undefined}
+      queue={queue.map(id => ({ id, progress: 0 }))} // Progress not tracked for queue yet
       availableTechs={availableTechs}
-      onStartResearch={(techId) => {
+      onStartResearch={(techId: string) => {
         dispatch({ type: 'START_RESEARCH', payload: { playerId, techId } });
       }}
-      onQueueResearch={(techId) => {
+      onQueueResearch={(techId: string) => {
         dispatch({ type: 'QUEUE_RESEARCH', payload: { playerId, techId } });
       }}
-      onAutoRecommend={() => {
-        // TODO: Implement auto-recommend logic
-        console.log('Auto-recommend research for', playerId);
-      }}
+      onAutoRecommend={handleAutoRecommend}
     />
   );
 }
