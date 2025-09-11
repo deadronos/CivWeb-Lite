@@ -89,6 +89,7 @@ export function generateWrappedBiomeGroups(
     colors?: string[];
     biome: string;
     variantIndex: number;
+    hexCoords: Array<{ q: number; r: number }>;
   }>,
   tiles: Array<{ coord: { q: number; r: number }; biome: any }>,
   config: WrappingConfig,
@@ -100,6 +101,7 @@ export function generateWrappedBiomeGroups(
     positions: [...group.positions],
     elevations: [...group.elevations],
     colors: group.colors ? [...group.colors] : undefined,
+    hexCoords: [...group.hexCoords],
   }));
 
   // Create lookup for quick tile access
@@ -127,6 +129,7 @@ export function generateWrappedBiomeGroups(
               origZ
             ]);
             wrappedGroups[groupIndex].elevations.push(group.elevations[origIndex]);
+            wrappedGroups[groupIndex].hexCoords.push(group.hexCoords[origIndex]);
             if (group.colors) {
               wrappedGroups[groupIndex].colors!.push(group.colors[origIndex]);
             }
@@ -152,6 +155,7 @@ export function generateWrappedBiomeGroups(
               origZ
             ]);
             wrappedGroups[groupIndex].elevations.push(group.elevations[origIndex]);
+            wrappedGroups[groupIndex].hexCoords.push(group.hexCoords[origIndex]);
             if (group.colors) {
               wrappedGroups[groupIndex].colors!.push(group.colors[origIndex]);
             }

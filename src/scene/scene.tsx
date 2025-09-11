@@ -144,7 +144,7 @@ export function ConnectedScene() {
   };
 
   const biomeGroups = useMemo(() => {
-    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; colors?: string[]; biome: string; variantIndex: number }>
+    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; colors?: string[]; biome: string; variantIndex: number; hexCoords: Array<{ q: number; r: number }> }>
       = Object.create(null);
     for (const [index, tile] of tiles.entries()) {
       const t = tile as any;
@@ -153,10 +153,11 @@ export function ConnectedScene() {
       // Assign a deterministic variant bucket; if no assets, this will be 1.
       const vIndex = Math.floor(hash2(t.coord.q, t.coord.r) * variantCount);
       const key = `${biome}#${vIndex}`;
-      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), colors: [], biome, variantIndex: vIndex };
+      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), colors: [], biome, variantIndex: vIndex, hexCoords: [] };
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       map[key].positions.push([x, 0, z]);
       map[key].elevations.push(elevations[index] ?? 0.5);
+      map[key].hexCoords.push({ q: t.coord.q, r: t.coord.r });
       // record the per-instance procedural color so InstancedTiles can use instanceColor
       map[key].colors!.push(colorForTile(t as any));
     }
@@ -284,6 +285,7 @@ export function ConnectedScene() {
             color={g.color}
             colors={enablePerInstanceColors ? g.colors : undefined}
             elevations={g.elevations}
+            hexCoords={g.hexCoords}
             size={DEFAULT_HEX_SIZE}
             onPointerMove={(e) => {
               const index = (e as any).instanceId;
@@ -298,6 +300,7 @@ export function ConnectedScene() {
         position={p}
         color={colors[index]}
         size={DEFAULT_HEX_SIZE}
+        hexCoord={tiles[index] ? { q: tiles[index].coord.q, r: tiles[index].coord.r } : undefined}
         onPointerMove={() => setHoverIndex(index)} />
 
       )

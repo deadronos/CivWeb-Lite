@@ -7,6 +7,7 @@ type InstancedTilesProperties = {
   colors?: string[]; // optional per-instance hex colors (length === positions.length)
   size?: number; // hex radius
   elevations?: number[]; // 0..1, same length as positions; used for slight height variation
+  hexCoords?: Array<{ q: number; r: number }>; // hex coordinates for alternating rotation pattern
   onPointerMove?: (event: any) => void;
 };
 
@@ -17,6 +18,7 @@ export function InstancedTiles({
   colors,
   size = 0.5,
   elevations,
+  hexCoords,
   onPointerMove,
 }: InstancedTilesProperties) {
   const count = positions.length;
@@ -79,7 +81,19 @@ export function InstancedTiles({
   const desiredHeight = 0.06 + (0.12 - 0.06) * Math.max(0, Math.min(1, elevation));
         const heightScale = desiredHeight / 0.08;
         object.scale.set(scaleFactor, heightScale, scaleFactor);
-        object.rotation.set(0, 0, 0);
+        
+        // Alternating hex rotation pattern for better tile interlocking
+        // Rotate alternate tiles by 30 degrees (π/6 radians) based on hex coordinates
+        let rotationY = 0;
+        if (hexCoords && hexCoords[index]) {
+          const { q, r } = hexCoords[index];
+          // Alternate tiles based on the sum of hex coordinates
+          if ((q + r) % 2 === 1) {
+            rotationY = Math.PI / 6; // 30 degrees
+          }
+        }
+        object.rotation.set(0, rotationY, 0);
+        
         object.updateMatrix();
         (mesh as any).setMatrixAt(index, object.matrix);
       }
@@ -431,7 +445,7 @@ export function InstancedTiles({
         // ignore
       }
     };
-  }, [positions, count, materialColor, object, size, colors]);
+  }, [positions, count, materialColor, object, size, colors, hexCoords]);
 
   // Build a simple hex cylinder geometry: cylinderGeometry(radius, radius, thickness, radialSegments)
   // We'll let the mesh create geometry from JSX children; provide proper args below.
