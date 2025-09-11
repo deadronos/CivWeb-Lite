@@ -30,4 +30,6 @@ export function tileIdToWorldFromExt(
 }
 
 // Default hex size (radius). Exported so rendering and layout can share the same scale.
-export const DEFAULT_HEX_SIZE = 0.5;
+// Increased from 0.5 to make hex tiles nearly touch at edges with minimal gaps
+// For flat-top hexes with spacing 3/2*r horizontally, this size creates ~1px visual gaps
+export const DEFAULT_HEX_SIZE = 0.7;
