@@ -44,9 +44,9 @@ function GameHUDInner() {
 
   const human = state.players.find((p) => p.isHuman);
   const techSummary = React.useMemo(() => {
-    if (!human?.researching) return null;
+    if (!human?.researching) return;
     const tech = state.techCatalog.find((t) => t.id === human.researching!.techId);
-    if (!tech) return null;
+    if (!tech) return;
     const pct = Math.floor((human.researching.progress / tech.cost) * 100);
     return `${tech.name} ${pct}%`;
   }, [human, state.techCatalog]);
@@ -54,22 +54,22 @@ function GameHUDInner() {
   const aiAvg =
     state.aiPerf && state.aiPerf.count > 0
       ? (state.aiPerf.total / state.aiPerf.count).toFixed(2)
-      : null;
+      : undefined;
 
   // Content extension HUD bits (cities, science, research progress)
   const extension = state.contentExt;
   const cityCount = extension ? Object.keys(extension.cities).length : 0;
   const extensionResearch = React.useMemo(() => {
-    if (!extension?.playerState.research) return null;
+    if (!extension?.playerState.research) return;
     const tech = TECHS[extension.playerState.research.techId];
-    if (!tech) return null;
+    if (!tech) return;
     const pct = Math.floor((extension.playerState.research.progress / tech.cost) * 100);
     return `${tech.name} ${pct}%`;
   }, [extension?.playerState.research]);
   const extensionCultureResearch = React.useMemo(() => {
-    if (!extension?.playerState.cultureResearch || !extension?.civics) return null;
+    if (!extension?.playerState.cultureResearch || !extension?.civics) return;
     const civic = extension.civics[extension.playerState.cultureResearch.civicId];
-    if (!civic) return null;
+    if (!civic) return;
     const pct = Math.floor((extension.playerState.cultureResearch.progress / civic.cost) * 100);
     return `${civic.name} ${pct}%`;
   }, [extension?.playerState.cultureResearch]);
@@ -259,10 +259,10 @@ function SpecControls() {
   const [moveToTileId, setMoveToTileId] = React.useState('');
   const [spawnUnitType, setSpawnUnitType] = React.useState('');
   const [catalogUnits, setCatalogUnits] = React.useState<
-    { id: string; name: string; requires: string | null }[]
+    { id: string; name: string; requires?: string }[]
   >([]);
   const [catalogBuildings, setCatalogBuildings] = React.useState<
-    { id: string; name: string; requires: string | null }[]
+    { id: string; name: string; requires?: string }[]
   >([]);
   const [queueBuildingId, setQueueBuildingId] = React.useState('');
   const [cultureCivics, setCultureCivics] = React.useState<
@@ -275,12 +275,12 @@ function SpecControls() {
         ([ulist, blist, clist]) => {
           if (on)
             setCatalogUnits(
-              ulist.map((u) => ({ id: u.id, name: u.name, requires: (u as any).requires ?? null }))
+              ulist.map((u) => ({ id: u.id, name: u.name, requires: (u as any).requires ?? undefined }))
             );
           if (on && ulist.length > 0 && !spawnUnitType) setSpawnUnitType(ulist[0].id);
           if (on)
             setCatalogBuildings(
-              blist.map((b) => ({ id: b.id, name: b.name, requires: (b as any).requires ?? null }))
+              blist.map((b) => ({ id: b.id, name: b.name, requires: (b as any).requires ?? undefined }))
             );
           if (on && blist.length > 0 && !queueBuildingId) setQueueBuildingId(blist[0].id);
           if (on && clist)

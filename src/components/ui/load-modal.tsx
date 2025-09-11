@@ -13,7 +13,7 @@ export default function LoadModal({
 }: {open: boolean;onClose: () => void;autoFocusText?: boolean;}) {
   const { dispatch } = useGame();
   const [text, setText] = React.useState('');
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | undefined>();
   const textReference = React.useRef<HTMLTextAreaElement | null>(null);
 
   React.useEffect(() => {
@@ -46,7 +46,7 @@ export default function LoadModal({
     }
   };
 
-  if (!open) return null;
+  if (!open) return;
   return (
     <div role="dialog" aria-modal="true" aria-label="Load Game" style={styles.backdrop}>
       <div style={styles.panel}>
@@ -62,13 +62,18 @@ export default function LoadModal({
             ref={textReference}
             aria-label="save json"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(event) => setText(event.target.value)}
             rows={8}
             style={{ width: '100%' }} />
 
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={onPasteLoad}>Load from Text</button>
-            <button onClick={() => document.querySelector('#load-file-input')?.click()}>
+            <button onClick={() => {
+              const input = document.querySelector('#load-file-input');
+              if (input instanceof HTMLInputElement) {
+                input.click();
+              }
+            }}>
               Choose File…
             </button>
             <input

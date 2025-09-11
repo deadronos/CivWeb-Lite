@@ -4,7 +4,7 @@ export type TechItem = { id: string; name: string; cost: number; unlocked?: bool
 
 export type LeftPanelProps = {
   techs: TechItem[];
-  currentTechId?: string | null;
+  currentTechId?: string;
   onSelect: (techId: string) => void;
 };
 

@@ -4,7 +4,7 @@ import buildings from '../../data/buildings.json';
 
 export default function RightProductionPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [tab, setTab] = React.useState<'units' | 'buildings'>('units');
-  if (!open) return null;
+  if (!open) return;
   return (
     <aside className="ui-rightpanel" aria-label="city production">
       <div className="panel-header">

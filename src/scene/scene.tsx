@@ -63,7 +63,7 @@ export function ConnectedScene() {
   };
 
   const biomeGroups = useMemo(() => {
-    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; biome: string; variantIndex: number }>
+    const map: Record<string, { positions: Array<[number, number, number]>; elevations: number[]; color: string; colors?: string[]; biome: string; variantIndex: number }>
       = Object.create(null);
     for (const [index, tile] of tiles.entries()) {
       const t = tile as any;
@@ -72,10 +72,12 @@ export function ConnectedScene() {
       // Assign a deterministic variant bucket; if no assets, this will be 1.
       const vIndex = Math.floor(hash2(t.coord.q, t.coord.r) * variantCount);
       const key = `${biome}#${vIndex}`;
-      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), biome, variantIndex: vIndex };
+      if (!map[key]) map[key] = { positions: [], elevations: [], color: colorForBiomeBucket(t.biome as any, vIndex, variantCount), colors: [], biome, variantIndex: vIndex };
       const [x, z] = axialToWorld(t.coord.q, t.coord.r, DEFAULT_HEX_SIZE);
       map[key].positions.push([x, 0, z]);
       map[key].elevations.push(elevations[index] ?? 0.5);
+      // record the per-instance procedural color so InstancedTiles can use instanceColor
+      map[key].colors!.push(colorForTile(t as any));
     }
     return Object.values(map);
   }, [tiles, elevations]);
@@ -191,6 +193,7 @@ export function ConnectedScene() {
             key={g.biome + ':' + gi}
             positions={g.positions}
             color={g.color}
+            colors={g.colors}
             elevations={g.elevations}
             size={DEFAULT_HEX_SIZE}
             onPointerMove={(e) => {

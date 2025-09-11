@@ -16,7 +16,7 @@ test('END_TURN completes research and emits tech:unlocked', () => {
   } as any;
   s.players = [player];
 
-  let unlocked: any = null;
+  let unlocked: any;
   const off = globalGameBus.on('tech:unlocked', (p) => {
     unlocked = p;
   });

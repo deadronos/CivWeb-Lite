@@ -4,7 +4,7 @@ import techs from '../../data/techs.json';
 
 export default function LeftCivicPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [tab, setTab] = React.useState<'science' | 'culture'>('culture');
-  if (!open) return null;
+  if (!open) return;
   const list = tab === 'culture' ? (civics as any[]) : (techs as any[]);
   return (
     <aside className="ui-leftpanel" aria-label="research chooser">

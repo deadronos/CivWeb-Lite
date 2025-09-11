@@ -4,7 +4,7 @@ export type CivicItem = { id: string; name: string; cost: number };
 
 export type CivicPanelProps = {
   civics: CivicItem[];
-  currentCivicId?: string | null;
+  currentCivicId?: string;
   onSelect: (civicId: string) => void;
 };
 
