@@ -64,7 +64,7 @@ describe('loadBiomeVariants', () => {
 
     // Filter the calls to console.warn to find any that included a TypeError.
     const typeErrorWarnings = consoleWarnSpy.mock.calls.filter(
-      (callArgs) => callArgs[3] instanceof TypeError
+      (callArguments) => callArguments[3] instanceof TypeError
     );
 
     // This assertion will FAIL with the buggy code because typeErrorWarnings.length will be 3.

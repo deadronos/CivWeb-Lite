@@ -25,26 +25,26 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
     case 'OPEN_CITY_PANEL': {
       const cityId = (action as any).payload?.cityId as string | undefined;
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
-      draft.ui.openPanels = { ...(draft.ui.openPanels || {}), cityPanel: cityId };
+      draft.ui.openPanels = { ...draft.ui.openPanels, cityPanel: cityId };
       break;
     }
 
     case 'CLOSE_CITY_PANEL': {
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
-      draft.ui.openPanels = { ...(draft.ui.openPanels || {}), cityPanel: undefined };
+      draft.ui.openPanels = { ...draft.ui.openPanels, cityPanel: undefined };
       break;
     }
 
     case 'OPEN_RESEARCH_PANEL': {
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
-      draft.ui.openPanels = { ...(draft.ui.openPanels || {}), researchPanel: true };
+      draft.ui.openPanels = { ...draft.ui.openPanels, researchPanel: true };
       break;
     }
 
     case 'CLOSE_RESEARCH_PANEL': {
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
       // normalize close to explicit false for predictable assertions
-      draft.ui.openPanels = { ...(draft.ui.openPanels || {}), researchPanel: false };
+      draft.ui.openPanels = { ...draft.ui.openPanels, researchPanel: false };
       break;
     }
 
@@ -73,7 +73,7 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
           draft.ui.previewPath = undefined;
           (draft.ui as any).previewCombat = undefined;
         }
-      } catch (e) {
+      } catch {
         draft.ui.previewPath = undefined;
         (draft.ui as any).previewCombat = undefined;
       }
@@ -104,8 +104,8 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
       }
       // iterate through path steps (skip first element when it equals current location)
       const startIndex = path[0] === unit.location ? 1 : 0;
-      for (let i = startIndex; i < path.length; i++) {
-        const tid = path[i];
+      for (let index = startIndex; index < path.length; index++) {
+        const tid = path[index];
         // if defender present and not confirmed, abort
         const tile = extension.tiles[tid];
         if (!tile) break;
@@ -126,7 +126,7 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
         try {
           const ok = extensionMoveUnit(extension, uid, tid);
           if (!ok) break;
-        } catch (e) {
+        } catch {
           break;
         }
       }

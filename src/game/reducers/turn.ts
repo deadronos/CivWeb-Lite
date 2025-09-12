@@ -110,8 +110,9 @@ export function turnReducer(draft: Draft<GameState>, action: GameAction): void {
               break;
             }
             // Ignore other actions for now
-            default:
+            default: {
               console.warn(`AI sub-action not handled: ${subAction.type}`);
+            }
           }
         }
 

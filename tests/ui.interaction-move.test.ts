@@ -10,9 +10,9 @@ describe('UI interaction movement flow', () => {
       type: 'NEW_GAME',
       payload: { seed: 'test', totalPlayers: 1, humanPlayers: 1 }
     });
-    const ext = state.contentExt!;
-    const unitId = Object.keys(ext.units)[0];
-    const range = computeMovementRange(ext, unitId, state.map.width, state.map.height);
+    const extension = state.contentExt!;
+    const unitId = Object.keys(extension.units)[0];
+    const range = computeMovementRange(extension, unitId, state.map.width, state.map.height);
     expect(range.reachable.length).toBeGreaterThan(0);
     const target = range.reachable[0];
     state = applyAction(state, { type: 'SELECT_UNIT', payload: { unitId } });

@@ -26,8 +26,8 @@ export function CityPanelContainer({ cityId }: { cityId: string }) {
     const allUnits = Object.values(UNIT_TYPES).filter(u => 
       researchedTechIds.includes(u.requires) || u.requires === null // Assume 'requires' field
     );
-    const allImprovements = Object.values(IMPROVEMENTS).filter(i => 
-      researchedTechIds.includes(i.requires) || i.requires === null
+    const allImprovements = Object.values(IMPROVEMENTS).filter(index => 
+      researchedTechIds.includes(index.requires) || index.requires === null
     );
     const allBuildings = Object.values(BUILDINGS).filter(b => 
       researchedTechIds.includes(b.requires) || b.requires === null

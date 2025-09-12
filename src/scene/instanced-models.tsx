@@ -28,25 +28,25 @@ export default function InstancedModels({
   name,
   frustumCulled = false,
 }: Properties) {
-  const meshRef = React.useRef<InstancedMesh>(null!);
+  const meshReference = React.useRef<InstancedMesh>(null!);
 
   // Apply matrices whenever transforms change
   React.useEffect(() => {
-    const mesh = meshRef.current as any;
+    const mesh = meshReference.current as any;
     if (!mesh || typeof mesh.setMatrixAt !== 'function') return; // tests/jsdom may stub this
-    const temp = new Object3D();
+    const temporary = new Object3D();
     const count = transforms.length;
     mesh.count = count;
-    for (let i = 0; i < count; i++) {
-      const t = transforms[i];
+    for (let index = 0; index < count; index++) {
+      const t = transforms[index];
       const [x, y, z] = t.position;
-      temp.position.set(x, y, z);
+      temporary.position.set(x, y, z);
       const s = t.scale ?? 1;
-      if (Array.isArray(s)) temp.scale.set(s[0], s[1], s[2]);
-      else temp.scale.setScalar(s);
-      temp.rotation.set(0, t.rotationY ?? 0, 0);
-      temp.updateMatrix();
-      mesh.setMatrixAt(i, temp.matrix as Matrix4);
+      if (Array.isArray(s)) temporary.scale.set(s[0], s[1], s[2]);
+      else temporary.scale.setScalar(s);
+      temporary.rotation.set(0, t.rotationY ?? 0, 0);
+      temporary.updateMatrix();
+      mesh.setMatrixAt(index, temporary.matrix as Matrix4);
     }
     if (mesh.instanceMatrix) mesh.instanceMatrix.needsUpdate = true;
   }, [transforms]);
@@ -54,7 +54,7 @@ export default function InstancedModels({
   if (!geometry || !material || transforms.length === 0) return null;
   return (
     <instancedMesh
-      ref={meshRef}
+      ref={meshReference}
       args={[geometry, material, Math.max(1, transforms.length)] as any}
       castShadow={castShadow}
       receiveShadow={receiveShadow}

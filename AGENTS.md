@@ -30,7 +30,6 @@ No need for --yolo flag for read-only analysis
 
 When checking implementations, be specific about what you're looking for to get accurate results
 
-
 ## Project Structure & Module Organization
 
 - See `src-file-structure.md` for the recommended project structure.
@@ -102,4 +101,3 @@ Developer tips
 - Keep Three.js code under `src/scene` and DOM UI under `src/components` or top-level `src/*`.
 - The `GameProvider` uses `requestAnimationFrame` to implement the autoSim loop — be careful with side effects and memoize callbacks (e.g., `dispatch`) to avoid infinite update loops.
 - When adding or changing action shapes, update `src/game/actions.ts`, `schema/action.schema.ts`, and any tests simultaneously to avoid runtime validation failures.
-

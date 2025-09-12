@@ -50,14 +50,14 @@ describe('UI Interaction Actions', () => {
   it('should handle START_RESEARCH action when contentExt exists', () => {
     const initialState = initialStateForTests();
     // Ensure contentExt exists
-    const stateWithExt = applyAction(initialState, { type: 'INIT' as const });
+    const stateWithExtension = applyAction(initialState, { type: 'INIT' as const });
     
     const action = { 
       type: 'START_RESEARCH' as const, 
       payload: { playerId: 'player1', techId: 'agriculture' } 
     };
     
-    const newState = applyAction(stateWithExt, action);
+    const newState = applyAction(stateWithExtension, action);
     
     // The action should complete without error
     expect(newState).toBeDefined();

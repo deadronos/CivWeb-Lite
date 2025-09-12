@@ -30,10 +30,10 @@ export function mapBiome(b: BiomeType): ExtensionBiome {
   }
 }
 
-export function populateExtensionTiles(ext: GameStateExtension, tiles: Tile[]) {
-  ext.tiles = {};
+export function populateExtensionTiles(extension: GameStateExtension, tiles: Tile[]) {
+  extension.tiles = {};
   for (const t of tiles) {
-    ext.tiles[t.id] = {
+    extension.tiles[t.id] = {
       id: t.id,
       q: t.coord.q,
       r: t.coord.r,
@@ -54,14 +54,17 @@ export function isSuitableSpawnTerrain(biome: BiomeType): boolean {
     case BiomeType.Grassland:
     case BiomeType.Forest:
     case BiomeType.Desert:
-    case BiomeType.Tundra:
+    case BiomeType.Tundra: {
       return true;
+    }
     case BiomeType.Ocean:
     case BiomeType.Ice:
-    case BiomeType.Mountain:
+    case BiomeType.Mountain: {
       return false;
-    default:
+    }
+    default: {
       return false;
+    }
   }
 }
 

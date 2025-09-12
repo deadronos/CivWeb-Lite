@@ -27,11 +27,11 @@ describe('Starting spawn separation', () => {
       },
     });
 
-    const ext = newState.contentExt!;
+    const extension = newState.contentExt!;
 
     // Collect one representative spawn tile per player (first unit location)
     const spawnByPlayer: Record<string, string> = {};
-    for (const u of Object.values(ext.units)) {
+    for (const u of Object.values(extension.units)) {
       if (!spawnByPlayer[u.ownerId]) {
         spawnByPlayer[u.ownerId] = String(u.location);
       }
@@ -43,17 +43,17 @@ describe('Starting spawn separation', () => {
     const minDistance = Math.max(4, Math.floor(Math.min(width, height) / 4));
 
     const entries = Object.entries(spawnByPlayer);
-    for (let i = 0; i < entries.length; i++) {
-      const [, aId] = entries[i];
+    for (let index = 0; index < entries.length; index++) {
+      const [, aId] = entries[index];
       const aTile = newState.map.tiles.find((t) => t.id === aId)!;
-      for (let j = i + 1; j < entries.length; j++) {
-        const [, bId] = entries[j];
+      for (let index_ = index + 1; index_ < entries.length; index_++) {
+        const [, bId] = entries[index_];
         const bTile = newState.map.tiles.find((t) => t.id === bId)!;
-        const dist = hexDistance({ q: aTile.coord.q, r: aTile.coord.r }, {
+        const distribution = hexDistance({ q: aTile.coord.q, r: aTile.coord.r }, {
           q: bTile.coord.q,
           r: bTile.coord.r,
         });
-        expect(dist).toBeGreaterThanOrEqual(minDistance);
+        expect(distribution).toBeGreaterThanOrEqual(minDistance);
       }
     }
   });

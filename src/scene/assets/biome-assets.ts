@@ -32,9 +32,9 @@ function pickBestMesh(meshes: Mesh[]): Mesh | undefined {
     const g: any = m.geometry;
     const tri = g?.index
       ? g.index.count / 3
-      : g?.attributes?.position?.count
+      : (g?.attributes?.position?.count
         ? g.attributes.position.count / 3
-        : 0;
+        : 0);
     if (tri > bestTris) {
       bestTris = tri;
       best = m;

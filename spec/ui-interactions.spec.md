@@ -159,7 +159,7 @@ Acceptance tests:
 - Submitting a valid move action results in actionAccepted and later an actionsResolved event where the unit's final position equals the end of the submitted path.
 - Submitting an illegal action (e.g., move through impassable tile) results in actionRejected with a human-friendly reason.
 
-2.2 Turn-based AI Behavior
+  2.2 Turn-based AI Behavior
 
 User story: AI players construct a list of actions during their playerActionPhase and submit them as a single batch. The engine should apply AI actions in the same deterministic way as human player actions.
 
@@ -172,7 +172,7 @@ Acceptance tests:
 - Deterministic AI: given a fixed random seed and fixed game state, calling aiComputeAndSubmit should produce the same computedActions on repeated runs.
 - AI parity: For a given valid action sequence computed by AI, the engine returns actionAccepted and actionsResolved and the resulting state is equivalent to a human-submitted action sequence with the same actions.
 
-2.3 Production & Queue Resolution
+  2.3 Production & Queue Resolution
 
 User story: During the endTurn phase, cities consume production to advance their current queue items. If production finishes, the new unit/building is spawned or the improvement order is flagged for worker assignment.
 
@@ -186,7 +186,7 @@ Acceptance tests:
 - A city with exactly enough production finishes the item during endTurn and emits productionCompleted with spawnedEntityId set.
 - If a queued improvement requires a target tile and no valid tile exists at endTurn, the order is marked as failed and a productionFailure event is emitted.
 
-2.4 Combat & Resolution
+  2.4 Combat & Resolution
 
 User story: When movement or attack actions result in combat, combat should be resolved during the resolution step. Combat may be instant or multi-round depending on unit rules. All combat results are emitted as structured events so the UI can animate them.
 
@@ -199,7 +199,7 @@ Acceptance tests:
 - Initiating an attack action against an enemy unit results in a combatResolved event where the defender or attacker is removed or has updated HP according to deterministic combat rules.
 - If simultaneous movement causes unit collisions, the engine resolves collisions deterministically (document the collision policy: mover-first or simultaneous) and emits appropriate actionResults.
 
-2.5 Resource & Tech Tick
+  2.5 Resource & Tech Tick
 
 User story: At the start or end of turn (project chooses standard), resource generation (gold, science, food) and research progress must be applied consistently.
 

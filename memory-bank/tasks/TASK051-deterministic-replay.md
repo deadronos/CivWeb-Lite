@@ -18,7 +18,6 @@ Plan marks deterministic replay as complete but notes that automated verificatio
 ## Acceptance criteria
 
 - A Vitest test `tests/deterministic-replay.test.ts` is added that:
-
   - Runs K random seeds (configurable), records actions during a run to memory (or temp files), replays them in a fresh environment with the same seed, and asserts final state hash equality.
   - On failure, writes a minimal repro (seed + action list) to `test-results/replay-failure-<seed>.json` for debugging.
 

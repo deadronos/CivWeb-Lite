@@ -2,8 +2,6 @@
 
 ## In Progress
 
-
-
 ## Pending
 
 - [TASK052..054] Performance benchmarks & rendering - Bench instanced vs non-instanced rendering and collect metrics
