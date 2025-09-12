@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGame } from '../../hooks/use-game';
-import { useAvailableTechs } from '../../hooks/useAvailableTechs';
+import { useAvailableTechs } from '../../hooks/use-available-techs';
 import { ResearchPanel } from './research-panel';
 
 export function ResearchPanelContainer({ playerId }: { playerId: string }) {

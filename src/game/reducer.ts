@@ -151,7 +151,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             const nextTech = draft.techCatalog.find((t) => t.id === nextId);
             if (nextTech && nextTech.prerequisites.every((p) => player.researchedTechIds.includes(p))) {
               player.researching = { techId: nextId, progress: 0 };
-              globalGameBus.emit('researchStarted', { playerId: techId: nextId });
+              globalGameBus.emit('researchStarted', { playerId, techId: nextId });
             }
           }
         }
@@ -578,6 +578,18 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       }
       case 'OPEN_CITY_PANEL': {
         draft.ui.openPanels.cityPanel = action.payload.cityId;
+        break;
+      }
+      case 'CLOSE_CITY_PANEL': {
+        draft.ui.openPanels.cityPanel = undefined;
+        break;
+      }
+      case 'OPEN_RESEARCH_PANEL': {
+        draft.ui.openPanels.researchPanel = true;
+        break;
+      }
+      case 'CLOSE_RESEARCH_PANEL': {
+        draft.ui.openPanels.researchPanel = false;
         break;
       }
       case 'CHOOSE_PRODUCTION_ITEM': {
