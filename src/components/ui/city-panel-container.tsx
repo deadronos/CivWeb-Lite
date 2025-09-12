@@ -17,6 +17,24 @@ export function CityPanelContainer({ cityId }: { cityId: string }) {
     // TODO: Store targetTileId in internal format when implementing improvement targeting
   }));
 
+  const player = state.players.find(p => p.ownerId === city.ownerId); // Assume ownerId on city
+  if (!player) return null;
+
+  // Memoized available production items (units, improvements, buildings unlocked by techs)
+  const availableProduction = useMemo(() => {
+    const { researchedTechIds } = player;
+    const allUnits = Object.values(UNIT_TYPES).filter(u => 
+      researchedTechIds.includes(u.requires) || u.requires === null // Assume 'requires' field
+    );
+    const allImprovements = Object.values(IMPROVEMENTS).filter(i => 
+      researchedTechIds.includes(i.requires) || i.requires === null
+    );
+    const allBuildings = Object.values(BUILDINGS).filter(b => 
+      researchedTechIds.includes(b.requires) || b.requires === null
+    );
+    return { units: allUnits, improvements: allImprovements, buildings: allBuildings };
+  }, [player.researchedTechIds.length]); // Optimize dep on length; full array if needed for specifics
+
   // Mock available items for now - in a real implementation this would come from tech tree
   const availableItems = useMemo(() => [
     { id: 'warrior', type: 'unit' as const, label: 'Warrior', cost: 40 },

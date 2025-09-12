@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useGame } from '../../hooks/use-game';
+import { useAvailableTechs } from '../../hooks/useAvailableTechs';
 import { ResearchPanel } from './research-panel';
 
 export function ResearchPanelContainer({ playerId }: { playerId: string }) {
@@ -7,26 +8,11 @@ export function ResearchPanelContainer({ playerId }: { playerId: string }) {
   const player = state.players.find(p => p.id === playerId);
   const extension = state.contentExt;
   
-  if (!player || !extension) return undefined;
+  if (!player || !extension) return null;
 
   const currentResearch = player.researching;
   const queue = player.researchQueue || [];
-  
-  const availableTechs = useMemo(() => 
-    state.techCatalog
-      .filter(tech => 
-        !player.researchedTechIds.includes(tech.id) &&
-        currentResearch?.techId !== tech.id &&
-        !queue.includes(tech.id) &&
-        tech.prerequisites.every(pr => player.researchedTechIds.includes(pr))
-      )
-      .map(tech => ({
-        id: tech.id,
-        label: tech.name,
-        cost: tech.cost,
-        prerequisites: tech.prerequisites,
-      }))
-  , [state.techCatalog, player.researchedTechIds, currentResearch, queue]);
+  const availableTechs = useAvailableTechs(state.techCatalog, player);
 
   const handleAutoRecommend = () => {
     if (availableTechs.length > 0) {
