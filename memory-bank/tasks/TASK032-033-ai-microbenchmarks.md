@@ -1,6 +1,6 @@
 # [TASK-032 / TASK-033] AI micro-benchmarks & optimizations
 
-**Status:** Not Started
+**Status:** Completed
 
 **Added:** 2025-09-12
 
@@ -33,9 +33,13 @@ Reconcile plan: AI decision function exists but micro-benchmarks across represen
 
 ## Tasks
 
-- [ ] Create `scripts/ai-bench.ts` that loads AI decision function and runs the benchmark harness.
-- [ ] Add a README snippet or `docs/ai-bench-results.md` for results.
+- [x] Create `scripts/ai-bench.ts` that loads AI decision function and runs the benchmark harness.
+- [x] Add a README snippet or `docs/ai-bench-results.md` for results.
 - [ ] If needed, open follow-up PR(s) for optimizations with before/after metrics.
+
+## Result
+
+Benchmark run on 2025-09-12 showed mean decision times well below 50ms, so no immediate optimizations were necessary.
 
 ## ETA
 

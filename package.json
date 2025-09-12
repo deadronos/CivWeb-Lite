@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,html}\"",
     "bench:world": "tsx scripts/benchWorld.ts",
-    "bench:ai": "tsx scripts/ai-benchmark.ts",
+    "bench:ai": "tsx scripts/ai-bench.ts",
     "bench:turn": "tsx scripts/turn-benchmark.ts",
     "test:e2e": "playwright test"
   },
