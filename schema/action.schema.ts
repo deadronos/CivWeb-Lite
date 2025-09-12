@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { UnitState } from '../src/types/unit';
+const UnitStateSchema = z.nativeEnum(UnitState);
 
 export const MoveActionSchema = z.object({ type: z.literal('move'), unitId: z.string(), path: z.array(z.string()) });
 export const AttackActionSchema = z.object({
@@ -22,6 +24,16 @@ export const EndTurnUpperSchema = z.object({ type: z.literal('END_TURN') });
 export const LogEventSchema = z.object({ type: z.literal('LOG_EVENT'), payload: z.any().optional() });
 export const RecordAIPerfSchema = z.object({ type: z.literal('RECORD_AI_PERF'), payload: z.object({ duration: z.number() }).optional() });
 
+export const AddUnitStateActionSchema = z.object({
+  type: z.literal('ADD_UNIT_STATE'),
+  payload: z.object({ unitId: z.string(), state: UnitStateSchema }),
+});
+
+export const RemoveUnitStateActionSchema = z.object({
+  type: z.literal('REMOVE_UNIT_STATE'),
+  payload: z.object({ unitId: z.string(), state: UnitStateSchema }),
+});
+
 
 export const GameActionSchema = z.discriminatedUnion('type', [
   MoveActionSchema,
@@ -34,6 +46,8 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   EndTurnUpperSchema,
   LogEventSchema,
   RecordAIPerfSchema,
+  AddUnitStateActionSchema,
+  RemoveUnitStateActionSchema,
 ]);
 
 // permissive catch-all for runtime events that are not strict game actions

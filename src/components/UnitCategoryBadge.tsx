@@ -40,7 +40,8 @@ export default function UnitCategoryBadge({ category }: UnitCategoryBadgeProps) 
       style={pillStyle}
       aria-label={`${category} unit category`}
     >
-      <IconComponent size={12} data-testid="category-icon" />
+      {/* IconComponent typing may not accept size/style props in this project setup; cast to any to render with props */}
+      {(IconComponent as any)({ size: 12, 'data-testid': 'category-icon' })}
     </div>
   );
 }

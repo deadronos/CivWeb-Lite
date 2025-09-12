@@ -64,6 +64,10 @@ export interface UIState {
   openPanels: {
     cityPanel?: string; // cityId if open
     researchPanel?: boolean;
+    // Dev / spec helper panels
+    specPanel?: boolean;
+    // Developer mode toggle (guards dev UI)
+    devPanel?: boolean;
   };
 }
 
@@ -83,7 +87,7 @@ export interface GameState {
   ui: UIState;
   // Optional extension for spec-driven content (biomes/units/cities/tech system)
   // This keeps the main GameState backward compatible while allowing incremental rollout.
-  contentExt?: import('./content/types').GameStateExt;
+  contentExt?: import('./content/types').GameStateExtensionAlias;
 }
 
 export interface LoadResult {

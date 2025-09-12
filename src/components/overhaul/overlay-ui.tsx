@@ -67,6 +67,7 @@ function TopMenu({
   onOpenCities: () => void;
 }) {
   const { dispatch } = useGame();
+  const { state } = useGame();
   
   const Item = (p: React.PropsWithChildren<{ onClick?: () => void }>) => (
     <button className="ui-topmenu-item" onClick={p.onClick}>
@@ -93,6 +94,16 @@ function TopMenu({
         <Item>Manual</Item>
       </div>
       <div className="ui-topmenu-right">
+        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <input
+            type="checkbox"
+            checked={!!state.ui.openPanels.devPanel}
+            onChange={(e) =>
+              dispatch(e.target.checked ? ({ type: 'OPEN_DEV_PANEL' } as any) : ({ type: 'CLOSE_DEV_PANEL' } as any))
+            }
+          />
+          Dev
+        </label>
         <button className="ui-turn" onClick={() => dispatch({ type: 'END_TURN' })}>
           Turn Done
         </button>

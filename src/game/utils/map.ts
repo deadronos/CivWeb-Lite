@@ -1,7 +1,7 @@
 import { BiomeType, Tile } from '../types';
-import { GameStateExtension, ExtensionBiome } from '../content/types';
+import { GameStateExtension } from '../content/types';
 
-export function mapBiome(b: BiomeType): ExtensionBiome {
+export function mapBiome(b: BiomeType): string {
   switch (b) {
     case BiomeType.Grassland: {
       return 'grassland';
@@ -22,7 +22,7 @@ export function mapBiome(b: BiomeType): ExtensionBiome {
       return 'ocean';
     }
     case BiomeType.Ice: {
-      return 'snow';
+  return 'snow';
     }
     default: {
       return 'grassland';

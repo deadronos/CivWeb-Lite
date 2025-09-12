@@ -5,7 +5,7 @@ export type CombatPreview = {
   requiresConfirm: boolean;
   expectedOutcome: 'unknown';
 };
-import type { GameStateExt as GameStateExtension, Hextile, Unit } from './content/types';
+import type { GameStateExtensionAlias as GameStateExtension, Hextile, Unit } from './content/types';
 import { neighbors as hexNeighbors } from './world/hex';
 import { movementCost, isPassable } from './content/biomes';
 import { UNIT_TYPES } from './content/registry';
@@ -25,9 +25,9 @@ function buildIndex(tiles: Record<string, Hextile>): Map<string, string> {
 }
 
 function passableFor(state: GameStateExtension, unit: Unit, tile: Hextile): boolean {
-  const unitDef = UNIT_TYPES[unit.type];
-  if (!unitDef) return false;
-  return isPassable(tile, { unitAbilities: unit.abilities, unitDomain: unitDef.domain });
+  const unitType = UNIT_TYPES[unit.type];
+  if (!unitType) return false;
+  return isPassable(tile, { unitAbilities: unit.abilities, unitDomain: unitType.domain });
 }
 
 export function computePath(
@@ -36,15 +36,15 @@ export function computePath(
   targetTileId: string,
   width?: number,
   height?: number
-):
-  | { path: string[]; totalCost: number; combatPreview?: CombatPreview }
-  | { path: null; totalCost: number } {
+): { path: string[] | null | undefined; totalCost: number; combatPreview?: CombatPreview } {
   const unit = state.units[unitId];
-  const start = unit ? state.tiles[unit.location] : undefined;
+  // unit.location may be a string tile id or a coord object - normalize to id string
+  const unitLocationId = unit ? (typeof unit.location === 'string' ? unit.location : `${unit.location.q},${unit.location.r}`) : undefined;
+  const start = unitLocationId ? state.tiles[unitLocationId] : undefined;
   const goal = state.tiles[targetTileId];
-  if (!unit || !start || !goal) return { path: null, totalCost: Infinity };
-  const unitDef = UNIT_TYPES[unit.type];
-  if (!unitDef) return { path: null, totalCost: Infinity };
+  if (!unit || !start || !goal) return { path: undefined, totalCost: Infinity };
+  const unitType = UNIT_TYPES[unit.type];
+  if (!unitType) return { path: undefined, totalCost: Infinity };
   const index = buildIndex(state.tiles);
 
   // Dijkstra with predecessor map and simple sorted queue
@@ -71,7 +71,7 @@ export function computePath(
       const nt = state.tiles[nid];
       if (!passableFor(state, unit, nt)) continue;
       const step = Math.ceil(
-        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: unitDef.domain })
+        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: unitType.domain })
       );
       const alt = (distribution.get(cid) ?? Infinity) + step;
       if (alt < (distribution.get(nid) ?? Infinity)) {
@@ -83,7 +83,7 @@ export function computePath(
       }
     }
   }
-  if (!pred.has(goal.id)) return { path: null, totalCost: Infinity };
+  if (!pred.has(goal.id)) return { path: undefined, totalCost: Infinity };
   const out: string[] = [];
   let current: string | undefined = goal.id;
   while (current) {
@@ -135,10 +135,12 @@ export function computeMovementRange(
   height?: number
 ): { reachable: string[]; cost: Record<string, number> } {
   const unit = state.units[unitId];
-  const start = unit ? state.tiles[unit.location] : undefined;
+  const unitLocationId2 = unit ? (typeof unit.location === 'string' ? unit.location : `${unit.location.q},${unit.location.r}`) : undefined;
+  const start2 = unitLocationId2 ? state.tiles[unitLocationId2] : undefined;
+  const start = start2;
   if (!unit || !start) return { reachable: [], cost: {} };
-  const unitDef = UNIT_TYPES[unit.type];
-  if (!unitDef) return { reachable: [], cost: {} };
+  const unitType = UNIT_TYPES[unit.type];
+  if (!unitType) return { reachable: [], cost: {} };
   const index = buildIndex(state.tiles);
   const distribution = new Map<string, number>();
   const reachable: string[] = [];
@@ -163,7 +165,7 @@ export function computeMovementRange(
       const nt = state.tiles[nid];
       if (!passableFor(state, unit, nt)) continue;
       const step = Math.ceil(
-        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: unitDef.domain })
+        movementCost(nt, { unitAbilities: unit.abilities, unitDomain: unitType.domain })
       );
       const alt = ccost + step;
       if (alt < (distribution.get(nid) ?? Infinity)) {

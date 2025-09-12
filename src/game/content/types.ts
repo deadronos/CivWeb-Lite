@@ -1,3 +1,4 @@
+import { UnitState, UnitActiveStates } from '../../types/unit';
 export type Biome =
   | 'ocean'
   | 'coast'
@@ -35,7 +36,7 @@ export interface Unit {
   attack: number;
   defense: number;
   sight: number;
-  state: 'idle' | 'moving' | 'fortify' | 'building' | 'exploring';
+  activeStates: UnitActiveStates;
   abilities?: string[];
 }
 
@@ -100,4 +101,5 @@ export interface GameStateExtension {
 }
 
 // Alias for backwards compatibility
-export type GameStateExt = GameStateExtension;
+// Alias for backwards compatibility
+export type GameStateExtensionAlias = GameStateExtension;

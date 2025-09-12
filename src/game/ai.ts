@@ -2,6 +2,7 @@ import type { GameState, PlayerState, TechNode, LeaderPersonality } from './type
 import type { GameAction, ProductionOrder } from './actions';
 import { globalGameBus } from './events';
 import { UNIT_TYPES, IMPROVEMENTS, BUILDINGS } from './content/registry';
+import { UnitState } from '../types/unit';
 
 // Basic AI decision weights (0-1 scale, tunable)
 const AI_WEIGHTS = {
@@ -118,7 +119,12 @@ export function generateAIDecisions(state: GameState, playerId: string): GameAct
   // Basic unit moves: e.g., idle warriors explore nearby (simplified without exploredBy)
   if (state.contentExt) {
     const idleUnits = Object.values(state.contentExt.units)
-      .filter(unit => unit.ownerId === playerId && unit.state === 'idle' && unit.movementRemaining > 0);
+      .filter(
+        unit =>
+          unit.ownerId === playerId &&
+          unit.activeStates?.has(UnitState.Idle) &&
+          unit.movementRemaining > 0
+      );
     for (const unit of idleUnits.slice(0, 2)) { // Limit to 2 units per turn for performance
       // Simple: Set to a random passable tile (placeholder; no real exploration tracking)
       const passableTiles = Object.values(state.contentExt!.tiles).filter(t => t.passable);

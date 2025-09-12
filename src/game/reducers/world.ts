@@ -3,18 +3,26 @@ import { GameAction } from '../actions';
 import { GameState } from '../types';
 import { createEmptyState as createContentExtension } from '../content/engine';
 import { foundCity, moveUnit as extensionMoveUnit } from '../content/rules';
+import { UnitState } from '../../types/unit';
 
 export function worldReducer(draft: Draft<GameState>, action: GameAction): void {
   switch (action.type) {
-    case 'SET_UNIT_STATE': {
-      const { unitId, state: newState } = action.payload;
+    case 'ADD_UNIT_STATE': {
+      const { unitId, state } = action.payload;
       const extension = (draft.contentExt ||= createContentExtension());
       const unit = extension.units[unitId];
-      if (unit && newState) {
-        // Validate or cast to valid states
-        const validStates = ['idle', 'moving', 'fortify', 'exploring', 'building'] as const;
-        const state = validStates.includes(newState as any) ? newState : 'idle';
-        unit.state = state;
+      if (unit) {
+        (unit.activeStates ||= new Set<UnitState>()).add(state);
+      }
+      break;
+    }
+
+    case 'REMOVE_UNIT_STATE': {
+      const { unitId, state } = action.payload;
+      const extension = (draft.contentExt ||= createContentExtension());
+      const unit = extension.units[unitId];
+      if (unit && unit.activeStates) {
+        unit.activeStates.delete(state);
       }
       break;
     }
@@ -70,9 +78,10 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
       if (unit && tileId && extension.tiles[tileId]) {
         const oldTileId = unit.location;
         unit.location = tileId;
-        // Update occupants
-        if (extension.tiles[oldTileId]) {
-          extension.tiles[oldTileId].occupantUnitId = null;
+        // Update occupants; normalize oldTileId which might be a coord object
+        const oldIdKey = typeof oldTileId === 'string' ? oldTileId : `${(oldTileId as any).q},${(oldTileId as any).r}`;
+        if (extension.tiles[oldIdKey]) {
+          extension.tiles[oldIdKey].occupantUnitId = null;
         }
         extension.tiles[tileId].occupantUnitId = unitId;
       }
@@ -147,7 +156,7 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
         attack: 1,
         defense: 1,
         sight: 1,
-        state: 'idle',
+        activeStates: new Set<UnitState>(),
         abilities: [],
       } as any;
       if (tileId && extension.tiles[tileId]) extension.tiles[tileId].occupantUnitId = unitId;
