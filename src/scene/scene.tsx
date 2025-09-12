@@ -13,6 +13,7 @@ import CameraControls from './drei/camera-controls';
 import HtmlLabel from './drei/html-label';
 import UnitMeshes from './unit-meshes';
 import UnitMarkers from './unit-markers';
+import SelectedHexOutline from './selected-hex-outline';
 import { useTexture } from '@react-three/drei';
 import dragonMapUrl from './background/dragonmap.png';
 import InstancedModels, { InstanceTransform } from './instanced-models';
@@ -329,6 +330,7 @@ export function ConnectedScene() {
       {/* Units & labels */}
       <UnitMeshes />
       <UnitMarkers />
+      <SelectedHexOutline />
 
       {/* Hovered tile */}
       {hoverPos ? (

@@ -9,7 +9,7 @@ interface UnitBadgeContainerProperties {
   activeStates: UnitActiveStates;
 }
 
-export default function UnitBadgeContainer({ category, activeStates }: UnitBadgeContainerProperties) {
+function UnitBadgeContainer({ category, activeStates }: UnitBadgeContainerProperties) {
   const validStates = [...activeStates].filter((s): s is UnitState => s !== UnitState.Selected && unitStateIconMap(s) !== undefined); // Spread + import
   const stateBadges = validStates.map((state) => <UnitStateBadge key={state} state={state} />);
 
@@ -39,3 +39,5 @@ export default function UnitBadgeContainer({ category, activeStates }: UnitBadge
     </div>
   );
 }
+
+export default React.memo(UnitBadgeContainer);

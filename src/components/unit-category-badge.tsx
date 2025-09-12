@@ -29,7 +29,7 @@ const getCategoryColor = (category: UnitCategory): string => {
   }
 };
 
-export default function UnitCategoryBadge({ category }: UnitCategoryBadgeProperties) {
+function UnitCategoryBadge({ category }: UnitCategoryBadgeProperties) {
   const IconComponent = unitCategoryIconMap(category);
   if (!IconComponent) return null;
 
@@ -57,3 +57,5 @@ export default function UnitCategoryBadge({ category }: UnitCategoryBadgePropert
     </div>
   );
 }
+
+export default React.memo(UnitCategoryBadge);
