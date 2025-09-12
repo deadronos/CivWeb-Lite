@@ -17,13 +17,20 @@ function TestApp() {
   const unit1 = state.contentExt?.units?.['unit1'];
 
   React.useEffect(() => {
-    if (unit1) {
-      // Dispatch to set multi-states (assume unit exists post-INIT)
-      dispatch({ type: 'ISSUE_MOVE', payload: { unitId: 'unit1', path: ['t1', 't2'] } } as any);
-      setTimeout(() => {
-        dispatch({ type: 'ADD_UNIT_STATE', payload: { unitId: 'unit1', state: UnitState.Fortified } } as any);
-      }, 0); // Async to simulate
+    if (!unit1) {
+      // Ensure minimal tiles and unit exist in the content extension for the test.
+      // Add tiles t1 and t2 then add unit1 at t1 so the other effect can operate when unit appears.
+      dispatch({ type: 'EXT_ADD_TILE', payload: { tile: { id: 't1', q: 0, r: 0, biome: 'grassland' } } } as any);
+      dispatch({ type: 'EXT_ADD_TILE', payload: { tile: { id: 't2', q: 1, r: 0, biome: 'grassland' } } } as any);
+      dispatch({ type: 'EXT_ADD_UNIT', payload: { unitId: 'unit1', type: 'warrior', ownerId: 'p1', tileId: 't1' } } as any);
+      return;
     }
+
+    // Dispatch to set multi-states once unit exists
+    dispatch({ type: 'ISSUE_MOVE', payload: { unitId: 'unit1', path: ['t1', 't2'] } } as any);
+    setTimeout(() => {
+      dispatch({ type: 'ADD_UNIT_STATE', payload: { unitId: 'unit1', state: UnitState.Fortified } } as any);
+    }, 0); // Async to simulate
   }, [dispatch, unit1]);
 
   if (!unit1) return <div>Loading...</div>;
