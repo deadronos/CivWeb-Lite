@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { coverGameProviderEffects, initialState } from '../src/contexts/game-provider';
+import { coverGameProviderEffects } from '../src/test-utils/game-provider';
+import { initialStateForTests as initialState } from '../src/test-utils/game-provider';
 
 describe('GameProvider coverage helper', () => {
   it('runs coverGameProviderEffects without throwing', () => {

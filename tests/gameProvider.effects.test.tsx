@@ -6,10 +6,12 @@ import {
   GameProvider,
   GameStateContext,
   GameDispatchContext,
+} from '../src/contexts/game-provider';
+import {
   initialStateForTests,
   coverGameProviderEffects,
   simulateAdvanceTurn,
-} from '../src/contexts/game-provider';
+} from '../src/test-utils/game-provider';
 import { globalGameBus } from '../src/game/events';
 import { useGame } from '../src/hooks/use-game';
 

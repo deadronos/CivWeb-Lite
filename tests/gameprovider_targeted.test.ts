@@ -5,7 +5,7 @@ import {
   triggerAutoSimOnce,
   coverRemainingGameProviderPaths,
   coverGameProviderInlineExtras,
-} from '../src/contexts/game-provider';
+} from '../src/test-utils/game-provider';
 
 describe('GameProvider targeted helpers', () => {
   it('force none, single, and multi player branches', () => {

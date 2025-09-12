@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialStateForTests } from '../src/contexts/game-provider';
+import { initialStateForTests } from '../src/test-utils/game-provider';
 
 describe('NEW_GAME leader selection', () => {
   it('applies specific leader id to players[0]', () => {

@@ -279,7 +279,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         draft.contentExt = createContentExtension();
         const extension = draft.contentExt;
         populateExtensionTiles(extension, draft.map.tiles);
-        // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal on suitable terrain
+        // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal
+        // Choose suitable terrain and keep spawns separated based on map size
         const findStartPosition = (index: number): string | null => {
           const pad = 2;
           const preferredQ = index % 2 === 0 ? pad : Math.max(pad, width - pad - 1);
@@ -289,6 +290,24 @@ export function applyAction(state: GameState, action: GameAction): GameState {
 
         // Keep track of assigned spawn tiles so multiple players don't get the same tile
         const usedTiles = new Set<string>();
+        // Minimum distance between player spawns, proportional to map size
+        const minSpawnDistance = Math.max(4, Math.floor(Math.min(width, height) / 4));
+        const getTile = (id: string) => draft.map.tiles.find((t) => t.id === id);
+        const hexDistance = (a: { q: number; r: number }, b: { q: number; r: number }) => {
+          const dq = a.q - b.q;
+          const dr = a.r - b.r;
+          return Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dq + dr));
+        };
+        const isFarEnoughFromUsed = (tile: Tile) => {
+          for (const used of usedTiles) {
+            const ut = getTile(used);
+            if (!ut) continue;
+            if (hexDistance({ q: tile.coord.q, r: tile.coord.r }, { q: ut.coord.q, r: ut.coord.r }) < minSpawnDistance) {
+              return false;
+            }
+          }
+          return true;
+        };
 
         for (let index = 0; index < draft.players.length; index++) {
           const ownerId = draft.players[index].id;
@@ -299,14 +318,43 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             continue; // Skip this player if no suitable position found
           }
 
-          // If the chosen tile is already used, pick the first available suitable tile that's not used
-          if (usedTiles.has(tileId)) {
-            const alt = draft.map.tiles.find((t) => isSuitableSpawnTerrain(t.biome) && !usedTiles.has(t.id));
-            if (alt) {
-              tileId = alt.id;
+          const preferredTile = getTile(tileId);
+          const preferredQ = preferredTile?.coord.q ?? 0;
+          const preferredR = preferredTile?.coord.r ?? 0;
+
+          // If the chosen tile is already used or too close, search for a better alternative
+          const isTooClose = (tid: string) => {
+            const t = getTile(tid);
+            return !t || !isFarEnoughFromUsed(t) || usedTiles.has(tid);
+          };
+
+          if (isTooClose(tileId)) {
+            // Find suitable candidates that are far enough and close to the preferred corner
+            const candidates = draft.map.tiles.filter(
+              (t) => isSuitableSpawnTerrain(t.biome) && !usedTiles.has(t.id) && isFarEnoughFromUsed(t)
+            );
+
+            if (candidates.length > 0) {
+              // Rank by distance to preferred corner and by terrain preference
+              const score = (t: Tile) => {
+                const dist = hexDistance({ q: t.coord.q, r: t.coord.r }, { q: preferredQ, r: preferredR });
+                const terrainPenalty =
+                  t.biome === BiomeType.Grassland || t.biome === BiomeType.Forest ? 0 : 2;
+                return dist + terrainPenalty;
+              };
+              candidates.sort((a, b) => score(a) - score(b));
+              tileId = candidates[0].id;
             } else {
-              console.warn(`No alternative spawn tile available for player ${ownerId}`);
-              continue;
+              // Fallback: any suitable tile even if closer than desired (still avoid duplicates)
+              const alt = draft.map.tiles.find(
+                (t) => isSuitableSpawnTerrain(t.biome) && !usedTiles.has(t.id)
+              );
+              if (alt) {
+                tileId = alt.id;
+              } else {
+                console.warn(`No alternative spawn tile available for player ${ownerId}`);
+                continue;
+              }
             }
           }
 

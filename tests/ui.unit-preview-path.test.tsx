@@ -4,7 +4,7 @@ import React from 'react';
 import { GameProvider } from '../src/contexts/game-provider';
 import { UnitSelectionOverlayContainer } from '../src/components/ui/unit-selection-overlay-container';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from '../src/contexts/game-provider';
+import { initialStateForTests as initialState } from '../src/test-utils/game-provider';
 
 function setupWorld() {
   let s = initialState();

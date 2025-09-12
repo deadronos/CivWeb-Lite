@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, test, expect } from 'vitest';
-import { GameProvider, coverAllGameProviderHuge } from '../src/contexts/game-provider';
+import { GameProvider } from '../src/contexts/game-provider';
+import { coverAllGameProviderHuge } from '../src/test-utils/game-provider';
 
 describe('GameProvider autoSim loop', () => {
   test('autoSim RAF loop body runs once with mock', () => {

@@ -2,14 +2,14 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   simulateAdvanceTurn,
   GAME_PROVIDER_MARKER,
-  initialState,
-} from '../src/contexts/game-provider';
+  initialStateForTests,
+} from '../src/test-utils/game-provider';
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider simulateAdvanceTurn helper', () => {
   it('is exported and can be called to dispatch END_TURN and call AI', () => {
     expect(GAME_PROVIDER_MARKER).toBeTruthy();
-    const state = initialState();
+    const state = initialStateForTests();
     // add a fake AI player
     state.players = [
       {
