@@ -4,8 +4,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { GameProvider } from '../src/contexts/game-provider';
 import { useGame } from '../src/hooks/use-game';
 import { UnitState } from '../src/types/unit';
-import { UnitBadgeContainer } from '../src/components/UnitBadgeContainer';
-import { ISSUE_MOVE, ADD_UNIT_STATE } from '../src/game/actions'; // Assume exports
+import UnitBadgeContainer from '../src/components/unit-badge-container';
+// actions imported directly in the test dispatch calls; no named imports required here
 
 // Mock heavy deps
 vi.doMock('../src/game/ai/ai', () => ({ evaluateAI: () => [] }));
@@ -30,7 +30,7 @@ function TestApp() {
 
   return (
     <div>
-      <UnitBadgeContainer unit={unit1} />
+      <UnitBadgeContainer category={unit1.category} activeStates={unit1.activeStates} />
     </div>
   );
 }

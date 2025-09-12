@@ -1,4 +1,5 @@
 import type { Draft } from 'immer';
+import { UnitState } from '../../types/unit';
 import { GameAction } from '../actions';
 import { GameState, PlayerState, Tile, BiomeType } from '../types';
 import { globalGameBus } from '../events';
@@ -179,11 +180,12 @@ export function lifecycleReducer(draft: Draft<GameState>, action: GameAction): v
 
       // Add Idle state to all units on init (including spawned ones)
       if (draft.contentExt && draft.contentExt.units) {
-        Object.values(draft.contentExt.units).forEach((unit) => {
+        // Use the UnitState enum values so tests and consumers receive the canonical type
+        Object.values(draft.contentExt.units).forEach((unit: any) => {
           if (unit.activeStates) {
-            unit.activeStates.add('idle' as any); // Assuming UnitState enum/string
+            unit.activeStates.add(UnitState.Idle as any);
           } else {
-            unit.activeStates = new Set(['idle']);
+            unit.activeStates = new Set([UnitState.Idle as any]);
           }
         });
       }

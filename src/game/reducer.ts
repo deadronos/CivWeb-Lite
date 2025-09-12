@@ -56,7 +56,7 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
 export function applyAction(state: GameState, action: GameAction): GameState {
   if (action.type === 'LOAD_STATE') {
     globalGameBus.emit('action:applied', { action });
-    return Object.freeze(action.payload);
+    return Object.freeze(action.payload as GameState);
   }
 
   return produceNextState(state, (draft) => {
@@ -65,24 +65,4 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       reducer(draft, action);
     }
   });
-}
-
-switch (action.type) {
-  // ...existing cases...
-
-  case 'INIT': {
-    // Add Idle state to all units on init/turn start
-    const updatedUnits = state.units ? state.units.map(unit => ({
-      ...unit,
-      activeStates: new Set([...(unit.activeStates || new Set()), 'idle'])
-    })) : state.units;
-
-    return {
-      ...state,
-      units: updatedUnits,
-      // ...other INIT logic if any...
-    };
-  }
-
-  // ...existing cases...
 }
