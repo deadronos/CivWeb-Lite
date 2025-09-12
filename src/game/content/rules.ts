@@ -93,11 +93,15 @@ export function moveUnit(state: GameStateExtension, unitId: string, toTileId: st
   const unitType = UNIT_TYPES[unit.type];
   if (!unitType) return false;
   if (!canUnitEnter(state, unit, tile)) return false;
+  const fromTileId = typeof unit.location === 'string' ? unit.location : '';
+  const fromTile = fromTileId ? state.tiles[fromTileId] : undefined;
   const cost = movementCost(tile, { unitAbilities: unit.abilities, unitDomain: unitType.domain });
   const step = roundUp(cost);
   if (step <= unit.movementRemaining) {
     unit.movementRemaining -= step;
+    if (fromTile && fromTile.occupantUnitId === unit.id) fromTile.occupantUnitId = null;
     unit.location = tile.id;
+    tile.occupantUnitId = unit.id;
     return true;
   }
   return false;

@@ -13,6 +13,46 @@ import {
 import { createEmptyState as createContentExtension } from './content/engine';
 import { UNIT_TYPES } from './content/registry';
 import { computePath } from './pathfinder';
+import type { GameStateExtension, Biome as ExtBiome } from './content/types';
+
+function mapBiome(b: BiomeType): ExtBiome {
+  switch (b) {
+    case BiomeType.Grassland:
+      return 'grassland';
+    case BiomeType.Forest:
+      return 'forest';
+    case BiomeType.Desert:
+      return 'desert';
+    case BiomeType.Tundra:
+      return 'tundra';
+    case BiomeType.Mountain:
+      return 'mountain';
+    case BiomeType.Ocean:
+      return 'ocean';
+    case BiomeType.Ice:
+      return 'snow';
+    default:
+      return 'grassland';
+  }
+}
+
+function populateExtensionTiles(ext: GameStateExtension, tiles: Tile[]) {
+  ext.tiles = {};
+  for (const t of tiles) {
+    ext.tiles[t.id] = {
+      id: t.id,
+      q: t.coord.q,
+      r: t.coord.r,
+      biome: mapBiome(t.biome),
+      elevation: t.elevation,
+      features: [],
+      improvements: [],
+      occupantUnitId: null,
+      occupantCityId: null,
+      passable: true,
+    } as any;
+  }
+}
 
 function findPlayer(players: PlayerState[], id: string) {
   return players.find((p) => p.id === id);
@@ -141,8 +181,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const world = generateWorld(seed, width, height);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
-        // ensure extension state exists
-        if (!draft.contentExt) draft.contentExt = createContentExtension();
+        const ext = (draft.contentExt ||= createContentExtension());
+        populateExtensionTiles(ext, draft.map.tiles);
         globalGameBus.emit('turn:start', { turn: draft.turn });
         break;
       }
@@ -202,6 +242,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         // Content extension reset
         draft.contentExt = createContentExtension();
         const extension = draft.contentExt;
+        populateExtensionTiles(extension, draft.map.tiles);
         // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal on suitable terrain
         const findStartPosition = (index: number): string | null => {
           const pad = 2;
@@ -423,6 +464,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
               passable: true,
             };
           }
+          extension.tiles[tileId].occupantUnitId = unitId;
         }
         break;
       }
@@ -443,7 +485,9 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             }
             return false;
           };
-          for (const tid of action.payload.path) {
+          const pathToFollow =
+            action.payload.path[0] === u.location ? action.payload.path.slice(1) : action.payload.path;
+          for (const tid of pathToFollow) {
             if (enemyAt(tid) && !action.payload.confirmCombat) {
               break; // require confirmCombat to proceed into enemy tile
             }
@@ -472,13 +516,13 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       case 'PREVIEW_PATH': {
         if (draft.contentExt && draft.ui.selectedUnitId) {
           const result = computePath(
-            draft.contentExt, 
-            draft.ui.selectedUnitId, 
+            draft.contentExt,
+            draft.ui.selectedUnitId,
             action.payload.targetTileId,
             draft.map.width,
             draft.map.height
           );
-          draft.ui.previewPath = result.path || undefined;
+          draft.ui.previewPath = result.path ? result.path.slice(1) : undefined;
         }
         break;
       }
@@ -488,7 +532,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           const unit = draft.contentExt.units[unitId];
           if (unit && path.length > 0) {
             const extension = draft.contentExt;
-            
+            const pathToFollow = path[0] === unit.location ? path.slice(1) : path;
+
             // Helper to check for enemies at a tile
             const enemyAt = (tileId: string): boolean => {
               const t = extension.tiles[tileId];
@@ -506,7 +551,7 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             
             // Move through the path step by step with proper validation
             let moved = false;
-            for (const tileId of path) {
+            for (const tileId of pathToFollow) {
               if (enemyAt(tileId) && !confirmCombat) {
                 break; // require confirmCombat to proceed into enemy tile
               }
