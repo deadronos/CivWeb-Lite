@@ -29,7 +29,7 @@ const getStateColor = (state: UnitState): string => {
   }
 };
 
-export default function UnitStateBadge({ state }: UnitStateBadgeProperties) {
+function UnitStateBadge({ state }: UnitStateBadgeProperties) {
   if (state === UnitState.Selected) return null; // Tile outline per REQ-002
   const IconComponent = unitStateIconMap(state);
   if (!IconComponent) return null;
@@ -58,3 +58,5 @@ export default function UnitStateBadge({ state }: UnitStateBadgeProperties) {
     </div>
   );
 }
+
+export default React.memo(UnitStateBadge);

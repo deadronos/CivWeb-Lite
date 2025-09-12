@@ -1,4 +1,4 @@
-import { UnitState, UnitActiveStates } from '../../types/unit';
+import { UnitState, UnitActiveStates, UnitCategory } from '../../types/unit';
 export type Biome =
   | 'ocean'
   | 'coast'
@@ -28,6 +28,7 @@ export interface Hextile {
 export interface Unit {
   id: string;
   type: string;
+  category: UnitCategory;
   ownerId: string;
   location: string | { q: number; r: number };
   hp: number; // 0..100

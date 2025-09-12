@@ -181,6 +181,7 @@ export function tickCityProduction(state: GameStateExtension, city: City): void 
           state.units[id] = {
             id,
             type: head.item,
+            category: udef.category,
             ownerId: city.ownerId,
             location: city.location,
             hp: udef.base.hp ?? 100,
