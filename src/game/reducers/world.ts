@@ -3,7 +3,8 @@ import { GameAction } from '../actions';
 import { GameState } from '../types';
 import { createEmptyState as createContentExtension } from '../content/engine';
 import { foundCity, moveUnit as extensionMoveUnit } from '../content/rules';
-import { UnitState } from '../../types/unit';
+import { UNIT_TYPES } from '../content/registry';
+import { UnitState, UnitCategory } from '../../types/unit';
 
 export function worldReducer(draft: Draft<GameState>, action: GameAction): void {
   switch (action.type) {
@@ -145,9 +146,11 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
       const { unitId, type, ownerId, tileId } = (action as any).payload || {};
       if (!unitId || !type || !ownerId) break;
       const extension = (draft.contentExt ||= createContentExtension());
+      const def = UNIT_TYPES[type];
       extension.units[unitId] = {
         id: unitId,
         type,
+        category: def?.category ?? UnitCategory.Civilian,
         ownerId,
         location: tileId ?? null,
         hp: 100,

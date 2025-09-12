@@ -2,6 +2,7 @@ import type { Technology } from './types';
 import unitsData from '../../data/units.json';
 import improvementsData from '../../data/improvements.json';
 import buildingsData from '../../data/buildings.json';
+import { UnitCategory } from '../../types/unit';
 
 export interface UnitVisualDef {
   model: string;
@@ -11,8 +12,31 @@ export interface UnitVisualDef {
   gltf?: string; // optional GLTF label or path
 }
 
+function toUnitCategory(cat: string): UnitCategory {
+  switch (cat.toLowerCase()) {
+    case 'melee': {
+      return UnitCategory.Melee;
+    }
+    case 'ranged': {
+      return UnitCategory.Ranged;
+    }
+    case 'recon': {
+      return UnitCategory.Recon;
+    }
+    case 'naval': {
+      return UnitCategory.Naval;
+    }
+    case 'civilian':
+    case 'support':
+    default: {
+      return UnitCategory.Civilian;
+    }
+  }
+}
+
 export interface UnitTypeDef {
   id: string;
+  category: UnitCategory;
   domain: 'land' | 'naval';
   base: {
     movement: number;
@@ -52,7 +76,8 @@ export interface BuildingDef {
 // Build registries from JSON data at module load time to keep synchronous APIs
 export const UNIT_TYPES: Record<string, UnitTypeDef> = Object.fromEntries(
   (unitsData as any[]).map((u) => {
-    const domain: 'land' | 'naval' = u.category === 'naval' ? 'naval' : 'land';
+    const category = toUnitCategory(u.category);
+    const domain: 'land' | 'naval' = category === UnitCategory.Naval ? 'naval' : 'land';
     const attack = typeof u.strength === 'number' ? u.strength : 0;
     const defense = Math.max(0, Math.round((u.strength ?? 0) * 0.7));
     const sight = 2;
@@ -73,6 +98,7 @@ export const UNIT_TYPES: Record<string, UnitTypeDef> = Object.fromEntries(
       u.id,
       {
         id: u.id,
+        category,
         domain,
         base: { movement: u.movement ?? 2, attack, defense, sight, hp },
         abilities: u.abilities ?? [],
