@@ -4,12 +4,21 @@ import { GameState } from '../types';
 import { computePath } from '../pathfinder';
 import { moveUnit as extensionMoveUnit } from '../content/rules';
 import { createEmptyState as createContentExtension } from '../content/engine';
+import { UnitState } from '../../types/unit';
 
 export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
   switch (action.type) {
     case 'SELECT_UNIT': {
       const unitId = (action as any).payload?.unitId as string | undefined;
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      const prev = draft.ui.selectedUnitId;
+      if (draft.contentExt && prev && draft.contentExt.units[prev]) {
+        draft.contentExt.units[prev].activeStates?.delete(UnitState.Selected);
+      }
+      if (draft.contentExt && unitId && draft.contentExt.units[unitId]) {
+        const unit = draft.contentExt.units[unitId];
+        (unit.activeStates ||= new Set<UnitState>()).add(UnitState.Selected);
+      }
       draft.ui.selectedUnitId = unitId;
       draft.ui.previewPath = undefined;
       break;
@@ -17,6 +26,10 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
 
     case 'CANCEL_SELECTION': {
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      const prev = draft.ui.selectedUnitId;
+      if (draft.contentExt && prev && draft.contentExt.units[prev]) {
+        draft.contentExt.units[prev].activeStates?.delete(UnitState.Selected);
+      }
       draft.ui.selectedUnitId = undefined;
       draft.ui.previewPath = undefined;
       break;
@@ -129,6 +142,9 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
         } catch {
           break;
         }
+      }
+      if (draft.contentExt && draft.contentExt.units[uid]) {
+        draft.contentExt.units[uid].activeStates?.delete(UnitState.Selected);
       }
       // clear selection and preview
       if (draft.ui) {
