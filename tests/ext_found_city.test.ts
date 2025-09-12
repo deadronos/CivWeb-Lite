@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialStateForTests } from '../src/contexts/game-provider';
+import { initialStateForTests } from '../src/test-utils/game-provider';
 
 describe('EXT_FOUND_CITY', () => {
   it('creates a city from a settler and removes the settler', () => {

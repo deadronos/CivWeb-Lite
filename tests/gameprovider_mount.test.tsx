@@ -6,7 +6,8 @@ import { render } from '@testing-library/react';
 vi.doMock('../src/game/ai/ai', () => ({ evaluateAI: () => [] }));
 vi.doMock('../src/game/events', () => ({ globalGameBus: { emit: () => {} } }));
 
-import { GameProvider, GAME_PROVIDER_MARKER } from '../src/contexts/game-provider';
+import { GameProvider } from '../src/contexts/game-provider';
+import { GAME_PROVIDER_MARKER } from '../src/test-utils/game-provider';
 import { useGame } from '../src/hooks/use-game';
 
 describe('GameProvider mount and context', () => {

@@ -3,7 +3,7 @@ import {
   simulateAdvanceTurn,
   initialStateForTests,
   coverGameProviderEffects,
-} from '../src/contexts/game-provider';
+} from '../src/test-utils/game-provider';
 import { globalGameBus } from '../src/game/events';
 
 describe('GameProvider extra behaviors', () => {

@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialStateForTests } from '../src/contexts/game-provider';
+import { initialStateForTests } from '../src/test-utils/game-provider';
 import { globalGameBus } from '../src/game/events';
 
 test('INIT sets seed/map and emits turn:start', () => {
