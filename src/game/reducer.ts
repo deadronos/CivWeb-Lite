@@ -44,6 +44,7 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   EXT_ADD_CITY: worldReducer,
   EXT_FOUND_CITY: worldReducer,
   EXT_ISSUE_MOVE_PATH: worldReducer,
+  FORTIFY_UNIT: worldReducer, // Route FORTIFY_UNIT to worldReducer for state addition
 
   // Lifecycle actions
   INIT: lifecycleReducer,
@@ -64,4 +65,24 @@ export function applyAction(state: GameState, action: GameAction): GameState {
       reducer(draft, action);
     }
   });
+}
+
+switch (action.type) {
+  // ...existing cases...
+
+  case 'INIT': {
+    // Add Idle state to all units on init/turn start
+    const updatedUnits = state.units ? state.units.map(unit => ({
+      ...unit,
+      activeStates: new Set([...(unit.activeStates || new Set()), 'idle'])
+    })) : state.units;
+
+    return {
+      ...state,
+      units: updatedUnits,
+      // ...other INIT logic if any...
+    };
+  }
+
+  // ...existing cases...
 }

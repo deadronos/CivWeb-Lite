@@ -9,11 +9,16 @@ import { UnitState, UnitCategory } from '../../types/unit';
 export function worldReducer(draft: Draft<GameState>, action: GameAction): void {
   switch (action.type) {
     case 'ADD_UNIT_STATE': {
-      const { unitId, state } = action.payload;
+      const { unitId, state } = (action as any).payload || {};
+      if (!unitId || !state) break; // Validation
+
       const extension = (draft.contentExt ||= createContentExtension());
       const unit = extension.units[unitId];
       if (unit) {
-        (unit.activeStates ||= new Set<UnitState>()).add(state);
+        if (!unit.activeStates) {
+          unit.activeStates = new Set();
+        }
+        unit.activeStates.add(state); // Add to Set (supports multiples)
       }
       break;
     }
@@ -196,6 +201,21 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
           // remove unit if still present
           if (extension.units[unitId]) delete extension.units[unitId];
         }
+      break;
+    }
+
+    case 'FORTIFY_UNIT': {
+      const { unitId } = (action as any).payload || {};
+      if (!unitId) break; // Validation
+
+      const extension = (draft.contentExt ||= createContentExtension());
+      const unit = extension.units[unitId];
+      if (unit) {
+        if (!unit.activeStates) {
+          unit.activeStates = new Set();
+        }
+        unit.activeStates.add(UnitState.Fortified); // Add fortified state
+      }
       break;
     }
   }

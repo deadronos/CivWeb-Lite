@@ -175,6 +175,19 @@ export function lifecycleReducer(draft: Draft<GameState>, action: GameAction): v
       draft.rngState = world.state;
       const extension = (draft.contentExt ||= createContentExtension());
       populateExtensionTiles(extension, draft.map.tiles);
+      spawnInitialUnits(draft);
+
+      // Add Idle state to all units on init (including spawned ones)
+      if (draft.contentExt && draft.contentExt.units) {
+        Object.values(draft.contentExt.units).forEach((unit) => {
+          if (unit.activeStates) {
+            unit.activeStates.add('idle' as any); // Assuming UnitState enum/string
+          } else {
+            unit.activeStates = new Set(['idle']);
+          }
+        });
+      }
+
       globalGameBus.emit('turn:start', { turn: draft.turn });
       break;
     }
