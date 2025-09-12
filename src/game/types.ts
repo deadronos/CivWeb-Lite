@@ -64,6 +64,10 @@ export interface UIState {
   openPanels: {
     cityPanel?: string; // cityId if open
     researchPanel?: boolean;
+    // Dev / spec helper panels
+    specPanel?: boolean;
+    // Developer mode toggle (guards dev UI)
+    devPanel?: boolean;
   };
 }
 

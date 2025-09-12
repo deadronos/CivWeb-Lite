@@ -42,6 +42,10 @@ export type GameAction =
   | { type: 'CLOSE_CITY_PANEL' }
   | { type: 'OPEN_RESEARCH_PANEL' }
   | { type: 'CLOSE_RESEARCH_PANEL' }
+  | { type: 'OPEN_SPEC_PANEL' }
+  | { type: 'CLOSE_SPEC_PANEL' }
+  | { type: 'OPEN_DEV_PANEL' }
+  | { type: 'CLOSE_DEV_PANEL' }
   | { type: 'CHOOSE_PRODUCTION_ITEM'; payload: { cityId: string; order: ProductionOrder } }
   | { type: 'REORDER_PRODUCTION_QUEUE'; payload: { cityId: string; reorderedQueue: ProductionOrder[] } }
   | { type: 'CANCEL_PRODUCTION_ORDER'; payload: { cityId: string; orderIndex: number } }
@@ -108,6 +112,10 @@ export const GAME_ACTION_TYPES = [
   'CANCEL_PRODUCTION_ORDER',
   'OPEN_RESEARCH_PANEL',
   'CLOSE_RESEARCH_PANEL',
+  'OPEN_SPEC_PANEL',
+  'CLOSE_SPEC_PANEL',
+  'OPEN_DEV_PANEL',
+  'CLOSE_DEV_PANEL',
   'CLOSE_CITY_PANEL',
   'START_RESEARCH',
   'QUEUE_RESEARCH',

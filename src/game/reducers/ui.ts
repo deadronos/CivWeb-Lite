@@ -61,6 +61,30 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
       break;
     }
 
+    case 'OPEN_SPEC_PANEL': {
+      if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      draft.ui.openPanels = { ...draft.ui.openPanels, specPanel: true };
+      break;
+    }
+
+    case 'CLOSE_SPEC_PANEL': {
+      if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      draft.ui.openPanels = { ...draft.ui.openPanels, specPanel: false };
+      break;
+    }
+
+    case 'OPEN_DEV_PANEL': {
+      if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      draft.ui.openPanels = { ...draft.ui.openPanels, devPanel: true };
+      break;
+    }
+
+    case 'CLOSE_DEV_PANEL': {
+      if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      draft.ui.openPanels = { ...draft.ui.openPanels, devPanel: false };
+      break;
+    }
+
     case 'PREVIEW_PATH': {
       const targetTileId = (action as any).payload?.targetTileId as string | undefined;
       const unitIdPayload = (action as any).payload?.unitId as string | undefined;

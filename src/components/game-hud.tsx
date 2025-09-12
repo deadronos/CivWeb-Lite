@@ -169,7 +169,23 @@ function GameHUDInner() {
           )}
           {extensionResearch && <div>Ext Research: {extensionResearch}</div>}
           {extensionCultureResearch && <div>Ext Civic: {extensionCultureResearch}</div>}
-          <SpecControls />
+          {state.ui?.openPanels?.devPanel && (
+            <>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button
+                  aria-label="toggle spec controls"
+                  onClick={() =>
+                    dispatch(
+                      state.ui?.openPanels?.specPanel ? { type: 'CLOSE_SPEC_PANEL' } : { type: 'OPEN_SPEC_PANEL' }
+                    )
+                  }
+                >
+                  {state.ui?.openPanels?.specPanel ? 'Hide Spec' : 'Show Spec'}
+                </button>
+              </div>
+              {state.ui?.openPanels?.specPanel && <SpecControls />}
+            </>
+          )}
         </>
       )}
       {aiAvg && <div>AI Avg: {aiAvg}ms</div>}
