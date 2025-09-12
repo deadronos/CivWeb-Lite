@@ -1,12 +1,36 @@
 import React from 'react';
 import { UnitCategory } from '../types/unit';
-import { unitCategoryIconMap } from '../utils/unit-icons';
+import { GiSword, GiArcher, GiBinoculars, GiSailboat, GiPerson } from 'react-icons/gi';
+
+// Mock category icon map (expand in phase 2)
+const categoryIconMap: Record<UnitCategory, React.ComponentType> = {
+  [UnitCategory.Melee]: GiSword,
+  [UnitCategory.Ranged]: GiArcher, // Assume
+  [UnitCategory.Recon]: GiBinoculars, // Assume
+  [UnitCategory.Naval]: GiSailboat, // Assume
+  [UnitCategory.Civilian]: GiPerson, // Assume
+};
 
 interface UnitCategoryBadgeProps {
   category: UnitCategory;
 }
 
-const getCategoryColor = (category: UnitCategory): string => {
+export function UnitCategoryBadge({ category }: UnitCategoryBadgeProps) {
+  const IconComponent = categoryIconMap[category];
+
+  return (
+    <span
+      aria-label={`Category ${category}`}
+      title={category}
+      style={{ display: 'inline-block', marginRight: '4px', color: getCategoryColor(category) }}
+    >
+      <IconComponent size={14} />
+    </span>
+  );
+}
+
+// Mock color function
+function getCategoryColor(category: UnitCategory): string {
   switch (category) {
     case UnitCategory.Melee: return 'red';
     case UnitCategory.Ranged: return 'green';
@@ -15,33 +39,4 @@ const getCategoryColor = (category: UnitCategory): string => {
     case UnitCategory.Civilian: return 'gray';
     default: return 'gray';
   }
-};
-
-export default function UnitCategoryBadge({ category }: UnitCategoryBadgeProps) {
-  const IconComponent = unitCategoryIconMap(category);
-  if (!IconComponent) return null;
-
-  const color = getCategoryColor(category);
-  const pillStyle = {
-    width: '18px',
-    height: '18px',
-    background: 'rgba(0,0,0,0.5)',
-    borderRadius: '4px',
-    color,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  };
-
-  return (
-    <div
-      data-testid="category-badge"
-      className="unit-category-badge pill"
-      style={pillStyle}
-      aria-label={`${category} unit category`}
-    >
-      {/* IconComponent typing may not accept size/style props in this project setup; cast to any to render with props */}
-      {(IconComponent as any)({ size: 12, 'data-testid': 'category-icon' })}
-    </div>
-  );
 }

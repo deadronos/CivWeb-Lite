@@ -170,6 +170,12 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
       if (draft.contentExt && draft.contentExt.units[uid]) {
         draft.contentExt.units[uid].activeStates?.delete(UnitState.Selected);
       }
+      // Add Moved state after successful move (REQ-005)
+      if (unit.activeStates) {
+        unit.activeStates.add(UnitState.Moved);
+      } else {
+        unit.activeStates = new Set([UnitState.Moved]);
+      }
       // clear selection and preview
       if (draft.ui) {
         draft.ui.selectedUnitId = undefined;
