@@ -65,9 +65,9 @@ export const UNIT_TYPES: Record<string, UnitTypeDef> = Object.fromEntries(
           anim: (u as any).visual.anim,
           gltf: (u as any).visual.gltf,
         }
-      : (u as any).model
+      : ((u as any).model
         ? { model: (u as any).model }
-        : undefined;
+        : undefined);
 
     return [
       u.id,

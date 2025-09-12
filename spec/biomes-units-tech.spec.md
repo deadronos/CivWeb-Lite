@@ -32,6 +32,7 @@ Enum of biome types (string):
 - coast
 - plains
 - grassland
+
 ### Biome types
 
 There are two related sets of biome names used in the codebase:
@@ -44,6 +45,7 @@ When writing acceptance tests or content fixtures prefer the `content` biomes (t
 - id: string (unique tile id)
 - q,r: number (axial hex coordinates) or x,y
 - biome: Biome (enum)
+
 ```json
 {
   "id": "hex_12_5",
@@ -62,6 +64,7 @@ When writing acceptance tests or content fixtures prefer the `content` biomes (t
 ### Rules — Hextiles
 
 ### Hextile data shape
+
 ## Biomes, Units, Cities, and Technologies Specification
 
 This specification describes a small, testable content model for CivWeb‑Lite: biome-varied hextiles, units, cities, and a minimal technology system. The goal is to keep things small, deterministic, and directly mappable to the repository's TypeScript types.
@@ -238,7 +241,7 @@ Suggested minimal yields for tests (no improvements):
 - mountain: { food: 0, prod: 0 }
 
 - Improvements: farm +1 food, mine +2 production (tests may use these values).
-- Growth: if netFood >= population * 2 then population increases by 1 that turn.
+- Growth: if netFood >= population \* 2 then population increases by 1 that turn.
 - Production: each turn the city applies production to the head of `productionQueue`; when `turnsRemaining` reaches 0 spawn the unit or add improvement.
 
 ## Technologies
@@ -324,4 +327,3 @@ test('city produces unit after correct turns', () => {
 ---
 
 End of spec
-

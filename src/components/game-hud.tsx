@@ -246,7 +246,7 @@ const LogList = React.memo(function LogList({ entries }: { entries: { type: stri
   return (
     <ul>
       {entries.map((e, index) => (
-        <li key={index}>{String(e.type).replace(/:/g, '·')}</li>
+        <li key={index}>{String(e.type).replaceAll(':', '·')}</li>
       ))}
     </ul>
   );
@@ -497,7 +497,7 @@ function SpecControls() {
               return (
                 <option key={b.id} value={b.id} disabled={!canBuild || built}>
                   {b.name}
-                  {built ? ' (built)' : canBuild ? '' : ' (locked)'}
+                  {built ? ' (built)' : (canBuild ? '' : ' (locked)')}
                 </option>
               );
             })}

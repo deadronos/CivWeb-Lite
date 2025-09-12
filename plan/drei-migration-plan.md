@@ -82,7 +82,6 @@ import { OrbitControls } from '@react-three/drei';
 export default function CameraControls(props) {
   return <OrbitControls enablePan enableRotate enableZoom {...props} />;
 }
-
 ```
 
 HtmlLabel.tsx
@@ -98,7 +97,6 @@ export default function HtmlLabel({ children, position, ...rest }) {
     </Html>
   );
 }
-
 ```
 
 ## Testing guidance

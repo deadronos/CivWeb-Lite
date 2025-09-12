@@ -296,7 +296,6 @@ High-level status
 
 Purpose: reconcile plan tables (which are largely filled) with runtime/author notes that flagged several items as still open. This section records the authoritative "needs follow-up" items, why they need verification, and an explicit next-step for each.
 
-
 Verified-complete (no action unless regression found):
 
 - Core types, RNG, event bus, immutable helpers, GameProvider scaffolding (Phase 1)
@@ -313,42 +312,27 @@ Verified-complete (no action unless regression found):
 
 Needs follow-up (authoritative open items):
 
-
-
 1. TASK-032 / TASK-033 — AI micro-benchmarks & optimizations
-
    - Why: tables mark AI work complete but commentary notes micro-benchmarks are blank. The AI decision function exists but performance has not been measured across representative states.
 
    - Next step: Add `scripts/ai-bench.ts` to run the AI decision function across seeds/map-sizes and produce mean/median/95th percentiles. If mean > 50ms, create follow-up PR(s) for heuristic pruning and memoization.
 
-
-
 2. TASK-051 — Deterministic replay harness verification
-
    - Why: table marks this complete but plan notes replay is important and should be verified against seeds. Confirm the replay hash test exists and runs in CI/offline.
 
    - Next step: Add a small Vitest that runs N random seeds, records actions during a run, replays them against isolated RNG, and asserts the final canonical hash matches.
 
-
-
 3. TASK-052..054 — Performance benchmarks and rendering optimizations reconciliation
-
    - Why: tables show benchmarks and instancing as complete, but commentary flags larger perf tasks as still open. We must ensure benchmarks run and that instancing is actually wired/practical.
 
    - Next step: Run `scripts/benchWorld.ts` (or add `scripts/bench-world.ts`) for map sizes 30/50/100, record results, and add a short doc `docs/perf-bench-results.md`. If render perf is suboptimal, follow-up with targeted PR to enable instancing behind a feature flag.
 
-
-
 4. TASK-047..049 & accessibility checks (HUD polish)
-
    - Why: UI elements are implemented but accessibility scans, keyboard-focus tests, and some UX flows (city production targeting) need finishing.
 
    - Next step: Add axe-core scan into Playwright smoke or a dedicated Vitest; add keyboard focus tests for TopBar & NextTurnControl; implement `targetTileId` internal format in `src/components/ui/city-panel-container.tsx` and add unit tests.
 
-
-
 5. CI / coverage / E2E stability (TASK-055..057)
-
    - Why: CI workflow and coverage config exist but must be validated for flakiness and optional dependency issues (Rollup note in HUD plan).
 
    - Next step: Run CI locally via the workflow or reproduce steps; fix any install/test build failures. Ensure Playwright smoke test is stable by making locators resilient.

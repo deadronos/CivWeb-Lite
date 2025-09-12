@@ -38,8 +38,8 @@ function spawnInitialUnits(draft: Draft<GameState>) {
     return true;
   };
 
-  for (let index = 0; index < players.length; index++) {
-    const ownerId = players[index].id;
+  for (const [index, player] of players.entries()) {
+    const ownerId = player.id;
     let tileId = findStartPosition(index);
 
     if (!tileId) {
@@ -63,10 +63,10 @@ function spawnInitialUnits(draft: Draft<GameState>) {
 
       if (candidates.length > 0) {
         const score = (t: Tile) => {
-          const dist = hexDistance({ q: t.coord.q, r: t.coord.r }, { q: preferredQ, r: preferredR });
+          const distribution = hexDistance({ q: t.coord.q, r: t.coord.r }, { q: preferredQ, r: preferredR });
           const terrainPenalty =
             t.biome === BiomeType.Grassland || t.biome === BiomeType.Forest ? 0 : 2;
-          return dist + terrainPenalty;
+          return distribution + terrainPenalty;
         };
         candidates.sort((a, b) => score(a) - score(b));
         tileId = candidates[0].id;
@@ -173,8 +173,8 @@ export function lifecycleReducer(draft: Draft<GameState>, action: GameAction): v
       const world = generateWorld(seed, width, height);
       draft.map = { width, height, tiles: world.tiles };
       draft.rngState = world.state;
-      const ext = (draft.contentExt ||= createContentExtension());
-      populateExtensionTiles(ext, draft.map.tiles);
+      const extension = (draft.contentExt ||= createContentExtension());
+      populateExtensionTiles(extension, draft.map.tiles);
       globalGameBus.emit('turn:start', { turn: draft.turn });
       break;
     }
@@ -245,8 +245,7 @@ export function lifecycleReducer(draft: Draft<GameState>, action: GameAction): v
     }
     case 'AUTO_SIM_TOGGLE': {
       const enabled = (action as any).payload?.enabled;
-      if (typeof enabled === 'boolean') draft.autoSim = enabled;
-      else draft.autoSim = !draft.autoSim;
+      draft.autoSim = typeof enabled === 'boolean' ? enabled : !draft.autoSim;
       break;
     }
     case 'LOG_EVENT': {

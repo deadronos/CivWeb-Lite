@@ -3,12 +3,12 @@ import type { CityProductionOrder } from '../../game/content/types';
 import { getCityYield } from '../../game/content/rules';
 import type { GameStateExtension } from '../../game/content/types';
 
-interface ProductionQueueProps {
+interface ProductionQueueProperties {
   cityId: string;
   state: GameStateExtension;
 }
 
-export function ProductionQueue({ cityId, state }: ProductionQueueProps) {
+export function ProductionQueue({ cityId, state }: ProductionQueueProperties) {
   const city = state.cities[cityId];
   if (!city) return null;
 

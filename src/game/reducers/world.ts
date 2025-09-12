@@ -82,30 +82,30 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
     case 'EXT_ISSUE_MOVE_PATH': {
       const { unitId, path, confirmCombat } = (action as any).payload || {};
       if (!unitId || !path || !Array.isArray(path) || path.length === 0) break;
-      const ext = (draft.contentExt ||= createContentExtension());
-      const unit = ext.units[unitId];
+      const extension = (draft.contentExt ||= createContentExtension());
+      const unit = extension.units[unitId];
       if (!unit) break;
       // iterate through path steps (skip first element when it equals current location)
       const startIndex = path[0] === unit.location ? 1 : 0;
-      for (let i = startIndex; i < path.length; i++) {
-        const tid = path[i];
-        const tile = ext.tiles[tid];
+      for (let index = startIndex; index < path.length; index++) {
+        const tid = path[index];
+        const tile = extension.tiles[tid];
         if (!tile) break;
         // detect enemy occupant
         let enemyPresent = false;
         if (tile.occupantUnitId) {
-          const occ = ext.units[tile.occupantUnitId];
+          const occ = extension.units[tile.occupantUnitId];
           if (occ && occ.ownerId !== unit.ownerId) enemyPresent = true;
         }
         if (tile.occupantCityId) {
-          const city = ext.cities[tile.occupantCityId];
+          const city = extension.cities[tile.occupantCityId];
           if (city && city.ownerId !== unit.ownerId) enemyPresent = true;
         }
         if (enemyPresent && !confirmCombat) break;
         try {
-          const ok = extensionMoveUnit(ext, unitId, tid);
+          const ok = extensionMoveUnit(extension, unitId, tid);
           if (!ok) break;
-        } catch (e) {
+        } catch {
           break;
         }
       }
@@ -116,8 +116,8 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
     case 'EXT_ADD_TILE': {
       const tile = (action as any).payload?.tile;
       if (!tile) break;
-      const ext = (draft.contentExt ||= createContentExtension());
-      ext.tiles[tile.id] = {
+      const extension = (draft.contentExt ||= createContentExtension());
+      extension.tiles[tile.id] = {
         id: tile.id,
         q: tile.q,
         r: tile.r,
@@ -135,8 +135,8 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
     case 'EXT_ADD_UNIT': {
       const { unitId, type, ownerId, tileId } = (action as any).payload || {};
       if (!unitId || !type || !ownerId) break;
-      const ext = (draft.contentExt ||= createContentExtension());
-      ext.units[unitId] = {
+      const extension = (draft.contentExt ||= createContentExtension());
+      extension.units[unitId] = {
         id: unitId,
         type,
         ownerId,
@@ -150,15 +150,15 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
         state: 'idle',
         abilities: [],
       } as any;
-      if (tileId && ext.tiles[tileId]) ext.tiles[tileId].occupantUnitId = unitId;
+      if (tileId && extension.tiles[tileId]) extension.tiles[tileId].occupantUnitId = unitId;
       break;
     }
 
     case 'EXT_ADD_CITY': {
       const { cityId, name, ownerId, tileId } = (action as any).payload || {};
       if (!cityId || !ownerId) break;
-      const ext = (draft.contentExt ||= createContentExtension());
-      ext.cities[cityId] = {
+      const extension = (draft.contentExt ||= createContentExtension());
+      extension.cities[cityId] = {
         id: cityId,
         name: name || cityId,
         ownerId,
@@ -166,26 +166,24 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
         tilesWorked: tileId ? [tileId] : [],
         productionQueue: [],
       } as any;
-      if (tileId && ext.tiles[tileId]) ext.tiles[tileId].occupantCityId = cityId;
+      if (tileId && extension.tiles[tileId]) extension.tiles[tileId].occupantCityId = cityId;
       break;
     }
 
     case 'EXT_FOUND_CITY': {
       const { unitId, tileId, cityId, name } = (action as any).payload || {};
-      const ext = (draft.contentExt ||= createContentExtension());
+      const extension = (draft.contentExt ||= createContentExtension());
       if (!unitId) break;
-      const unit = ext.units[unitId];
+      const unit = extension.units[unitId];
       if (!unit) break;
       const targetTile = tileId ?? unit.location;
-      const res = foundCity(ext, unitId, targetTile, cityId, name);
-      if (res.success) {
-        // ensure tile exists in extension (foundCity creates minimal tile if missing)
-        if (ext.tiles[res.tileId]) {
-          ext.tiles[res.tileId].occupantCityId = res.cityId;
+      const res = foundCity(extension, unitId, targetTile, cityId, name);
+      if (res.success && // ensure tile exists in extension (foundCity creates minimal tile if missing)
+        extension.tiles[res.tileId]) {
+          extension.tiles[res.tileId].occupantCityId = res.cityId;
           // remove unit if still present
-          if (ext.units[unitId]) delete ext.units[unitId];
+          if (extension.units[unitId]) delete extension.units[unitId];
         }
-      }
       break;
     }
   }

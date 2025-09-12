@@ -1,4 +1,3 @@
-
 # blenderpython — AGENTS
 
 ## Purpose
