@@ -1,11 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import {
-  GameProvider,
-  simulateAdvanceTurn,
-  initialStateForTests,
-} from '../src/contexts/game-provider';
+import { GameProvider } from '../src/contexts/game-provider';
+import { simulateAdvanceTurn, initialStateForTests } from '../src/test-utils/game-provider';
 // GameStateContext intentionally removed; not used in this test
 import { useGame } from '../src/hooks/use-game';
 

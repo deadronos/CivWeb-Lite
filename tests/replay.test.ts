@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { initialStateForTests } from '../src/contexts/game-provider';
+import { initialStateForTests } from '../src/test-utils/game-provider';
 import { record, runReplay, hashState } from '../src/game/utils/replay';
 import { applyAction } from '../src/game/reducer';
 

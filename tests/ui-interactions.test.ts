@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialStateForTests } from '../src/contexts/game-provider';
+import { initialStateForTests } from '../src/test-utils/game-provider';
 
 describe('UI Interaction Actions', () => {
   it('should handle SELECT_UNIT action', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from '../src/contexts/game-provider';
+import { initialStateForTests as initialState } from '../src/test-utils/game-provider';
 import { computeMovementRange } from '../src/game/pathfinder';
 
 describe('UI interaction movement flow', () => {

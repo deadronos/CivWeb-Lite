@@ -5,7 +5,7 @@ import { GameProvider } from '../src/contexts/game-provider';
 import { SelectionProvider } from '../src/contexts/selection-context';
 import MinimapContainer from '../src/components/ui/minimap-container';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from '../src/contexts/game-provider';
+import { initialStateForTests as initialState } from '../src/test-utils/game-provider';
 
 function seedWorld() {
   let s = initialState();

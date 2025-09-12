@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { simulateAdvanceTurn, GAME_PROVIDER_MARKER } from '../src/contexts/game-provider';
+import { simulateAdvanceTurn, GAME_PROVIDER_MARKER } from '../src/test-utils/game-provider';
 import { GameState, PlayerState } from '../src/game/types';
 
 function makeState(player?: PlayerState): GameState {
@@ -14,6 +14,12 @@ function makeState(player?: PlayerState): GameState {
     log: [],
     mode: 'standard',
     autoSim: false,
+    ui: {
+      selectedUnitId: undefined,
+      selectedCityId: undefined,
+      previewPath: undefined,
+      openPanels: {},
+    },
   };
 }
 

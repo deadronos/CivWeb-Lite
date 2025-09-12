@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyAction } from '../src/game/reducer';
-import { initialState } from '../src/contexts/game-provider';
+import { initialStateForTests as initialState } from '../src/test-utils/game-provider';
 import type { GameState } from '../src/game/types';
 
 function dispatchSeq(s: GameState, actions: any[]): GameState {
