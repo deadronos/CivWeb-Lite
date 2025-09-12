@@ -23,6 +23,7 @@ const LEGACY_ALLOWLIST = new Set([
   'game/tech/tech-catalog.ts',
   'hooks/useCamera.tsx',
   'hooks/useGame.ts',
+  'hooks/useAvailableTechs.ts',
   'scene/InstancedTiles.tsx',
   'scene/Scene.tsx',
   'scene/TileMesh.tsx',

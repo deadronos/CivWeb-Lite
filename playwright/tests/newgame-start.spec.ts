@@ -14,7 +14,7 @@ test('main menu new game flow starts game', async ({ page }) => {
   // Menu should disappear
   await expect(page.getByRole('dialog', { name: 'Main Menu' })).toHaveCount(0);
   // HUD visible
-  await expect(page.getByText('Turn:')).toBeVisible();
+  await expect(page.getByLabel('turn')).toBeVisible();
   // Summary banner shows selected leader name
   await expect(page.getByLabel('game summary')).toContainText('Pericles');
 });
