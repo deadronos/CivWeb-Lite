@@ -1,22 +1,22 @@
 """generate_grassland_tiles.py
 
-Create three variations of a POINTY‑TOP grassland hex tile inside Blender.
+Create three variations of a POINTY-TOP grassland hex tile inside Blender.
 
-IMPORTANT: Runtime (three.js) uses pointy‑top axial coordinates with
+IMPORTANT: Runtime (three.js) uses pointy-top axial coordinates with
 `DEFAULT_HEX_SIZE` defined in `src/scene/utils/coords.ts` (currently 0.51).
-This script now generates pointy‑top geometry directly so the exported GLB
+This script now generates pointy-top geometry directly so the exported GLB
 radius matches 0.51 by default (can be overridden via CLI / constants).
 
 HOW SIZE PARITY IS ENSURED
 ==========================
-For a pointy‑top hex:
+For a pointy-top hex:
     - Radius ("size") = distance center -> any corner.
     - Width (flat edge to flat edge) = sqrt(3) * size.
     - Height (point to opposite point) = 2 * size.
 
 The web fallback procedural tile uses the same radius. Set HEX_RADIUS below
 to the EXACT value of DEFAULT_HEX_SIZE (0.51) for a 1:1 match. If you ever
-change DEFAULT_HEX_SIZE in the repo, re‑export by either:
+change DEFAULT_HEX_SIZE in the repo, re-export by either:
     a) editing HEX_RADIUS here, OR
     b) supplying --size <value> in the CLI (added in this rewrite).
 
@@ -28,10 +28,10 @@ VALIDATING SCALE IN BLENDER (quick):
 
 ADJUSTING ORIENTATION
 ======================
-We explicitly construct a pointy‑top hex mesh (one vertex on the +Y axis in
+We explicitly construct a pointy-top hex mesh (one vertex on the +Y axis in
 Blender's local space, then rotate so that when exported (Y up) and imported
 into three.js (Y up) the axial formulas align with coords.ts. The previous
-version relied on `primitive_cylinder_add` (flat‑top for our usage), so we
+version relied on `primitive_cylinder_add` (flat-top for our usage), so we
 replace that with a custom bmesh build.
 
 CLI CHANGES
@@ -82,7 +82,7 @@ def _resolve_export_path(path: str | None) -> str | None:
 
 # --- Parameters (aligned to repo defaults) ----------------------------------
 # NOTE: Keep in sync with `DEFAULT_HEX_SIZE` in the web project (coords.ts).
-# If changed there, re‑export here. Overridable via CLI --size.
+# If changed there, re-export here. Overridable via CLI --size.
 HEX_RADIUS = 0.51
 HEX_THICKNESS = 0.08
 SEED = 42
@@ -101,13 +101,13 @@ def clear_collection(name: str):
 
 
 def create_base_hex(name: str, radius=HEX_RADIUS, thickness=HEX_THICKNESS):
-    """Create a POINTY‑TOP hexagonal prism centered at origin.
+    """Create a POINTY-TOP hexagonal prism centered at origin.
 
     We build the top face manually (point at +Y). Then extrude down to give
     thickness. The local +Z remains "up" for displacement logic.
     """
-    # Compute 6 corner positions for pointy‑top orientation. Angle 0 at +Y.
-    # Standard pointy‑top layout uses 30° offset if starting at +X; here we
+    # Compute 6 corner positions for pointy-top orientation. Angle 0 at +Y.
+    # Standard pointy-top layout uses 30° offset if starting at +X; here we
     # start at +Y so angle step = 60° and initial angle = 0.
     angles = [0, 60, 120, 180, 240, 300]
     verts_top = []
