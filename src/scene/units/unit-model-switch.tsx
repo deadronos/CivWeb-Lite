@@ -32,10 +32,8 @@ export type UnitModelProps = UnitModelProperties;
 // add it to `gltfRegistry` or export a dedicated mapping module.
 
 import { Bob, phaseFromId } from './bob';
-// Lazy GLTF pipeline: only pull code when flag is enabled
-const LazyGLTFModel = React.lazy(() =>
-  import(String.raw`../drei/gltf-model`).then((m) => ({ default: m.default }))
-);
+// Use typed wrapper that safely forwards props to the lazy GLTF loader
+import { LazyGLTFModelWrapper as LazyGLTFModel } from '../drei/lazy-gltf-wrapper';
 
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
@@ -65,11 +63,7 @@ export const UnitModelSwitch: React.FC<UnitModelProps> = ({
     };
   }, [gltf, modelLabel, lowerType]);
   if (gltfEnabled() && gltfUrl) {
-    return (
-      <React.Suspense fallback={null}>
-        <LazyGLTFModel url={gltfUrl} position={position} scale={scale ?? 0.6} />
-      </React.Suspense>
-    );
+    return <LazyGLTFModel url={gltfUrl} position={position} scale={scale ?? 0.6} />;
   }
 
   const CommonWrap: React.FC<{ children: React.ReactNode }> = ({ children }) => (

@@ -1,5 +1,5 @@
 import { movementCost, isPassable } from './biomes';
-import type { City, GameStateExt as GameStateExtension, Hextile, Unit } from './types';
+import type { City, GameStateExtensionAlias as GameStateExtension, Hextile, Unit } from './types';
 import { IMPROVEMENTS, UNIT_TYPES, BUILDINGS } from './registry';
 import { UnitState } from '../../types/unit';
 

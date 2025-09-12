@@ -1,5 +1,4 @@
-import { UnitActiveStates } from '../../types/unit';
-
+import { UnitState, UnitActiveStates } from '../../types/unit';
 export type Biome =
   | 'ocean'
   | 'coast'
@@ -25,8 +24,6 @@ export interface Hextile {
   occupantCityId: string | null;
   passable: boolean;
 }
-
-import { UnitState, UnitActiveStates } from '../../types/unit';
 
 export interface Unit {
   id: string;
@@ -104,4 +101,5 @@ export interface GameStateExtension {
 }
 
 // Alias for backwards compatibility
-export type GameStateExt = GameStateExtension;
+// Alias for backwards compatibility
+export type GameStateExtensionAlias = GameStateExtension;

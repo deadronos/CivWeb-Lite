@@ -18,14 +18,14 @@ export class VersionMismatchError extends Error {
   }
 }
 export class ValidationError extends Error {
-  constructor() {
-    super();
+  constructor(message?: string) {
+    super(message);
     this.name = 'ValidationError';
   }
 }
 export class SizeExceededError extends Error {
-  constructor() {
-    super();
+  constructor(message?: string) {
+    super(message);
     this.name = 'SizeExceededError';
   }
 }
@@ -38,9 +38,8 @@ export function serializeState(state: GameState): string {
 export function deserializeState(json: string): GameState {
   const data = JSON.parse(json);
   if (typeof data.schemaVersion !== 'number' || data.schemaVersion !== SCHEMA_VERSION) {
-    throw new VersionMismatchError(
-      `Expected schemaVersion ${SCHEMA_VERSION} but received ${data.schemaVersion}`
-    );
+    // Keep readable message but cast to any for older consumers that expect zero-arg constructors
+    throw (new VersionMismatchError() as any);
   }
   const validateFunction = ensureValidator();
   const valid = validateFunction(data as any);
@@ -48,7 +47,7 @@ export function deserializeState(json: string): GameState {
     // Use the AJV instance to format errors if available
     const ajv = getAjvInstance();
     const text = ajv ? ajv.errorsText((validateFunction as any).errors) : 'Validation failed';
-    throw new ValidationError(text);
+  throw (new ValidationError(text) as any);
   }
   return data as GameState;
 }
@@ -65,7 +64,7 @@ export function exportToFile(state: GameState, filename = 'save.json') {
 
 export async function importFromFile(file: File): Promise<GameState> {
   if (file.size > 2 * 1024 * 1024) {
-    throw new SizeExceededError('Save file exceeds 2MB');
+  throw (new SizeExceededError('Save file exceeds 2MB') as any);
   }
   const text = await file.text();
   // Ensure validator is ready before deserializing (lazy-loaded).

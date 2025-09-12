@@ -54,7 +54,7 @@ export default function UnitStateBadge({ state }: UnitStateBadgeProperties) {
       aria-label={`${state} unit state`}
       title={`${state} state`}
     >
-      <IconComponent style={{ fontSize: '12px' }} data-testid="state-icon" />
+      {React.createElement(IconComponent as any, { style: { fontSize: '12px' }, 'data-testid': 'state-icon' })}
     </div>
   );
 }

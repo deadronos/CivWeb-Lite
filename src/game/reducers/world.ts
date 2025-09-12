@@ -78,9 +78,10 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
       if (unit && tileId && extension.tiles[tileId]) {
         const oldTileId = unit.location;
         unit.location = tileId;
-        // Update occupants
-        if (extension.tiles[oldTileId]) {
-          extension.tiles[oldTileId].occupantUnitId = null;
+        // Update occupants; normalize oldTileId which might be a coord object
+        const oldIdKey = typeof oldTileId === 'string' ? oldTileId : `${(oldTileId as any).q},${(oldTileId as any).r}`;
+        if (extension.tiles[oldIdKey]) {
+          extension.tiles[oldIdKey].occupantUnitId = null;
         }
         extension.tiles[tileId].occupantUnitId = unitId;
       }

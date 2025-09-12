@@ -27,7 +27,8 @@ export function TileDebugVisualizer() {
           Ice: '#E3F2FD',
         };
 
-        const color = colors[String(tile.biome)] || '#FF0000'; // Red for unknown biomes
+  // colors is a fixed mapping; TS warns when indexing by string so cast to any for lookup
+  const color = (colors as any)[String(tile.biome)] || '#FF0000'; // Red for unknown biomes
 
         return (
           <mesh key={tile.id} position={[x, 0.1, z]}>

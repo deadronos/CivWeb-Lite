@@ -76,9 +76,12 @@ function GameHUDInner() {
   }, [extension?.playerState.cultureResearch]);
 
   // Minimal data-backed catalog view (Units/Buildings)
-  const [unitList, setUnitList] = React.useState<{ id: string; name: string; category: string }[]>(
-    []
-  );
+  const [unitList, setUnitList] = React.useState<{
+    id: string;
+    name: string;
+    category: string;
+    requires?: string;
+  }[]>([]);
   const [buildingList, setBuildingList] = React.useState<
     { id: string; name: string; cost: number }[]
   >([]);
@@ -524,6 +527,18 @@ function SpecControls() {
     </div>
   );
 }
+
+/**
+ * Developer UI Controls
+ * 
+ * The SpecControls and Show/Hide Spec button are gated behind the Dev checkbox toggle in the top overlay UI.
+ * This toggle sets state.ui.openPanels.devPanel to true/false, and only when true will this dev section render.
+ * 
+ * To enable: Check the "Dev" checkbox in the top menu (left of End Turn button).
+ * Spec controls allow spawning units, queuing production, moving units, adding demo cities/tiles, and starting research/civics for testing.
+ * 
+ * Note: This is for development/debugging. Consider gating further with import.meta.env.DEV in production builds.
+ */
 
 function victoryBadge(v: string): string {
   switch (v) {

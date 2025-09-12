@@ -8,8 +8,13 @@ export type ProductionOrderType = 'unit' | 'improvement' | 'building';
 
 export interface ProductionOrder {
   type: ProductionOrderType;
-  itemId: string;
+  // Match engine ProductionOrder shape: use `item` (same as CityProductionOrder.item)
+  item: string;
+  // Optional target for improvements/units that require a tile
   targetTileId?: string;
+  // Optional fields to support lightweight UI and legacy spec controls
+  turnsRemaining?: number;
+  turns?: number;
 }
 
 export interface ResearchOrder {
@@ -32,7 +37,7 @@ export interface CityPanelProperties {
   availableItems: { id: string; type: ProductionOrderType; label: string; cost?: number }[];
   productionPerTurn: number;
   onChooseItem: (order: ProductionOrder) => void;
-  onReorderQueue: (newQueue: ProductionOrder[]) => void;
+  onReorderQueue: (reorderedQueue: ProductionOrder[]) => void;
   onCancelOrder: (index: number) => void;
 }
 

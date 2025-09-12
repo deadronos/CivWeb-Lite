@@ -4,6 +4,7 @@ import { GameState } from '../types';
 import { globalGameBus } from '../events';
 import { findPlayer } from '../utils/player';
 import { getItemCost } from '../utils/cost';
+import type { CityProductionOrder } from '../content/types';
 import { getCityYield } from '../content/rules';
 
 export function playerReducer(draft: Draft<GameState>, action: GameAction): void {
@@ -32,10 +33,10 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
       if (!tech) break;
       const add = typeof pts === 'number' ? pts : (player.sciencePoints ?? 0);
       player.researching.progress = (player.researching.progress ?? 0) + add;
-      if (player.researching.progress >= tech.cost) {
-        if (!player.researchedTechIds) player.researchedTechIds = [] as any;
-        player.researchedTechIds.push(tech.id);
-        player.researching = null as any;
+  if (player.researching.progress >= tech.cost) {
+  if (!player.researchedTechIds) player.researchedTechIds = [] as any;
+  player.researchedTechIds.push(tech.id);
+  player.researching = null;
         globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
         // Auto-advance from queue
         if (player.researchQueue && player.researchQueue.length > 0) {
@@ -68,14 +69,17 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
         const city = extension.cities[cityId];
         if (city) {
           // Compute turnsRemaining if not provided
-          let turnsRemaining = (order as ProductionOrder).turnsRemaining;
-          if (turnsRemaining <= 0) {
+          const maybeTurns = (order as ProductionOrder).turnsRemaining;
+          let resolvedTurnsRemaining: number;
+          if (typeof maybeTurns === 'number' && maybeTurns > 0) {
+            resolvedTurnsRemaining = maybeTurns;
+          } else {
             const cost = getItemCost(order.type, order.item);
             const yieldPerTurn = getCityYield(extension, city) || 1;
-            turnsRemaining = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
+            resolvedTurnsRemaining = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
           }
 
-          const fullOrder: ProductionOrder = { ...order, turnsRemaining } as ProductionOrder;
+          const fullOrder: CityProductionOrder = { type: order.type, item: order.item, turnsRemaining: resolvedTurnsRemaining };
 
           // Replace existing top order if same type
           const top = city.productionQueue[0];

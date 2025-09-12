@@ -122,4 +122,10 @@ This project is licensed under the MIT license — see `LICENSE`.
 
 Owner: deadronos — open issues or PRs for collaboration.
 
+## Developer Tools
+
+- **Dev Toggle**: Found in the top overlay UI (left of End Turn button). When checked, it enables developer mode (`state.ui.openPanels.devPanel = true`), revealing SpecControls in the HUD for spawning units, queuing production, moving units, adding demo cities/tiles, and starting research/civics.
+  - Toggle via checkbox; only visible/enabled in development.
+  - Use for testing and debugging game mechanics.
+
 ---

@@ -46,6 +46,7 @@ const LEGACY_ALLOWLIST = new Set([
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // GameProvider, SelectionContext, HoverContext PascalCase shims have been untracked; keep kebab-case files
+  'env.d.ts', // Vite TypeScript env declarations
 ]);
 
 function isKebabCase(name: string) {

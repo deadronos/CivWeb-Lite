@@ -1,11 +1,8 @@
 import { GameState } from './types';
 import { UnitState } from '../types/unit';
-
-export type ProductionOrder = {
-  type: 'unit' | 'building' | 'improvement';
-  item: string;
-  turnsRemaining: number;
-};
+import type { ProductionOrder } from './types/production';
+// Re-export ProductionOrder for modules that import it from ../actions
+export type { ProductionOrder } from './types/production';
 
 export type UnitMovePayload = {
   unitId: string;
@@ -35,13 +32,13 @@ export type GameAction =
   | { type: 'RECORD_AI_PERF'; payload: { duration: number } }
   // UI Interaction Actions (from spec)
   | { type: 'SELECT_UNIT'; payload: { unitId: string } }
-  | { type: 'PREVIEW_PATH'; payload: { targetTileId: string } } // unitId from ui.selectedUnitId
+  | { type: 'PREVIEW_PATH'; payload: { targetTileId: string; unitId?: string } } // unitId from ui.selectedUnitId
   | { type: 'ISSUE_MOVE'; payload: UnitMovePayload }
-  | { type: 'CANCEL_SELECTION' }
+  | { type: 'CANCEL_SELECTION'; payload?: { unitId?: string } }
   | { type: 'OPEN_CITY_PANEL'; payload: { cityId: string } }
-  | { type: 'CLOSE_CITY_PANEL' }
-  | { type: 'OPEN_RESEARCH_PANEL' }
-  | { type: 'CLOSE_RESEARCH_PANEL' }
+  | { type: 'CLOSE_CITY_PANEL'; payload?: { cityId?: string } }
+  | { type: 'OPEN_RESEARCH_PANEL'; payload?: {} }
+  | { type: 'CLOSE_RESEARCH_PANEL'; payload?: {} }
   | { type: 'OPEN_SPEC_PANEL' }
   | { type: 'CLOSE_SPEC_PANEL' }
   | { type: 'OPEN_DEV_PANEL' }
@@ -63,6 +60,7 @@ export type GameAction =
         order: ProductionOrder;
       };
     }
+  | { type: 'EXT_MOVE_UNIT'; payload: { unitId: string; toTileId: string } }
   | { type: 'EXT_ADD_TILE'; payload: { tile: { id: string; q: number; r: number; biome: string } } }
   | {
       type: 'EXT_ADD_CITY';
@@ -125,6 +123,7 @@ export const GAME_ACTION_TYPES = [
   'EXT_BEGIN_RESEARCH',
   'EXT_BEGIN_CULTURE_RESEARCH',
   'EXT_QUEUE_PRODUCTION',
+  'EXT_MOVE_UNIT',
   'EXT_ADD_TILE',
   'EXT_ADD_CITY',
   'EXT_ADD_UNIT',

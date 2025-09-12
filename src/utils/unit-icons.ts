@@ -6,7 +6,6 @@ import React from 'react';
  * Maps UnitCategory to react-icons/gi component for category badges.
  * @param category - UnitCategory from src/types/unit.ts
  * @returns React.ComponentType | undefined - Icon for badge; undefined for invalid (safe for rendering)
- * @example unitCategoryIconMap(UnitCategory.Melee) // Returns GiAncientSword
  */
 export const unitCategoryIconMap = (category: UnitCategory): React.ComponentType | undefined => {
   switch (category) {
@@ -32,10 +31,7 @@ export const unitCategoryIconMap = (category: UnitCategory): React.ComponentType
 };
 
 /**
- * Maps UnitState to react-icons/gi component for state badges (Selected undefined for tile outline).
- * @param state - UnitState from src/types/unit.ts
- * @returns React.ComponentType | undefined - Icon for badge; undefined for Selected/invalid (safe for multi-state sets)
- * @example unitStateIconMap(UnitState.Moved) // Returns GiFootsteps; supports sets like new Set(['Moved', 'Fortified'])
+ * Maps UnitState to react-icons/gi component for state badges
  */
 export const unitStateIconMap = (state: UnitState): React.ComponentType | undefined => {
   switch (state) {
@@ -52,10 +48,12 @@ export const unitStateIconMap = (state: UnitState): React.ComponentType | undefi
       return GiAnchor;
     }
     case UnitState.Selected: {
-      return undefined; // Tile outline per REQ-002
+      return undefined;
     }
     default: {
       return undefined;
     }
   }
 };
+
+export default unitCategoryIconMap;

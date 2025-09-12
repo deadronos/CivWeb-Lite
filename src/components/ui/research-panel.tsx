@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ResearchPanelProps as ResearchPanelProperties } from '../../game/types/ui';
+import type { ResearchPanelProperties } from '../../game/types/ui';
 
 export function ResearchPanel({
   playerId,
@@ -15,7 +15,7 @@ export function ResearchPanel({
       <h3>Research (Player {playerId})</h3>
       <div>Current: {currentResearch ? currentResearch.techId : 'none'}</div>
       <ul>
-        {availableTechs.map((t) => (
+        {availableTechs.map((t: { id: string; label: string; cost: number }) => (
           <li key={t.id}>
             <button onClick={() => onStartResearch(t.id)}>{t.label}</button>
             <button onClick={() => onQueueResearch(t.id)}>Queue</button>
