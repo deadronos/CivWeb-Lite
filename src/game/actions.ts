@@ -1,4 +1,5 @@
 import { GameState } from './types';
+import { UnitState } from '../types/unit';
 
 export type ProductionOrder = {
   type: 'unit' | 'building' | 'improvement';
@@ -80,7 +81,8 @@ export type GameAction =
   | { type: 'SET_TILE_IMPROVEMENT'; payload: { tileId: string; improvementId: string } }
   | { type: 'REMOVE_TILE_IMPROVEMENT'; payload: { tileId: string; improvementId: string } }
   | { type: 'SET_CITY_TILE'; payload: { cityId: string; tileId: string } }
-  | { type: 'SET_UNIT_STATE'; payload: { unitId: string; state: string } }
+  | { type: 'ADD_UNIT_STATE'; payload: { unitId: string; state: UnitState } }
+  | { type: 'REMOVE_UNIT_STATE'; payload: { unitId: string; state: UnitState } }
   | { type: 'SET_UNIT_LOCATION'; payload: { unitId: string; tileId: string } }
   | { type: 'SET_PLAYER_SCORES'; payload: { players: Array<{ id: string; sciencePoints: number; culturePoints: number }> } };
 
@@ -125,7 +127,8 @@ export const GAME_ACTION_TYPES = [
   'SET_TILE_IMPROVEMENT',
   'REMOVE_TILE_IMPROVEMENT',
   'SET_CITY_TILE',
-  'SET_UNIT_STATE',
+  'ADD_UNIT_STATE',
+  'REMOVE_UNIT_STATE',
   'SET_UNIT_LOCATION',
   'SET_PLAYER_SCORES',
 ] as const;

@@ -1,3 +1,5 @@
+import { UnitActiveStates } from '../../types/unit';
+
 export type Biome =
   | 'ocean'
   | 'coast'
@@ -24,6 +26,8 @@ export interface Hextile {
   passable: boolean;
 }
 
+import { UnitState, UnitActiveStates } from '../../types/unit';
+
 export interface Unit {
   id: string;
   type: string;
@@ -35,7 +39,7 @@ export interface Unit {
   attack: number;
   defense: number;
   sight: number;
-  state: 'idle' | 'moving' | 'fortify' | 'building' | 'exploring';
+  activeStates: UnitActiveStates;
   abilities?: string[];
 }
 
