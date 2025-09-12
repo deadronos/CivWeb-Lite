@@ -1,12 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useGame } from '../../hooks/use-game';
 import { UnitSelectionOverlay } from './unit-selection-overlay';
-import { computePath, computeMovementRange } from '../../game/pathfinder';
+import { computeMovementRange } from '../../game/pathfinder';
 
 export function UnitSelectionOverlayContainer({ selectedUnitId }: { selectedUnitId?: string }) {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;
-  const [path, setPath] = useState<string[] | undefined>();
+  
+  // Use the preview path from UI state instead of local state
+  const previewPath = state.ui.previewPath;
 
   const range = useMemo(() => {
     if (!extension || !selectedUnitId) return { reachable: [], cost: {} as Record<string, number> };
@@ -19,21 +21,16 @@ export function UnitSelectionOverlayContainer({ selectedUnitId }: { selectedUnit
     <UnitSelectionOverlay
       selectedUnitId={selectedUnitId}
       computedRangeTiles={range.reachable}
-      computedPath={path}
+      computedPath={previewPath}
       onPreviewPath={(targetTileId) => {
-        if (!extension) return;
-        const result = computePath(
-          extension,
-          selectedUnitId,
-          targetTileId,
-          state.map.width,
-          state.map.height
-        );
-        if ('path' in result && result.path) setPath(result.path);
-        else setPath(undefined);
+        dispatch({ type: 'PREVIEW_PATH', payload: { unitId: selectedUnitId, targetTileId } });
       }}
-      onIssueMove={(payload) => dispatch({ type: 'EXT_ISSUE_MOVE_PATH', payload })}
-      onCancel={() => setPath(undefined)}
+      onIssueMove={(payload) => {
+        dispatch({ type: 'ISSUE_MOVE', payload });
+      }}
+      onCancel={() => {
+        dispatch({ type: 'CANCEL_SELECTION', payload: { unitId: selectedUnitId } });
+      }}
     />
   );
 }

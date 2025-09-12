@@ -93,11 +93,15 @@ export function moveUnit(state: GameStateExtension, unitId: string, toTileId: st
   const unitType = UNIT_TYPES[unit.type];
   if (!unitType) return false;
   if (!canUnitEnter(state, unit, tile)) return false;
+  const fromTileId = typeof unit.location === 'string' ? unit.location : '';
+  const fromTile = fromTileId ? state.tiles[fromTileId] : undefined;
   const cost = movementCost(tile, { unitAbilities: unit.abilities, unitDomain: unitType.domain });
   const step = roundUp(cost);
   if (step <= unit.movementRemaining) {
     unit.movementRemaining -= step;
+    if (fromTile && fromTile.occupantUnitId === unit.id) fromTile.occupantUnitId = null;
     unit.location = tile.id;
+    tile.occupantUnitId = unit.id;
     return true;
   }
   return false;
@@ -291,4 +295,63 @@ export function workerBuildImprovement(
     return { complete: true, progress: next };
   }
   return { complete: false, progress: next };
+}
+
+export type FoundCityResult =
+  | { success: true; cityId: string; ownerId: string; tileId: string }
+  | { success: false; reason: string };
+
+/**
+ * Attempt to found a city by a unit (typically a settler).
+ * Returns success + created city info or failure reason.
+ */
+export function foundCity(
+  state: GameStateExtension,
+  unitId: string,
+  tileId?: string,
+  cityId?: string,
+  name?: string
+): FoundCityResult {
+  const unit = state.units[unitId];
+  if (!unit) return { success: false, reason: 'Unit not found' };
+  if (unit.type !== 'settler') return { success: false, reason: 'Unit cannot found cities' };
+  const locTileIdRaw = tileId ?? unit.location;
+  const locTileId = typeof locTileIdRaw === 'string' ? locTileIdRaw : undefined;
+  if (!locTileId) return { success: false, reason: 'No tile specified' };
+  if (!state.tiles[locTileId]) {
+    // defensive: create a minimal tile entry
+    state.tiles[locTileId] = {
+      id: locTileId,
+      q: 0,
+      r: 0,
+      biome: 'grassland',
+      elevation: 0.1,
+      features: [],
+      improvements: [],
+      occupantUnitId: null,
+      occupantCityId: null,
+      passable: true,
+    } as any;
+  }
+  const tile = state.tiles[locTileId];
+  if (tile.occupantCityId) return { success: false, reason: 'Tile already has a city' };
+  if (['ocean', 'mountain', 'snow'].includes(tile.biome)) return { success: false, reason: 'Invalid biome for city' };
+  const ownerId = unit.ownerId;
+  const createdCityId = cityId ?? `c_${ownerId}_${Date.now()}`;
+  state.cities[createdCityId] = {
+    id: createdCityId,
+    name: name ?? `City ${createdCityId}`,
+    ownerId,
+    location: locTileId,
+    population: 1,
+    productionQueue: [],
+    tilesWorked: [locTileId],
+    garrisonUnitIds: [],
+    happiness: 0,
+  } as any;
+  // remove settler
+  delete state.units[unitId];
+  state.tiles[locTileId].occupantUnitId = undefined as any;
+  state.tiles[locTileId].occupantCityId = createdCityId as any;
+  return { success: true, cityId: createdCityId, ownerId, tileId: locTileId };
 }

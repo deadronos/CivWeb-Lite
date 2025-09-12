@@ -47,6 +47,7 @@ export interface PlayerState {
   culturePoints: number;
   researchedTechIds: string[];
   researching?: { techId: string; progress: number } | null;
+  researchQueue?: string[]; // Queue of tech IDs to research after current completes
 }
 
 export interface GameLogEntry {
@@ -54,6 +55,16 @@ export interface GameLogEntry {
   turn: number;
   type: string;
   payload?: any;
+}
+
+export interface UIState {
+  selectedUnitId?: string;
+  selectedCityId?: string;
+  previewPath?: string[];
+  openPanels: {
+    cityPanel?: string; // cityId if open
+    researchPanel?: boolean;
+  };
 }
 
 export interface GameState {
@@ -68,6 +79,8 @@ export interface GameState {
   aiPerf?: { total: number; count: number };
   mode: 'standard' | 'ai-sim';
   autoSim: boolean;
+  // UI state for selections and interactions
+  ui: UIState;
   // Optional extension for spec-driven content (biomes/units/cities/tech system)
   // This keeps the main GameState backward compatible while allowing incremental rollout.
   contentExt?: import('./content/types').GameStateExt;

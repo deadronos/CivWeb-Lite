@@ -40,7 +40,7 @@ export interface Unit {
 }
 
 export interface CityProductionOrder {
-  type: 'unit' | 'improvement';
+  type: 'unit' | 'improvement' | 'building';
   item: string;
   turnsRemaining: number;
 }
@@ -98,3 +98,6 @@ export interface GameStateExtension {
     cultureResearch?: { civicId: string; progress: number } | null;
   };
 }
+
+// Alias for backwards compatibility
+export type GameStateExt = GameStateExtension;

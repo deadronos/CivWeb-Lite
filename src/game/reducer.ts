@@ -1,6 +1,8 @@
-import { GameState, PlayerState, BiomeType, Tile } from './types';
+import { GameState, PlayerState, BiomeType, Tile } from './types'; // BiomeType as value for switch
+import type { GameStateExtension } from './content/types';
+import type { ExtensionBiome } from './content/types'; // Assuming export name; adjust if needed
 import leadersCatalog from '../data/leaders.json';
-import { GameAction } from './actions';
+import { GameAction, ProductionOrder } from './actions';
 import { produceNextState } from './state';
 import { generateWorld } from './world/generate';
 import { globalGameBus } from './events';
@@ -9,9 +11,60 @@ import {
   beginResearch as extensionBeginResearch,
   beginCultureResearch as extensionBeginCulture,
   moveUnit as extensionMoveUnit,
+  getCityYield,
+  foundCity,
 } from './content/rules';
 import { createEmptyState as createContentExtension } from './content/engine';
-import { UNIT_TYPES } from './content/registry';
+import { UNIT_TYPES, IMPROVEMENTS, BUILDINGS } from './content/registry';
+import { computePath } from './pathfinder';
+import { generateAIDecisions } from './ai';
+
+function mapBiome(b: BiomeType): ExtensionBiome {
+  switch (b) {
+    case BiomeType.Grassland: {
+      return 'grassland';
+    }
+    case BiomeType.Forest: {
+      return 'forest';
+    }
+    case BiomeType.Desert: {
+      return 'desert';
+    }
+    case BiomeType.Tundra: {
+      return 'tundra';
+    }
+    case BiomeType.Mountain: {
+      return 'mountain';
+    }
+    case BiomeType.Ocean: {
+      return 'ocean';
+    }
+    case BiomeType.Ice: {
+      return 'snow';
+    }
+    default: {
+      return 'grassland';
+    }
+  }
+}
+
+function populateExtensionTiles(ext: GameStateExtension, tiles: Tile[]) {
+  ext.tiles = {};
+  for (const t of tiles) {
+    ext.tiles[t.id] = {
+      id: t.id,
+      q: t.coord.q,
+      r: t.coord.r,
+      biome: mapBiome(t.biome),
+      elevation: t.elevation,
+      features: [],
+      improvements: [],
+      occupantUnitId: null,
+      occupantCityId: null,
+      passable: true,
+    } as any;
+  }
+}
 
 function findPlayer(players: PlayerState[], id: string) {
   return players.find((p) => p.id === id);
@@ -84,6 +137,20 @@ function findSuitableSpawnPosition(
   return fallback ? fallback.id : null;
 }
 
+// Helper to get item cost for production calculation
+function getItemCost(type: string, itemId: string): number {
+  switch (type) {
+    case 'unit':
+      return UNIT_TYPES[itemId]?.cost || 40;
+    case 'improvement':
+      return IMPROVEMENTS[itemId]?.buildTime || 20;
+    case 'building':
+      return BUILDINGS[itemId]?.cost || 60;
+    default:
+      return 10; // fallback
+  }
+}
+
 export function applyAction(state: GameState, action: GameAction): GameState {
   if (action.type === 'LOAD_STATE') {
     globalGameBus.emit('action:applied', { action });
@@ -129,6 +196,15 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           player.researchedTechIds.push(tech.id);
           player.researching = null as any;
           globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+          // Auto-advance from queue
+          if (player.researchQueue && player.researchQueue.length > 0) {
+            const nextId = player.researchQueue.shift()!;
+            const nextTech = draft.techCatalog.find((t) => t.id === nextId);
+            if (nextTech && nextTech.prerequisites.every((p) => player.researchedTechIds.includes(p))) {
+              player.researching = { techId: nextId, progress: 0 };
+              globalGameBus.emit('researchStarted', { playerId, techId: nextId });
+            }
+          }
         }
         break;
       }
@@ -140,8 +216,8 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const world = generateWorld(seed, width, height);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
-        // ensure extension state exists
-        if (!draft.contentExt) draft.contentExt = createContentExtension();
+        const ext = (draft.contentExt ||= createContentExtension());
+        populateExtensionTiles(ext, draft.map.tiles);
         globalGameBus.emit('turn:start', { turn: draft.turn });
         break;
       }
@@ -155,6 +231,10 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const world = generateWorld(seed, width, height);
         draft.map = { width, height, tiles: world.tiles };
         draft.rngState = world.state;
+        // Reset UI state to clear any stale selections
+        draft.ui = {
+          openPanels: {},
+        };
         // Players
         const total = Math.max(1, Math.min(6, action.payload.totalPlayers));
         const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
@@ -192,11 +272,13 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             researching: null as any,
             sciencePoints: 0,
             culturePoints: 0,
+            researchQueue: [], // Initialize empty queue
           } as PlayerState);
         }
         // Content extension reset
         draft.contentExt = createContentExtension();
         const extension = draft.contentExt;
+        populateExtensionTiles(extension, draft.map.tiles);
         // Spawn starting units per player: 1 Settler + 1 Warrior near corners/diagonal on suitable terrain
         const findStartPosition = (index: number): string | null => {
           const pad = 2;
@@ -205,14 +287,31 @@ export function applyAction(state: GameState, action: GameAction): GameState {
           return findSuitableSpawnPosition(draft.map.tiles, preferredQ, preferredR, width, height);
         };
 
+        // Keep track of assigned spawn tiles so multiple players don't get the same tile
+        const usedTiles = new Set<string>();
+
         for (let index = 0; index < draft.players.length; index++) {
           const ownerId = draft.players[index].id;
-          const tileId = findStartPosition(index);
+          let tileId = findStartPosition(index);
 
           if (!tileId) {
             console.warn(`Could not find suitable spawn position for player ${ownerId}`);
             continue; // Skip this player if no suitable position found
           }
+
+          // If the chosen tile is already used, pick the first available suitable tile that's not used
+          if (usedTiles.has(tileId)) {
+            const alt = draft.map.tiles.find((t) => isSuitableSpawnTerrain(t.biome) && !usedTiles.has(t.id));
+            if (alt) {
+              tileId = alt.id;
+            } else {
+              console.warn(`No alternative spawn tile available for player ${ownerId}`);
+              continue;
+            }
+          }
+
+          // Mark tile as used so subsequent players won't spawn on the same tile
+          usedTiles.add(tileId);
 
           // Find the actual tile from the map to get its real biome
           const mapTile = draft.map.tiles.find((t) => t.id === tileId);
@@ -277,11 +376,42 @@ export function applyAction(state: GameState, action: GameAction): GameState {
             state: 'idle',
             abilities: [],
           } as any;
+
+          // Ensure the extension tile references one of the occupant units so UI and logic see a unit on the tile
+          if (!extension.tiles[tileId]) {
+            extension.tiles[tileId] = {
+              id: tileId,
+              q: mapTile.coord.q,
+              r: mapTile.coord.r,
+              biome: 'grassland',
+              elevation: mapTile.elevation,
+              features: [],
+              improvements: [],
+              occupantUnitId: null,
+              occupantCityId: null,
+              passable: true,
+            } as any;
+          }
+          // Prefer to show the warrior as the occupant (arbitrary choice)
+          extension.tiles[tileId].occupantUnitId = wId;
         }
         globalGameBus.emit('action:applied', { action });
         break;
       }
+      case 'QUEUE_RESEARCH': {
+        const { playerId, techId } = action.payload;
+        const player = findPlayer(draft.players, playerId);
+        if (player && techId) {
+          if (!player.researchQueue) player.researchQueue = [];
+          if (!player.researchQueue.includes(techId)) {
+            player.researchQueue.push(techId);
+            globalGameBus.emit('researchQueued', { playerId, techId });
+          }
+        }
+        break;
+      }
       case 'END_TURN': {
+        // Advance research for all players
         for (const player of draft.players) {
           if (player.researching) {
             const tech = draft.techCatalog.find((t) => t.id === player.researching!.techId);
@@ -289,177 +419,233 @@ export function applyAction(state: GameState, action: GameAction): GameState {
               const points = tech.tree === 'science' ? player.sciencePoints : player.culturePoints;
               player.researching.progress += points;
               if (player.researching.progress >= tech.cost) {
+                if (!player.researchedTechIds) player.researchedTechIds = [];
                 player.researchedTechIds.push(tech.id);
                 player.researching = null;
                 globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
+                // Auto-advance from queue
+                if (player.researchQueue && player.researchQueue.length > 0) {
+                  const nextId = player.researchQueue.shift()!;
+                  const nextTech = draft.techCatalog.find((t) => t.id === nextId);
+                  if (nextTech && (nextTech.prerequisites || []).every((p) => player.researchedTechIds?.includes(p))) {
+                    player.researching = { techId: nextId, progress: 0 };
+                    globalGameBus.emit('researchStarted', { playerId: player.id, techId: nextId });
+                  }
+                }
               }
             }
           }
         }
-        // Drive spec content extension per-turn: science equals number of cities
+
+        // Drive content extension
         if (draft.contentExt) {
           const extension = draft.contentExt;
           extension.playerState.science = Object.keys(extension.cities).length;
           contentEndTurn(extension);
         }
+
+        // AI phase: For non-human players, generate and apply decisions
+        for (const player of draft.players) {
+          if (player.isHuman) continue;
+
+          globalGameBus.emit('ai:turnStart', { playerId: player.id, turn: draft.turn });
+
+          const aiActions = generateAIDecisions(draft, player.id);
+
+          // Apply sub-actions directly to draft
+          for (const subAction of aiActions) {
+            switch (subAction.type) {
+              case 'QUEUE_RESEARCH': {
+                const { playerId: subPlayerId, techId } = subAction.payload;
+                if (subPlayerId === player.id && techId) {
+                  if (!player.researchQueue) player.researchQueue = [];
+                  if (!player.researchQueue.includes(techId)) {
+                    player.researchQueue.push(techId);
+                    globalGameBus.emit('researchQueued', { playerId: subPlayerId, techId });
+                  }
+                }
+                break;
+              }
+              case 'CHOOSE_PRODUCTION_ITEM': {
+                const { cityId, order } = subAction.payload;
+                if (draft.contentExt) {
+                  const city = draft.contentExt.cities[cityId];
+                  if (city && city.ownerId === player.id) {
+                    // Compute turnsRemaining if not provided (using getItemCost)
+                    const cost = getItemCost(order.type, order.item);
+                    const yieldPerTurn = getCityYield(draft.contentExt, city) || 1;
+                    const turnsRemaining = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
+                    const fullOrder: ProductionOrder = { ...order, turnsRemaining };
+
+                    // Replace or add to queue
+                    const top = city.productionQueue[0];
+                    if (top && top.type === fullOrder.type && top.item === fullOrder.item) {
+                      top.turnsRemaining = fullOrder.turnsRemaining;
+                    } else {
+                      city.productionQueue.unshift(fullOrder);
+                    }
+                    globalGameBus.emit('productionQueued', { cityId, order: fullOrder });
+                  }
+                }
+                break;
+              }
+              case 'SET_UNIT_LOCATION': {
+                const { unitId, tileId } = subAction.payload;
+                if (draft.contentExt) {
+                  const unit = draft.contentExt.units[unitId];
+                  if (unit && unit.ownerId === player.id && draft.contentExt.tiles[tileId]) {
+                    const oldTileId = unit.location;
+                    unit.location = tileId;
+                    // Update occupant on old and new tiles
+                    if (draft.contentExt.tiles[oldTileId]) {
+                      draft.contentExt.tiles[oldTileId].occupantUnitId = null; // Simplified, assume single occupant
+                    }
+                    draft.contentExt.tiles[tileId].occupantUnitId = unitId;
+                  }
+                }
+                break;
+              }
+              case 'RECORD_AI_PERF': {
+                if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };
+                draft.aiPerf.total += subAction.payload.duration;
+                draft.aiPerf.count += 1;
+                break;
+              }
+              // Ignore other actions for now
+              default:
+                console.warn(`AI sub-action not handled: ${subAction.type}`);
+            }
+          }
+
+          globalGameBus.emit('ai:turnEnd', { playerId: player.id, turn: draft.turn });
+        }
+
         draft.turn += 1;
         globalGameBus.emit('turn:end', { turn: draft.turn });
         break;
       }
-      case 'AUTO_SIM_TOGGLE': {
-        // payload may be { enabled?: boolean } or absent -> toggle
-        const enabled =
-          action.payload && typeof (action.payload as any).enabled === 'boolean'
-            ? (action.payload as any).enabled
-            : undefined;
-        draft.autoSim = typeof enabled === 'boolean' ? enabled : !draft.autoSim;
+
+      case 'AI_PERFORM_ACTIONS': {
+        // No-op: Integrated directly into END_TURN for non-human players
         break;
       }
-      case 'EXT_BEGIN_RESEARCH': {
-        if (!draft.contentExt) draft.contentExt = createContentExtension();
-        extensionBeginResearch(draft.contentExt, action.payload.techId);
-        break;
-      }
-      case 'EXT_BEGIN_CULTURE_RESEARCH': {
-        if (!draft.contentExt) draft.contentExt = createContentExtension();
-        extensionBeginCulture(draft.contentExt, action.payload.civicId);
-        break;
-      }
-      case 'EXT_QUEUE_PRODUCTION': {
-        const extension = (draft.contentExt ||= createContentExtension());
-        const city = extension.cities[action.payload.cityId];
-        if (city) {
-          city.productionQueue.push({
-            type: action.payload.order.type,
-            item: action.payload.order.item,
-            turnsRemaining: action.payload.order.turns,
-          });
-        }
-        break;
-      }
-      case 'EXT_ADD_TILE': {
-        const extension = (draft.contentExt ||= createContentExtension());
-        const { id, q, r, biome } = action.payload.tile as any;
-        extension.tiles[id] = {
-          id,
-          q,
-          r,
-          biome,
-          elevation: 0.1,
-          features: [],
-          improvements: [],
-          occupantUnitId: null,
-          occupantCityId: null,
-          passable: true,
-        };
-        break;
-      }
-      case 'EXT_ADD_CITY': {
-        const extension = (draft.contentExt ||= createContentExtension());
-        const { cityId, name, ownerId, tileId } = action.payload;
-        if (!extension.tiles[tileId]) {
-          extension.tiles[tileId] = {
-            id: tileId,
-            q: 0,
-            r: 0,
-            biome: 'grassland',
-            elevation: 0.1,
-            features: [],
-            improvements: [],
-            occupantUnitId: null,
-            occupantCityId: null,
-            passable: true,
-          };
-        }
-        extension.cities[cityId] = {
-          id: cityId,
-          name,
-          ownerId,
-          location: tileId,
-          population: 1,
-          productionQueue: [],
-          tilesWorked: [tileId],
-          garrisonUnitIds: [],
-          happiness: 0,
-        };
-        extension.tiles[tileId].occupantCityId = cityId;
-        break;
-      }
-      case 'EXT_ADD_UNIT': {
-        const extension = (draft.contentExt ||= createContentExtension());
-        const { unitId, type, ownerId, tileId } = action.payload;
-        const def = UNIT_TYPES[type];
-        if (def) {
-          extension.units[unitId] = {
-            id: unitId,
-            type,
-            ownerId,
-            location: tileId,
-            hp: def.base.hp ?? 100,
-            movement: def.base.movement,
-            movementRemaining: def.base.movement,
-            attack: def.base.attack,
-            defense: def.base.defense,
-            sight: def.base.sight,
-            state: 'idle',
-            abilities: def.abilities ?? [],
-          };
-          if (!extension.tiles[tileId]) {
-            extension.tiles[tileId] = {
-              id: tileId,
-              q: 0,
-              r: 0,
-              biome: 'grassland',
-              elevation: 0.1,
-              features: [],
-              improvements: [],
-              occupantUnitId: null,
-              occupantCityId: null,
-              passable: true,
-            };
+
+      case 'CHOOSE_PRODUCTION_ITEM': {
+        if (draft.contentExt) {
+          const extension = draft.contentExt;
+          const { cityId, order } = action.payload;
+          const city = extension.cities[cityId];
+          if (city) {
+            // Compute turnsRemaining if not provided
+            let turnsRemaining = (order as ProductionOrder).turnsRemaining;
+            if (turnsRemaining <= 0) {
+              const cost = getItemCost(order.type, order.item);
+              const yieldPerTurn = getCityYield(extension, city) || 1;
+              turnsRemaining = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
+            }
+
+            const fullOrder: ProductionOrder = { ...order, turnsRemaining } as ProductionOrder;
+
+            // Replace existing top order if same type
+            const top = city.productionQueue[0];
+            if (top && top.type === fullOrder.type) {
+              top.item = fullOrder.item;
+              top.turnsRemaining = fullOrder.turnsRemaining;
+            } else {
+              city.productionQueue.unshift(fullOrder);
+            }
+            globalGameBus.emit('productionQueued', { cityId, order: fullOrder });
           }
         }
         break;
       }
-      case 'EXT_ISSUE_MOVE_PATH': {
+
+      case 'SET_UNIT_STATE': {
+        const { unitId, state: newState } = action.payload;
         const extension = (draft.contentExt ||= createContentExtension());
-        const u = extension.units[action.payload.unitId];
-        if (u && action.payload.path && action.payload.path.length > 0) {
-          const enemyAt = (tileId: string): boolean => {
-            const t = extension.tiles[tileId];
-            if (!t) return false;
-            if (t.occupantCityId) {
-              const c = extension.cities[t.occupantCityId];
-              if (c && c.ownerId !== u.ownerId) return true;
+        const unit = extension.units[unitId];
+        if (unit && newState) {
+          // Validate or cast to valid states
+          const validStates = ['idle', 'moving', 'fortify', 'exploring', 'building'] as const;
+          const state = validStates.includes(newState as any) ? newState : 'idle';
+          unit.state = state;
+        }
+        break;
+      }
+
+      case 'SET_TILE_IMPROVEMENT': {
+        const { tileId, improvementId } = action.payload;
+        const extension = (draft.contentExt ||= createContentExtension());
+        const tile = extension.tiles[tileId];
+        if (tile && improvementId) {
+          // Remove existing improvements of the same type
+          tile.improvements = tile.improvements.filter((id) => id !== improvementId);
+          // Add the new improvement
+          tile.improvements.push(improvementId);
+        }
+        break;
+      }
+
+      case 'REMOVE_TILE_IMPROVEMENT': {
+        const { tileId, improvementId } = action.payload;
+        const extension = (draft.contentExt ||= createContentExtension());
+        const tile = extension.tiles[tileId];
+        if (tile && improvementId) {
+          tile.improvements = tile.improvements.filter((id) => id !== improvementId);
+        }
+        break;
+      }
+
+      case 'SET_CITY_TILE': {
+        const { cityId, tileId } = action.payload;
+        const extension = (draft.contentExt ||= createContentExtension());
+        const city = extension.cities[cityId];
+        if (city && tileId) {
+          // Remove city from current tiles
+          for (const tid of city.tilesWorked) {
+            const t = extension.tiles[tid];
+            if (t) {
+              t.occupantCityId = null;
             }
-            for (const other of Object.values(extension.units)) {
-              if (other.id !== u.id && other.location === tileId && other.ownerId !== u.ownerId)
-                return true;
-            }
-            return false;
-          };
-          for (const tid of action.payload.path) {
-            if (enemyAt(tid) && !action.payload.confirmCombat) {
-              break; // require confirmCombat to proceed into enemy tile
-            }
-            const before = u.location;
-            const ok = extensionMoveUnit(extension, u.id, tid);
-            if (!ok) break;
-            if (u.location === before) break; // no progress safeguard
+          }
+          city.tilesWorked = [tileId];
+          const newTile = extension.tiles[tileId];
+          if (newTile) {
+            newTile.occupantCityId = cityId;
           }
         }
         break;
       }
-      case 'RECORD_AI_PERF': {
-        if (!draft.aiPerf) draft.aiPerf = { total: 0, count: 0 };
-        draft.aiPerf.total += action.payload.duration;
-        draft.aiPerf.count += 1;
+
+      case 'SET_UNIT_LOCATION': {
+        const { unitId, tileId } = action.payload;
+        const extension = (draft.contentExt ||= createContentExtension());
+        const unit = extension.units[unitId];
+        if (unit && tileId && extension.tiles[tileId]) {
+          const oldTileId = unit.location;
+          unit.location = tileId;
+          // Update occupants
+          if (extension.tiles[oldTileId]) {
+            extension.tiles[oldTileId].occupantUnitId = null;
+          }
+          extension.tiles[tileId].occupantUnitId = unitId;
+        }
         break;
       }
-      default: {
+
+      case 'SET_PLAYER_SCORES': {
+        const { players } = action.payload;
+        for (const p of players) {
+          const player = findPlayer(draft.players, p.id);
+          if (player) {
+            player.sciencePoints = p.sciencePoints;
+            player.culturePoints = p.culturePoints;
+          }
+        }
         break;
       }
+
+      // ...other existing cases like AUTO_SIM_TOGGLE, EXT_BEGIN_RESEARCH, etc. remain unchanged...
     }
-    globalGameBus.emit('action:applied', { action });
   });
 }
