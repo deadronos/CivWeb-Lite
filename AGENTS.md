@@ -2,6 +2,35 @@
 
 This guide helps contributors work effectively in CivWeb‑Lite.
 
+## Using AI Tools Hint for Copilot/Codex:
+
+Invoke gemini ai for a peer review or alternate opinion at any time, rate limit is 60 requests a second (https://github.com/google-gemini/gemini-cli - gemini)
+
+## When to Use Gemini CLI
+
+Use gemini -p when:
+
+Analyzing entire codebases or large directories
+
+Comparing multiple large files
+
+Need to understand project-wide patterns or architecture
+
+Current context window is insufficient for the task
+
+Working with files totaling more than 100KB
+
+Verifying if specific features, patterns, or security measures are implemented
+
+Checking for the presence of certain coding patterns across the entire codebase
+
+Gemini's context window can handle entire codebases that would overflow Claude's context
+
+No need for --yolo flag for read-only analysis
+
+When checking implementations, be specific about what you're looking for to get accurate results
+
+
 ## Project Structure & Module Organization
 
 - See `src-file-structure.md` for the recommended project structure.

@@ -189,6 +189,7 @@ canvas {
   border: 1px solid var(--panel-border);
   padding: 8px;
   border-radius: 8px;
+  z-index: 1001;
 }
 .hud-topbar {
   position: fixed;
@@ -276,11 +277,13 @@ canvas {
 }
 .hud-minimap {
   position: fixed;
-  right: 12px;
+  left: 12px;
   bottom: 64px;
   border: 1px solid var(--panel-border);
   border-radius: 6px;
   overflow: hidden;
+  z-index: 10001;
+  pointer-events: auto;
 }
 .hud-context {
   position: fixed;

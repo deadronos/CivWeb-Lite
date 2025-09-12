@@ -6,6 +6,7 @@ import { loadUnits, loadBuildings } from '../data/loader';
 import CivicPanelContainer from './ui/civic-panel-container';
 import ExtTechPanelContainer from './ui/ext-tech-panel-container';
 import LoadModal from './ui/load-modal';
+import MinimapContainer from './ui/minimap-container';
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();
@@ -135,9 +136,8 @@ function GameHUDInner() {
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
-      <div>Turn: {state.turn}</div>
-      <div>Seed: {state.seed}</div>
-      <div>Mode: {state.mode}</div>
+  <div>Seed: {state.seed}</div>
+  <div>Mode: {state.mode}</div>
       {playersSummary}
       <div style={{ display: 'flex', gap: 8, margin: '8px 0' }}>
         <button aria-label="save game" onClick={handleSave}>
@@ -163,9 +163,9 @@ function GameHUDInner() {
             <CivicPanelContainer />
           </div>
           <div>Cities: {cityCount}</div>
-          <div>Science/turn: {extension.playerState.science}</div>
+          <div>Science per turn {extension.playerState.science}</div>
           {typeof extension.playerState.culture === 'number' && (
-            <div>Culture/turn: {extension.playerState.culture}</div>
+            <div>Culture per turn {extension.playerState.culture}</div>
           )}
           {extensionResearch && <div>Ext Research: {extensionResearch}</div>}
           {extensionCultureResearch && <div>Ext Civic: {extensionCultureResearch}</div>}
@@ -237,6 +237,7 @@ function GameHUDInner() {
       <div role="log" aria-label="event log" aria-live="polite">
         <LogList entries={state.log.slice(-10)} />
       </div>
+      <MinimapContainer />
     </div>
   );
 }
@@ -245,7 +246,7 @@ const LogList = React.memo(function LogList({ entries }: { entries: { type: stri
   return (
     <ul>
       {entries.map((e, index) => (
-        <li key={index}>{e.type}</li>
+        <li key={index}>{String(e.type).replace(/:/g, '·')}</li>
       ))}
     </ul>
   );
