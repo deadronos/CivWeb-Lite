@@ -1,6 +1,7 @@
 import React from 'react';
 import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
+import GameHUD from '../game-hud';
 const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
 const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
 
@@ -41,6 +42,7 @@ export default function OverlayUI() {
         }} 
       />
       <StatsBar />
+      <GameHUD />
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
           setShowLeft(false);
@@ -111,7 +113,7 @@ function StatsBar() {
   ];
   return (
     <div className="ui-statsbar" aria-label="empire stats">
-      <span>Turn {state.turn}</span>
+      <span aria-label="turn">Turn: {state.turn}</span>
       <div className="stat">
         <b>Science</b> +{science}/t
       </div>

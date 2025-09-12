@@ -196,6 +196,8 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
+    // Allow clicks to pass through the backdrop to HUD elements (tests expect minimap clickable)
+    pointerEvents: 'none',
   },
   panel: {
     background: 'var(--color-bg, #1e1e1e)',
@@ -204,6 +206,8 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 8,
     width: 360,
     boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+    // Keep the panel itself interactive
+    pointerEvents: 'auto',
   },
   field: {
     display: 'flex',
