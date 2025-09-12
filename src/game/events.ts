@@ -19,6 +19,11 @@ export interface GameEvents {
   'researchProgress': { playerId: string; techId: string; progress: number; completed?: boolean };
   'researchStarted': { playerId: string; techId: string };
   'researchQueued': { playerId: string; techId: string };
+  'city:found': { cityId: string; ownerId: string; tileId: string };
+  // AI events
+  'ai:turnStart': { playerId: string; turn: number };
+  'ai:turnEnd': { playerId: string; turn: number };
+  'ai:decisions': { playerId: string; actions: GameAction[]; duration: number };
 }
 
 export class GameEventBus<E extends Record<string, any>> {

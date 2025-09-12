@@ -1,4 +1,5 @@
-import type { GameState, PlayerState, TechNode, LeaderPersonality, GameAction } from './types';
+import type { GameState, PlayerState, TechNode, LeaderPersonality } from './types';
+import type { GameAction, ProductionOrder } from './actions';
 import { globalGameBus } from './events';
 import { UNIT_TYPES, IMPROVEMENTS, BUILDINGS } from './content/registry';
 
@@ -9,6 +10,13 @@ const AI_WEIGHTS = {
   military: 0.2, // Warriors/defense
   economy: 0.1, // Improvements for yields
 } as const;
+
+// Top-level estimated turns function
+function getEstimatedTurns(type: ProductionOrder['type'], itemId: string): number {
+  const baseCosts = { unit: 40, improvement: 20, building: 60 } as const;
+  const baseYield = 1; // Assume basic city yield
+  return Math.ceil((baseCosts[type] || 10) / baseYield);
+}
 
 // Score a tech based on player personality and state
 function scoreTech(player: PlayerState, tech: TechNode, state: GameState): number {
@@ -23,12 +31,12 @@ function scoreTech(player: PlayerState, tech: TechNode, state: GameState): numbe
   score += unlocksValue * 10;
 
   // Expansionist bonus for movement/science unlocks
-  if (tech.effects?.some(e => e.includes('movement') || e.includes('expansion'))) {
+  if (tech.effects?.some(effect => effect.includes('movement') || effect.includes('expansion'))) {
     score += leader.expansionism * 20;
   }
 
   // Penalty if prereqs not met (should be filtered out)
-  if (tech.prerequisites.some(p => !player.researchedTechIds.includes(p))) {
+  if ((tech.prerequisites || []).some(p => !player.researchedTechIds?.includes(p))) {
     score *= 0.1;
   }
 
@@ -38,34 +46,34 @@ function scoreTech(player: PlayerState, tech: TechNode, state: GameState): numbe
 // Generate research queue for AI (top 3 available techs)
 function generateResearchQueue(player: PlayerState, state: GameState): string[] {
   const available = state.techCatalog.filter(tech => 
-    !player.researchedTechIds.includes(tech.id) &&
-    !player.researching?.techId === tech.id &&
-    ! (player.researchQueue || []).includes(tech.id) &&
-    tech.prerequisites.every(pr => player.researchedTechIds.includes(pr))
+    !player.researchedTechIds?.includes(tech.id) &&
+    player.researching?.techId !== tech.id &&
+    !(player.researchQueue || []).includes(tech.id) &&
+    (tech.prerequisites || []).every(pr => player.researchedTechIds?.includes(pr) ?? false)
   );
 
   return available
     .map(tech => ({ tech, score: scoreTech(player, tech, state) }))
-    .sort((a, b) => b.score - a.score)
+    .toSorted((a, b) => b.score - a.score)
     .slice(0, 3)
     .map(({ tech }) => tech.id);
 }
 
 // Basic production decision: Queue based on expansionism (e.g., settlers) or economy
-function generateProductionQueue(player: PlayerState, cityId: string, state: GameState): { type: string; itemId: string }[] {
+function generateProductionQueue(player: PlayerState, cityId: string, state: GameState): ProductionOrder[] {
   const leader = player.leader as LeaderPersonality;
-  const queue: { type: string; itemId: string }[] = [];
+  const queue: ProductionOrder[] = [];
 
   if (leader.expansionism > 0.6) {
     // High expansion: Queue settler
-    queue.push({ type: 'unit', itemId: 'settler' });
+    queue.push({ type: 'unit', item: 'settler', turnsRemaining: getEstimatedTurns('unit', 'settler') });
   } else if (leader.expansionism > 0.3) {
     // Medium: Warrior for defense
-    queue.push({ type: 'unit', itemId: 'warrior' });
+    queue.push({ type: 'unit', item: 'warrior', turnsRemaining: getEstimatedTurns('unit', 'warrior') });
   }
 
   // Always queue a basic improvement for economy
-  queue.push({ type: 'improvement', itemId: 'farm' });
+  queue.push({ type: 'improvement', item: 'farm', turnsRemaining: getEstimatedTurns('improvement', 'farm') });
 
   return queue;
 }
@@ -82,52 +90,50 @@ export function generateAIDecisions(state: GameState, playerId: string): GameAct
   const currentQueue = player.researchQueue || [];
   if (currentQueue.length === 0 || Math.random() < 0.3) { // 30% chance to replan
     const suggestedQueue = generateResearchQueue(player, state);
-    suggestedQueue.forEach(techId => {
+    for (const techId of suggestedQueue) {
       if (!currentQueue.includes(techId)) {
         actions.push({
-          type: 'QUEUE_RESEARCH',
+          type: 'QUEUE_RESEARCH' as const,
           payload: { playerId, techId }
         });
       }
-    });
+    }
   }
 
   // Production: For each city, suggest queue if empty
   if (state.contentExt) {
-    Object.values(state.contentExt.cities)
-      .filter(city => city.ownerId === playerId && city.productionQueue.length === 0)
-      .forEach(city => {
-        const suggestions = generateProductionQueue(player, city.id, state);
-        suggestions.forEach(order => {
-          actions.push({
-            type: 'CHOOSE_PRODUCTION_ITEM',
-            payload: { cityId: city.id, order }
-          });
+    const cities = Object.values(state.contentExt.cities)
+      .filter(city => city.ownerId === playerId && city.productionQueue.length === 0);
+    for (const city of cities) {
+      const suggestions = generateProductionQueue(player, city.id, state);
+      for (const order of suggestions) {
+        actions.push({
+          type: 'CHOOSE_PRODUCTION_ITEM' as const,
+          payload: { cityId: city.id, order }
         });
-      });
+      }
+    }
   }
 
-  // Basic unit moves: e.g., idle warriors explore nearby
+  // Basic unit moves: e.g., idle warriors explore nearby (simplified without exploredBy)
   if (state.contentExt) {
-    Object.values(state.contentExt.units)
-      .filter(unit => unit.ownerId === playerId && unit.state === 'idle' && unit.movementRemaining > 0)
-      .forEach(unit => {
-        // Simple: Move to nearest unexplored tile (placeholder logic)
-        const unexplored = Object.values(state.contentExt!.tiles).find(t => 
-          !playerId.includes(t.exploredBy || []) && // Assuming exploredBy array
-          t.passable
-        );
-        if (unexplored) {
-          actions.push({
-            type: 'ISSUE_MOVE',
-            payload: { unitId: unit.id, path: [unexplored.id], confirmCombat: false }
-          });
-        }
-      });
+    const idleUnits = Object.values(state.contentExt.units)
+      .filter(unit => unit.ownerId === playerId && unit.state === 'idle' && unit.movementRemaining > 0);
+    for (const unit of idleUnits.slice(0, 2)) { // Limit to 2 units per turn for performance
+      // Simple: Set to a random passable tile (placeholder; no real exploration tracking)
+      const passableTiles = Object.values(state.contentExt!.tiles).filter(t => t.passable);
+      if (passableTiles.length > 0) {
+        const target = passableTiles[Math.floor(Math.random() * passableTiles.length)];
+        actions.push({
+          type: 'SET_UNIT_LOCATION' as const,
+          payload: { unitId: unit.id, tileId: target.id }
+        });
+      }
+    }
   }
 
   const duration = performance.now() - startTime;
-  actions.push({ type: 'RECORD_AI_PERF', payload: { duration } });
+  actions.push({ type: 'RECORD_AI_PERF' as const, payload: { duration } });
 
   globalGameBus.emit('ai:decisions', { playerId, actions, duration });
   return actions;
