@@ -1,5 +1,12 @@
 import { LeaderPersonality } from '../types';
 
+/**
+ * @file This file contains the definitions for the different leader personalities in the game.
+ */
+
+/**
+ * An array of leader personalities.
+ */
 export const LEADER_PERSONALITIES: LeaderPersonality[] = [
   {
     id: 'scientist',
@@ -35,6 +42,12 @@ export const LEADER_PERSONALITIES: LeaderPersonality[] = [
   },
 ];
 
+/**
+ * Gets a leader personality by its ID.
+ * @param id - The ID of the leader to get.
+ * @returns The leader personality.
+ * @throws An error if the leader is not found.
+ */
 export function getLeader(id: string): LeaderPersonality {
   const found = LEADER_PERSONALITIES.find((l) => l.id === id);
   if (!found) throw new Error(`Unknown leader ${id}`);

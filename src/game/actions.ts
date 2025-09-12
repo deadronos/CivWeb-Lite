@@ -1,17 +1,37 @@
 import { GameState } from './types';
 
+/**
+ * @file Defines the action types and payloads for the game state reducer.
+ */
+
+/**
+ * Represents a production order in a city's production queue.
+ * @property type - The type of item being produced (unit, building, or improvement).
+ * @property item - The specific item being produced (e.g., 'warrior', 'granary').
+ * @property turnsRemaining - The number of turns left to complete the production.
+ */
 export type ProductionOrder = {
   type: 'unit' | 'building' | 'improvement';
   item: string;
   turnsRemaining: number;
 };
 
+/**
+ * Represents the payload for a unit move action.
+ * @property unitId - The ID of the unit to move.
+ * @property path - An array of tile IDs representing the path to move along.
+ * @property confirmCombat - Whether to confirm combat if the move results in an attack.
+ */
 export type UnitMovePayload = {
   unitId: string;
   path: string[];
   confirmCombat?: boolean;
 };
 
+/**
+ * Represents all possible actions that can be dispatched to the game state reducer.
+ * Each action has a `type` and an optional `payload`.
+ */
 export type GameAction =
   | { type: 'INIT'; payload?: { seed?: string; width?: number; height?: number } }
   | {
@@ -84,7 +104,10 @@ export type GameAction =
   | { type: 'SET_UNIT_LOCATION'; payload: { unitId: string; tileId: string } }
   | { type: 'SET_PLAYER_SCORES'; payload: { players: Array<{ id: string; sciencePoints: number; culturePoints: number }> } };
 
-// Update GAME_ACTION_TYPES to include new ones
+/**
+ * A constant array of all possible game action types.
+ * This is useful for type checking and for iterating over all possible actions.
+ */
 export const GAME_ACTION_TYPES = [
   'INIT',
   'NEW_GAME',

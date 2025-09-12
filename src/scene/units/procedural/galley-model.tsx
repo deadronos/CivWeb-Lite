@@ -1,6 +1,16 @@
 import React from 'react';
 import { getBox, getCylinder } from './shared';
 
+/**
+ * @file This file contains the GalleyModel component, which is a procedural model for the galley unit.
+ */
+
+/**
+ * A procedural model for the galley unit.
+ * @param props - The component properties.
+ * @param props.teamColor - The color of the team.
+ * @returns The rendered component.
+ */
 export function GalleyModel({ teamColor = '#2980b9' }: { teamColor?: string }) {
   // Simple boat: hull + mast + sail placeholder
   return (
@@ -37,4 +47,7 @@ export function GalleyModel({ teamColor = '#2980b9' }: { teamColor?: string }) {
   );
 }
 
+/**
+ * The label for the galley model.
+ */
 export const MODEL_LABEL = 'galley';

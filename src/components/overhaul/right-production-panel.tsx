@@ -2,6 +2,17 @@ import React from 'react';
 import units from '../../data/units.json';
 import buildings from '../../data/buildings.json';
 
+/**
+ * @file This file contains the RightProductionPanel component, which displays the production options for a city.
+ */
+
+/**
+ * A component that displays the production options for a city.
+ * @param props - The component properties.
+ * @param props.open - Whether the panel is open.
+ * @param props.onClose - A callback function to close the panel.
+ * @returns The rendered component.
+ */
 export default function RightProductionPanel({
   open,
   onClose,

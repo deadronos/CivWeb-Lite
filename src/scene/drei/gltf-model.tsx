@@ -3,6 +3,15 @@
 import React from 'react';
 import { useGLTF } from '@react-three/drei';
 
+/**
+ * @file This file contains the GLTFModel component, which is a wrapper around the drei useGLTF hook.
+ */
+
+/**
+ * Represents the properties for the GLTFModel component.
+ * @property url - The URL of the GLTF model.
+ * @property transform - The transform to apply to the model.
+ */
 export type GLTFModelProperties = {
   url: string;
   // optional transform and presentation props forwarded to the primitive
@@ -13,6 +22,11 @@ export type GLTFModelProperties = {
   };
 } & Record<string, any>;
 
+/**
+ * A wrapper component around the drei useGLTF hook.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export const GLTFModel: React.FC<GLTFModelProperties> = ({ url, transform, ...rest }) => {
   // In non-DOM/test environments, avoid calling Drei hooks which rely on WebGL.
   if (globalThis.window === undefined) {
@@ -33,7 +47,10 @@ export const GLTFModel: React.FC<GLTFModelProperties> = ({ url, transform, ...re
 
 export default GLTFModel;
 
-// Drei recommendation: preloading helper
+/**
+ * A preloading helper for GLTF models.
+ * @param url - The URL of the GLTF model to preload.
+ */
 export function preloadGLTF(url: string) {
   try {
     // useGLTF.preload may be provided at runtime by Drei; call if present.

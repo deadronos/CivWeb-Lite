@@ -9,8 +9,18 @@
 import { extend, ReactThreeFiber } from '@react-three/fiber';
 import { Object3D } from 'three';
 
-// Minimal stub that behaves like an empty Object3D in the scene graph.
+/**
+ * @file This file contains runtime shims for react-three-fiber to avoid crashes when third-party code attempts to render unknown/incompatible primitives.
+ */
+
+/**
+ * A minimal stub for the Polyline component that behaves like an empty Object3D in the scene graph.
+ */
 class Polyline extends Object3D {}
+
+/**
+ * A minimal stub for the Svg component that behaves like an empty Object3D in the scene graph.
+ */
 class Svg extends Object3D {}
 
 // Register the stub with R3F so <Polyline /> doesn’t crash the renderer.

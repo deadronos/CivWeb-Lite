@@ -1,3 +1,20 @@
+import type { GameStateExt as GameStateExtension, Hextile, Unit } from './content/types';
+import { neighbors as hexNeighbors } from './world/hex';
+import { movementCost, isPassable } from './content/biomes';
+import { UNIT_TYPES } from './content/registry';
+
+/**
+ * @file This file contains functions for pathfinding and movement range calculation.
+ */
+
+/**
+ * Represents a preview of a potential combat encounter.
+ * @property tileId - The ID of the tile where the combat would occur.
+ * @property attackerUnitId - The ID of the attacking unit.
+ * @property defender - The defending unit or city, if any.
+ * @property requiresConfirm - Whether the combat requires user confirmation.
+ * @property expectedOutcome - The expected outcome of the combat.
+ */
 export type CombatPreview = {
   tileId: string;
   attackerUnitId: string;
@@ -5,10 +22,6 @@ export type CombatPreview = {
   requiresConfirm: boolean;
   expectedOutcome: 'unknown';
 };
-import type { GameStateExt as GameStateExtension, Hextile, Unit } from './content/types';
-import { neighbors as hexNeighbors } from './world/hex';
-import { movementCost, isPassable } from './content/biomes';
-import { UNIT_TYPES } from './content/registry';
 
 // ...existing code...
 
@@ -30,6 +43,15 @@ function passableFor(state: GameStateExtension, unit: Unit, tile: Hextile): bool
   return isPassable(tile, { unitAbilities: unit.abilities, unitDomain: unitDef.domain });
 }
 
+/**
+ * Computes the shortest path for a unit to a target tile.
+ * @param state - The game state.
+ * @param unitId - The ID of the unit to move.
+ * @param targetTileId - The ID of the target tile.
+ * @param width - The width of the world map.
+ * @param height - The height of the world map.
+ * @returns An object containing the path, total cost, and a combat preview if applicable.
+ */
 export function computePath(
   state: GameStateExtension,
   unitId: string,
@@ -128,6 +150,15 @@ export function computePath(
     ...(combat ? { combatPreview: combat } : {}),
   };
 }
+
+/**
+ * Computes the movement range of a unit.
+ * @param state - The game state.
+ * @param unitId - The ID of the unit.
+ * @param width - The width of the world map.
+ * @param height - The height of the world map.
+ * @returns An object containing the reachable tiles and the cost to reach them.
+ */
 export function computeMovementRange(
   state: GameStateExtension,
   unitId: string,

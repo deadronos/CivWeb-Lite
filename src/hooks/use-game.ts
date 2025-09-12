@@ -2,6 +2,15 @@ import { useContext } from 'react';
 import { GameStateContext, GameDispatchContext, Dispatch } from '../contexts/game-provider';
 import { GameState } from '../game/types';
 
+/**
+ * @file This file contains the useGame hook, which provides access to the game state and dispatch function.
+ */
+
+/**
+ * A hook that provides access to the game state and dispatch function.
+ * @returns An object containing the game state and dispatch function.
+ * @throws An error if used outside of a GameProvider.
+ */
 export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
   const state = useContext(GameStateContext) as GameState | undefined;
   const dispatch = useContext(GameDispatchContext) as Dispatch | undefined;
@@ -9,7 +18,13 @@ export function useGame(): { state: Readonly<GameState>; dispatch: Dispatch } {
   return { state: state as Readonly<GameState>, dispatch: dispatch as Dispatch };
 }
 
-// extracted check into a helper so tests can exercise the exact thrown branch
+/**
+ * Ensures that the game context is available.
+ * @param state - The game state.
+ * @param dispatch - The dispatch function.
+ * @returns True if the context is available.
+ * @throws An error if the context is not available.
+ */
 export function ensureGameContext(
   state: GameState | null | undefined,
   dispatch: Dispatch | null | undefined

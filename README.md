@@ -55,9 +55,47 @@ npm run test:e2e
 npm run validate:data
 ```
 
+## Architecture
+
+The project is built around a deterministic game engine and a reactive UI.
+
+- **Game Engine**: The core logic resides in `src/game`. It's a deterministic simulation that manages the game state, processes player actions, and runs the AI. It is designed to be completely independent of the UI.
+- **React UI**: The UI is built with React and Three.js (via `@react-three/fiber`). It subscribes to the game state and renders the game world and UI components.
+- **State Management**: The game state is managed by a central `GameProvider` context, which uses a reducer to handle actions and update the state.
+
 ## Project structure
 
 This project follows a canonical `src/` layout. The structure below reflects the current codebase — use these locations when adding or modifying code. If you need to deviate, open a short proposal and update `spec/` and `plan/` with the rationale.
+
+```text
+src/
+├── app.tsx                 # Top-level React app (uses GameProvider)
+├── main.tsx                # React bootstrap / entry
+├── components/             # UI and game components (game-hud, overlays, panels)
+│   ├── common/             # Common components like spinners and error boundaries
+│   ├── overhaul/           # Overhaul components
+│   └── ui/                 # UI components
+├── contexts/               # Context providers (GameProvider, hover, etc.)
+├── data/                   # Game data files (JSON)
+├── game/                   # Simulation systems and utilities
+│   ├── ai/                 # AI-related logic
+│   ├── content/            # Game content like biomes, rules, etc.
+│   ├── save/               # Save/load game logic
+│   ├── tech/               # Technology tree logic
+│   ├── world/              # World generation logic
+│   └── utils/              # Utility functions
+├── hooks/                  # Custom hooks (use-game.ts)
+├── scene/                  # three/@react-three/fiber scene and helpers
+│   ├── assets/             # 3D assets
+│   ├── background/         # Background elements
+│   ├── debug/              # Debugging components
+│   ├── drei/               # Drei-related components
+│   ├── units/              # Unit-related components and models
+│   └── utils/              # Scene utility functions
+├── styles.css
+├── types/                  # TypeScript types and interfaces
+└── utils/                  # General utility functions
+```
 
 ### Runtime flags (dev/testing)
 
@@ -65,26 +103,15 @@ This project follows a canonical `src/` layout. The structure below reflects the
 - Instancing probe: append `?probe=1` to show a tiny red/green two-instance mesh near the origin (sanity check for instancing colors).
 - Verbose instancing logs: in devtools console, run `window.__CWL_DEBUG = true` and refresh to enable detailed `[debug] InstancedTiles` logs. Set to `false` (or reload) to silence.
 
-```text
-src/
-├── app.tsx                 # Top-level React app (uses GameProvider)
-├── main.tsx                # React bootstrap / entry
-├── components/             # UI and game components (game-hud, overlays, panels)
-├── contexts/               # Context providers (GameProvider, hover, etc.)
-├── hooks/                  # Custom hooks (use-game.ts)
-├── scene/                  # three/@react-three/fiber scene and helpers
-├── styles.css
-├── types/
-├── game/ or game-logic/    # Simulation systems and utilities
-└── ...
-```
-
 ## How to contribute
 
-- Follow the authoritative `src/` layout above. If a feature requires a different layout, create a short proposal and update both `spec/spec-architecture-civweb-lite-core.md` and `plan/feature-core-game-foundation-1.md` documenting the reason and the proposed file placement.
-- Keep changes small and focused. Use conventional commits: `feat:`, `fix:`, `docs:`, `test:`, etc.
-- Add tests for logic-heavy modules (Vitest recommended) and include at least one happy-path test plus 1-2 edge cases for new behaviors.
-- Avoid committing secrets. Use environment variables for any keys or tokens.
+- **Follow the Code of Conduct**: Be respectful and constructive.
+- **Find an issue**: Look for existing issues or create a new one to discuss your proposed changes.
+- **Fork and branch**: Fork the repository and create a new branch for your feature or bug fix.
+- **Write clean code**: Follow the coding style and naming conventions mentioned in `AGENTS.md`.
+- **Test your changes**: Add unit tests for new logic and ensure all existing tests pass.
+- **Document your code**: Add docstrings to new functions, methods, and classes.
+- **Submit a pull request**: Open a pull request with a clear description of your changes.
 
 ## Development practices
 

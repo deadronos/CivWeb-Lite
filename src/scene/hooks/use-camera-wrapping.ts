@@ -1,5 +1,5 @@
 /**
- * Hook for managing camera wrapping in a cylindrical world
+ * @file This file contains hooks for managing camera wrapping in a cylindrical world.
  */
 
 import { useRef, useEffect } from 'react';
@@ -11,6 +11,10 @@ import {
   DEFAULT_WRAPPING_CONFIG,
 } from '../utils/world-wrapping';
 
+/**
+ * A hook for managing camera wrapping in a cylindrical world.
+ * @param config - The wrapping configuration.
+ */
 export function useCameraWrapping(config: WrappingConfig = DEFAULT_WRAPPING_CONFIG) {
   const { camera } = useThree();
   const lastPositionRef = useRef(new Vector3());
@@ -47,7 +51,9 @@ export function useCameraWrapping(config: WrappingConfig = DEFAULT_WRAPPING_CONF
 }
 
 /**
- * Hook to check if a position is visible considering world wrapping
+ * A hook to check if a position is visible considering world wrapping.
+ * @param config - The wrapping configuration.
+ * @returns A function that returns true if the position is visible, false otherwise.
  */
 export function useWrappedVisibility(config: WrappingConfig = DEFAULT_WRAPPING_CONFIG) {
   const { camera } = useThree();

@@ -4,8 +4,16 @@ import { useGame } from '../../hooks/use-game';
 const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
 const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
 
+/**
+ * @file This file contains the OverlayUI component, which is the main UI overlay for the game.
+ */
+
 type PanelProperties = { open: boolean; onClose: () => void };
 
+/**
+ * The main UI overlay for the game.
+ * @returns The rendered component.
+ */
 export default function OverlayUI() {
   const { state, dispatch } = useGame();
   const [showRight, setShowRight] = React.useState(false);
@@ -57,6 +65,13 @@ export default function OverlayUI() {
   );
 }
 
+/**
+ * The top menu bar component.
+ * @param props - The component properties.
+ * @param props.onOpenResearch - A callback function to open the research panel.
+ * @param props.onOpenCities - A callback function to open the cities panel.
+ * @returns The rendered component.
+ */
 function TopMenu({
   onOpenResearch,
   onOpenCities,
@@ -99,6 +114,10 @@ function TopMenu({
   );
 }
 
+/**
+ * The stats bar component.
+ * @returns The rendered component.
+ */
 function StatsBar() {
   const { state } = useGame();
   // Very light mock numbers; wire real economy later

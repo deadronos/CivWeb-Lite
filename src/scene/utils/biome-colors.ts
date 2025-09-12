@@ -1,6 +1,15 @@
 import { Tile, BiomeType } from '../../game/types';
 
-// Small deterministic hash for (q,r) based on bit-mixing
+/**
+ * @file This file contains functions for generating procedural biome colors.
+ */
+
+/**
+ * A small deterministic hash for (q,r) based on bit-mixing.
+ * @param q - The q coordinate.
+ * @param r - The r coordinate.
+ * @returns A hash value between 0 and 1.
+ */
 function hash2(q: number, r: number): number {
   let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
   x = (x ^ (x >>> 13)) * 1_274_126_177;
@@ -9,12 +18,22 @@ function hash2(q: number, r: number): number {
   return (x >>> 0) / 0xff_ff_ff_ff;
 }
 
-// Helper: clamp 0..1
+/**
+ * Clamps a number between 0 and 1.
+ * @param n - The number to clamp.
+ * @returns The clamped number.
+ */
 function clamp01(n: number) {
   return Math.max(0, Math.min(1, n));
 }
 
-// Convert HSL (0..1) to hex string
+/**
+ * Converts HSL (0-1) to a hex string.
+ * @param h - The hue.
+ * @param s - The saturation.
+ * @param l - The lightness.
+ * @returns The hex color string.
+ */
 function hsl(h: number, s: number, l: number): string {
   // Adapted lightweight HSL->RGB
   const a = s * Math.min(l, 1 - l);
@@ -31,8 +50,9 @@ function hsl(h: number, s: number, l: number): string {
 }
 
 /**
- * Procedural biome color with subtle variation by elevation/moisture and a stable per-tile jitter.
- * Returns a hex color string (e.g., #33aa77).
+ * Generates a procedural biome color with subtle variation by elevation/moisture and a stable per-tile jitter.
+ * @param t - The tile to generate the color for.
+ * @returns A hex color string (e.g., #33aa77).
  */
 export function colorForTile(t: Tile): string {
   const { q, r } = t.coord;
@@ -103,7 +123,11 @@ export function colorForTile(t: Tile): string {
   return hsl(h % 1, clamp01(s), clamp01(l));
 }
 
-// Base, stable color per biome (no per-tile variation). Useful for per-biome instancing.
+/**
+ * Gets the base, stable color for a biome (no per-tile variation).
+ * @param b - The biome type.
+ * @returns The hex color string.
+ */
 export function baseColorForBiome(b: BiomeType): string {
   switch (b) {
     case BiomeType.Ocean: {
@@ -130,7 +154,13 @@ export function baseColorForBiome(b: BiomeType): string {
   }
 }
 
-// Return a slight shade variation for a biome bucket index (0..total-1)
+/**
+ * Returns a slight shade variation for a biome bucket index.
+ * @param b - The biome type.
+ * @param index - The index of the bucket.
+ * @param total - The total number of buckets.
+ * @returns The hex color string.
+ */
 export function colorForBiomeBucket(b: BiomeType, index: number, total: number): string {
   const t = total <= 1 ? 0.5 : index / (total - 1); // 0..1
   // Adjust lightness around the base per-biome color by +/- 6%

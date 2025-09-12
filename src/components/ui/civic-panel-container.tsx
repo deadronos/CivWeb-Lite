@@ -2,6 +2,15 @@ import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import CivicPanel from './civic-panel';
 
+/**
+ * @file This file contains the CivicPanelContainer component, which is a container for the CivicPanel component.
+ */
+
+/**
+ * A container component for the CivicPanel component.
+ * It fetches the available civics from the game state and passes them to the CivicPanel component.
+ * @returns The rendered component, or null if the game state extension is not available.
+ */
 export default function CivicPanelContainer() {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;

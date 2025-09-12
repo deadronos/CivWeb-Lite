@@ -6,6 +6,19 @@ import React from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 
+/**
+ * @file This file contains the Bob component, which makes its children bob up and down.
+ */
+
+/**
+ * A component that makes its children bob up and down.
+ * @param props - The component properties.
+ * @param props.children - The child components.
+ * @param props.amplitude - The amplitude of the bobbing motion.
+ * @param props.speed - The speed of the bobbing motion.
+ * @param props.phase - The phase of the bobbing motion.
+ * @returns The rendered component.
+ */
 export function Bob({
   children,
   amplitude = 0.05,
@@ -35,6 +48,11 @@ export function Bob({
   return <group ref={reference as any}>{children}</group>;
 }
 
+/**
+ * Generates a phase from a string ID.
+ * @param id - The ID to generate the phase from.
+ * @returns A phase value between 0 and 1.
+ */
 export function phaseFromId(id?: string): number {
   if (!id) return 0;
   let h = 0;

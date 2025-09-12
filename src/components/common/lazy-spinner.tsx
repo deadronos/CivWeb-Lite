@@ -1,6 +1,16 @@
 import React from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 
+/**
+ * @file This file contains the LazySpinner component, which is used to indicate that a component is loading.
+ */
+
+/**
+ * A spinner component that is displayed when a lazy-loaded component is loading.
+ * @param props - The component properties.
+ * @param props.corner - The corner of the screen to display the spinner in.
+ * @returns The rendered component.
+ */
 export default function LazySpinner({
   corner = 'bottom-right',
 }: {

@@ -2,6 +2,18 @@ import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import { importFromFile, deserializeState } from '../../game/save';
 
+/**
+ * @file This file contains the LoadModal component, which allows the user to load a game from a file or from text.
+ */
+
+/**
+ * A modal component that allows the user to load a game from a file or from text.
+ * @param props - The component properties.
+ * @param props.open - Whether the modal is open.
+ * @param props.onClose - A callback function to close the modal.
+ * @param props.autoFocusText - Whether to automatically focus the text area.
+ * @returns The rendered component.
+ */
 export default function LoadModal({
   open,
   onClose,

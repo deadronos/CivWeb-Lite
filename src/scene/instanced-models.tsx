@@ -1,12 +1,32 @@
 import React from 'react';
 import { InstancedMesh, Matrix4, Object3D } from 'three';
 
+/**
+ * @file This file contains the InstancedModels component, which is a lightweight helper to render arbitrary geometry via InstancedMesh.
+ */
+
+/**
+ * Represents the transform for a single instance.
+ * @property position - The position of the instance.
+ * @property scale - The scale of the instance.
+ * @property rotationY - The rotation of the instance around the Y axis.
+ */
 export type InstanceTransform = {
   position: [number, number, number];
   scale?: number | [number, number, number];
   rotationY?: number; // radians
 };
 
+/**
+ * Represents the properties for the InstancedModels component.
+ * @property geometry - The geometry to render.
+ * @property material - The material to use for rendering.
+ * @property transforms - An array of transforms for each instance.
+ * @property castShadow - Whether to cast shadows.
+ * @property receiveShadow - Whether to receive shadows.
+ * @property name - The name of the mesh.
+ * @property frustumCulled - Whether to frustum cull the mesh.
+ */
 type Properties = {
   geometry: any; // THREE.BufferGeometry
   material: any; // THREE.Material | THREE.Material[]
@@ -17,8 +37,12 @@ type Properties = {
   frustumCulled?: boolean; // default false: instances can extend far due to wrapping
 };
 
-// Lightweight helper to render arbitrary geometry via InstancedMesh.
-// Accepts per-instance transforms and applies them to the instanceMatrix.
+/**
+ * A lightweight helper to render arbitrary geometry via InstancedMesh.
+ * Accepts per-instance transforms and applies them to the instanceMatrix.
+ * @param props - The component properties.
+ * @returns The rendered component, or null if no geometry, material, or transforms are provided.
+ */
 export default function InstancedModels({
   geometry,
   material,

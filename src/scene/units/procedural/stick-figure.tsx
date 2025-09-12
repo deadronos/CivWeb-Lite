@@ -1,6 +1,16 @@
 import React from 'react';
 import { getBox, getCone, getCylinder, getSphere, getTorus } from './shared';
 
+/**
+ * @file This file contains the StickFigure component, which is a procedural model for a stick figure.
+ */
+
+/**
+ * Represents the options for the StickFigure component.
+ * @property teamColor - The color of the team.
+ * @property height - The height of the stick figure.
+ * @property accessories - An object describing the accessories to display.
+ */
 export type StickFigureOptions = {
   teamColor?: string;
   height?: number;
@@ -14,7 +24,11 @@ export type StickFigureOptions = {
   };
 };
 
-// Keep this component small and self-contained. Use React.FC for clearer typing.
+/**
+ * A procedural model for a stick figure.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export const StickFigure: React.FC<StickFigureOptions> = ({
   teamColor = '#bdc3c7',
   height = 1.6,

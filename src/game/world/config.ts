@@ -1,11 +1,24 @@
 import { BiomeType } from '../types';
 
+/**
+ * @file This file contains configuration for world generation.
+ */
+
+/**
+ * Represents a rule for determining the biome of a tile.
+ * @property type - The type of the biome.
+ * @property elevation - The range of elevation for this biome.
+ * @property moisture - The range of moisture for this biome.
+ */
 export interface BiomeRule {
   type: BiomeType;
   elevation: [number, number];
   moisture?: [number, number];
 }
 
+/**
+ * An array of biome rules that are used to determine the biome of a tile based on its elevation and moisture.
+ */
 export const BIOME_RULES: BiomeRule[] = [
   { type: BiomeType.Ocean, elevation: [0, 0.3] },
   { type: BiomeType.Desert, elevation: [0.3, 0.6], moisture: [0, 0.4] },
@@ -17,12 +30,9 @@ export const BIOME_RULES: BiomeRule[] = [
   { type: BiomeType.Ice, elevation: [0, 1] },
 ];
 
-// Recommended rectangular sizes for a cylindrical world with polar caps.
-// Due to flat-top axial projection, map bounding height grows with width
-// (stagger term r + q/2). These presets keep the world wide while practical.
-// Adjusted presets to feel less "thin" vertically and to align
-// roughly with well-known Civ V/VI sizes (in tile counts), keeping
-// a ~1.6 width:height ratio in tiles (not world units).
+/**
+ * Recommended rectangular sizes for a cylindrical world with polar caps.
+ */
 export const MAP_PRESETS = {
   small: { width: 80, height: 50 }, // ~4000 tiles
   medium: { width: 106, height: 66 }, // Civ VI-ish large (≈6996 tiles)
@@ -30,4 +40,7 @@ export const MAP_PRESETS = {
   xlarge: { width: 160, height: 100 }, // headroom for very large games
 } as const;
 
+/**
+ * The default map size.
+ */
 export const DEFAULT_MAP_SIZE = MAP_PRESETS.medium;

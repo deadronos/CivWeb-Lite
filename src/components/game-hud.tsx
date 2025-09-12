@@ -7,6 +7,14 @@ import CivicPanelContainer from './ui/civic-panel-container';
 import ExtTechPanelContainer from './ui/ext-tech-panel-container';
 import LoadModal from './ui/load-modal';
 
+/**
+ * @file This file contains the main game HUD component.
+ */
+
+/**
+ * The main game HUD component.
+ * @returns The rendered component.
+ */
 function GameHUDInner() {
   const { state, dispatch } = useGame();
 
@@ -241,6 +249,12 @@ function GameHUDInner() {
   );
 }
 
+/**
+ * A memoized component that displays a list of log entries.
+ * @param props - The component props.
+ * @param props.entries - The log entries to display.
+ * @returns The rendered component.
+ */
 const LogList = React.memo(function LogList({ entries }: { entries: { type: string }[] }) {
   return (
     <ul>
@@ -253,6 +267,10 @@ const LogList = React.memo(function LogList({ entries }: { entries: { type: stri
 
 export default React.memo(GameHUDInner);
 
+/**
+ * A component that provides controls for the spec-driven content extension.
+ * @returns The rendered component.
+ */
 function SpecControls() {
   const { state, dispatch } = useGame();
   const extension = state.contentExt!;
@@ -508,6 +526,11 @@ function SpecControls() {
   );
 }
 
+/**
+ * A function that returns a badge for a given victory type.
+ * @param v - The victory type.
+ * @returns The badge string.
+ */
 function victoryBadge(v: string): string {
   switch (v) {
     case 'science': {

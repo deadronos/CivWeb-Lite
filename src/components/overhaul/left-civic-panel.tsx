@@ -2,6 +2,17 @@ import React from 'react';
 import civics from '../../data/civics.json';
 import techs from '../../data/techs.json';
 
+/**
+ * @file This file contains the LeftCivicPanel component, which displays the civics and science trees.
+ */
+
+/**
+ * A component that displays the civics and science trees.
+ * @param props - The component properties.
+ * @param props.open - Whether the panel is open.
+ * @param props.onClose - A callback function to close the panel.
+ * @returns The rendered component.
+ */
 export default function LeftCivicPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [tab, setTab] = React.useState<'science' | 'culture'>('culture');
   if (!open) return;

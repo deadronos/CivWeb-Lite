@@ -6,6 +6,13 @@ import { ArcherModel, MODEL_LABEL as ARCHER } from './procedural/archer-model';
 import { SpearmanModel, MODEL_LABEL as SPEARMAN } from './procedural/spearman-model';
 import { GalleyModel, MODEL_LABEL as GALLEY } from './procedural/galley-model';
 
+/**
+ * @file This file contains the model registry, which maps model labels to model components.
+ */
+
+/**
+ * Represents a model component.
+ */
 export type ModelComponent = React.ComponentType<{ teamColor?: string; showArrow?: boolean }>;
 
 const registry: Record<string, ModelComponent> = {
@@ -17,6 +24,11 @@ const registry: Record<string, ModelComponent> = {
   [GALLEY]: GalleyModel,
 };
 
+/**
+ * Gets a model component from the registry.
+ * @param label - The label of the model to get.
+ * @returns The model component, or undefined if not found.
+ */
 export function getModelComponent(label?: string): ModelComponent | undefined {
   if (!label) return undefined;
   return registry[label];

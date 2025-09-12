@@ -5,6 +5,15 @@ import { useSelection } from '../../contexts/selection-context';
 import { computeMovementRange } from '../../game/pathfinder';
 import { useCamera } from '../../hooks/use-camera';
 
+/**
+ * @file This file contains the MinimapContainer component, which is a container for the Minimap component.
+ */
+
+/**
+ * A container component for the Minimap component.
+ * It fetches the map data and highlighted tiles from the game state and passes them to the Minimap component.
+ * @returns The rendered component.
+ */
 export default function MinimapContainer() {
   const { state } = useGame();
   // useSelection may throw if not wrapped in provider in some tests; guard safely.

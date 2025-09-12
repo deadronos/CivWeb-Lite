@@ -1,6 +1,15 @@
 import React from 'react';
 import type { UnitSelectionOverlayProperties } from '../../game/types/ui';
 
+/**
+ * @file This file contains the UnitSelectionOverlay component, which displays information about the selected unit.
+ */
+
+/**
+ * A component that displays information about the selected unit.
+ * @param props - The component properties.
+ * @returns The rendered component, or null if no unit is selected.
+ */
 export function UnitSelectionOverlay(properties: UnitSelectionOverlayProperties) {
   const { selectedUnitId, computedRangeTiles, computedPath, onPreviewPath, onIssueMove, onCancel } =
     properties;

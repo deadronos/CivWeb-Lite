@@ -1,5 +1,12 @@
 import { TechNode } from '../types';
 
+/**
+ * @file This file contains the technology catalog for the game.
+ */
+
+/**
+ * The technology catalog, containing all technologies in the game.
+ */
 export const techCatalog: TechNode[] = [
   // Science tree (Ancient)
   { id: 'pottery', tree: 'science', name: 'Pottery', cost: 20, prerequisites: [], effects: [] },
@@ -74,6 +81,11 @@ export const techCatalog: TechNode[] = [
   },
 ];
 
+/**
+ * Validates the technology catalog for cycles.
+ * @param catalog - The technology catalog to validate.
+ * @throws An error if a cycle is detected.
+ */
 export function validateTechCatalog(catalog: TechNode[]): void {
   const graph: Record<string, string[]> = {};
   for (const node of catalog) {

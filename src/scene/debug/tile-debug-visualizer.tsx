@@ -1,11 +1,15 @@
 /**
- * Debug visualization component to help diagnose tile rendering issues
+ * @file This file contains the TileDebugVisualizer component, which is used to diagnose tile rendering issues.
  */
 
 import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import { axialToWorld, DEFAULT_HEX_SIZE } from '../utils/coords';
 
+/**
+ * A debug visualization component to help diagnose tile rendering issues.
+ * @returns The rendered component.
+ */
 export function TileDebugVisualizer() {
   const { state } = useGame();
   const tiles = state.map.tiles;

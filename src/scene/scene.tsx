@@ -24,10 +24,20 @@ import { BIOME_ASSETS_EVENT, loadBiomeVariants } from './assets/biome-assets';
 import { DEFAULT_WRAPPING_CONFIG, generateWrappedBiomeGroups } from './utils/world-wrapping';
 import { useCameraWrapping } from './hooks/use-camera-wrapping';
 
+/**
+ * @file This file contains the main scene component, which renders the game world.
+ */
+
 // Public runtime marker used by tests
 export const SCENE_RUNTIME_MARKER = true;
 
-// Simple stable hash for variant selection from axial coords
+/**
+ * A simple stable hash for variant selection from axial coords.
+ * @param q - The q coordinate.
+ * @param r - The r coordinate.
+ * @param count - The number of variants.
+ * @returns The variant index.
+ */
 function variantIndexFor(q: number, r: number, count: number): number {
   if (count <= 1) return 0;
   let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
@@ -51,6 +61,14 @@ const FALLBACK_GEOMETRY = new CylinderGeometry(
 
 // Prepare simple materials cache per biome bucket to keep GPU state changes minimal
 const materialCache = new Map<string, MeshStandardMaterial>();
+
+/**
+ * Gets a material for a given biome bucket.
+ * @param biome - The biome type.
+ * @param bucket - The bucket index.
+ * @param total - The total number of buckets.
+ * @returns The material.
+ */
 function materialForBiomeBucket(biome: BiomeType, bucket: number, total: number) {
   const key = `${biome}:${bucket}/${total}`;
   let m = materialCache.get(key);
@@ -70,6 +88,11 @@ type Bucket = {
   hexCoords: Array<{ q: number; r: number }>; // for debug/wrapping helpers
 };
 
+/**
+ * Builds an array of buckets from an array of tiles.
+ * @param tiles - The array of tiles.
+ * @returns An array of buckets.
+ */
 function buildBuckets(tiles: Tile[]): Bucket[] {
   const buckets: Record<string, Bucket> = {};
   for (const t of tiles) {
@@ -94,7 +117,11 @@ function buildBuckets(tiles: Tile[]): Bucket[] {
   return Object.values(buckets);
 }
 
-// Convert bucket positions/elevations into instanced transforms, scaling Y by elevation
+/**
+ * Converts bucket positions/elevations into instanced transforms, scaling Y by elevation.
+ * @param bucket - The bucket.
+ * @returns An array of instance transforms.
+ */
 function transformsForBucket(bucket: Bucket): InstanceTransform[] {
   const out: InstanceTransform[] = [];
   const base = 0.06; // base tile height
@@ -109,6 +136,12 @@ function transformsForBucket(bucket: Bucket): InstanceTransform[] {
   return out;
 }
 
+/**
+ * A component that renders instanced hex buckets.
+ * @param props - The component properties.
+ * @param props.buckets - An array of buckets to render.
+ * @returns The rendered component.
+ */
 function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
   // Attempt to render GLTF assets when available per variant; fallback to hex cylinders otherwise
   return (
@@ -153,7 +186,10 @@ function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
   );
 }
 
-// Main scene component
+/**
+ * The main scene component.
+ * @returns The rendered component.
+ */
 export function ConnectedScene() {
   const { state } = useGame();
   const { selectedUnitId } = useSelection();
@@ -347,9 +383,10 @@ export function ConnectedScene() {
   );
 }
 
-// Default export for convenience
-// Default export is a safe stub for tests that render the Scene without
-// providers. App imports ConnectedScene explicitly via dynamic import.
+/**
+ * A stub component for the scene, used in tests.
+ * @returns The rendered component.
+ */
 export default function Scene() {
   return <group name="scene-stub" />;
 }

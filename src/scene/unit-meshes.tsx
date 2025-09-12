@@ -7,6 +7,14 @@ import unitsData from '../data/units.json';
 import { UNIT_TYPES } from '../game/content/registry';
 import { distance } from '../game/world/hex';
 
+/**
+ * @file This file contains the UnitMeshes component, which displays the 3D models for each unit on the map.
+ */
+
+/**
+ * A component that displays the 3D models for each unit on the map.
+ * @returns The rendered component, or null if the game state extension is not available.
+ */
 export const UnitMeshes: React.FC = () => {
   const { state } = useGame();
   const positions = useUnitPositions({ y: 0.01 });

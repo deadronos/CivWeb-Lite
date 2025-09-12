@@ -1,6 +1,17 @@
 import { useMemo } from 'react';
 import type { PlayerState, TechNode } from '../game/types';
 
+/**
+ * @file This file contains the useAvailableTechs hook, which returns a list of available technologies for a player.
+ */
+
+/**
+ * Represents an available technology.
+ * @property id - The unique ID of the technology.
+ * @property label - The name of the technology.
+ * @property cost - The cost of the technology.
+ * @property prerequisites - An array of technology IDs that are required to research this technology.
+ */
 interface AvailableTech {
   id: string;
   label: string;
@@ -8,6 +19,12 @@ interface AvailableTech {
   prerequisites: string[];
 }
 
+/**
+ * A hook that returns a list of available technologies for a player.
+ * @param techCatalog - The technology catalog.
+ * @param player - The player state.
+ * @returns An array of available technologies.
+ */
 export function useAvailableTechs(
   techCatalog: TechNode[],
   player: PlayerState

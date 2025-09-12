@@ -2,6 +2,18 @@ import { movementCost, isPassable } from './biomes';
 import type { City, GameStateExt as GameStateExtension, Hextile, Unit } from './types';
 import { IMPROVEMENTS, UNIT_TYPES, BUILDINGS } from './registry';
 
+/**
+ * @file This file contains the core game rules and logic.
+ */
+
+/**
+ * Represents the yield of a tile.
+ * @property food - The food yield.
+ * @property production - The production yield.
+ * @property gold - The gold yield.
+ * @property science - The science yield.
+ * @property culture - The culture yield.
+ */
 export type TileYield = {
   food: number;
   production: number;
@@ -10,6 +22,11 @@ export type TileYield = {
   culture?: number;
 };
 
+/**
+ * Gets the base yield of a tile.
+ * @param tile - The tile.
+ * @returns The base yield of the tile.
+ */
 export function getTileBaseYield(tile: Hextile): TileYield {
   switch (tile.biome) {
     case 'plains':
@@ -31,6 +48,12 @@ export function getTileBaseYield(tile: Hextile): TileYield {
   }
 }
 
+/**
+ * Applies the yield from improvements to a base yield.
+ * @param base - The base yield.
+ * @param tile - The tile with improvements.
+ * @returns The new yield after applying improvements.
+ */
 export function applyImprovementsYield(base: TileYield, tile: Hextile): TileYield {
   const result = { ...base };
   for (const impId of tile.improvements) {
@@ -43,14 +66,29 @@ export function applyImprovementsYield(base: TileYield, tile: Hextile): TileYiel
   return result;
 }
 
+/**
+ * Gets the total yield of a tile, including improvements.
+ * @param tile - The tile.
+ * @returns The total yield of the tile.
+ */
 export function getTileYield(tile: Hextile): TileYield {
   return applyImprovementsYield(getTileBaseYield(tile), tile);
 }
 
+/**
+ * Gets the base yield of a city.
+ * @returns The base yield of a city.
+ */
 export function cityBaseYield(): TileYield {
   return { food: 2, production: 1, gold: 0, science: 0, culture: 0 };
 }
 
+/**
+ * Gets the total yield of a city, including worked tiles and buildings.
+ * @param state - The game state extension.
+ * @param city - The city.
+ * @returns The total yield of the city.
+ */
 export function getCityYield(state: GameStateExtension, city: City): TileYield {
   const total: TileYield = { ...cityBaseYield() };
   for (const tileId of city.tilesWorked) {
@@ -76,16 +114,35 @@ export function getCityYield(state: GameStateExtension, city: City): TileYield {
   return total;
 }
 
+/**
+ * Rounds a number up to the nearest integer.
+ * @param n - The number to round up.
+ * @returns The rounded up number.
+ */
 export function roundUp(n: number): number {
   return Math.ceil(n);
 }
 
+/**
+ * Checks if a unit can enter a tile.
+ * @param state - The game state extension.
+ * @param unit - The unit.
+ * @param tile - The tile.
+ * @returns True if the unit can enter the tile, false otherwise.
+ */
 export function canUnitEnter(state: GameStateExtension, unit: Unit, tile: Hextile): boolean {
   const unitType = UNIT_TYPES[unit.type];
   if (!unitType) return false;
   return isPassable(tile, { unitAbilities: unit.abilities, unitDomain: unitType.domain });
 }
 
+/**
+ * Moves a unit to a new tile.
+ * @param state - The game state extension.
+ * @param unitId - The ID of the unit to move.
+ * @param toTileId - The ID of the tile to move to.
+ * @returns True if the unit was moved, false otherwise.
+ */
 export function moveUnit(state: GameStateExtension, unitId: string, toTileId: string): boolean {
   const unit = state.units[unitId];
   const tile = state.tiles[toTileId];
@@ -107,6 +164,10 @@ export function moveUnit(state: GameStateExtension, unitId: string, toTileId: st
   return false;
 }
 
+/**
+ * Ends the current turn.
+ * @param state - The game state extension.
+ */
 export function endTurn(state: GameStateExtension): void {
   // reset unit movement, heal in friendly city
   for (const unit of Object.values(state.units)) {
@@ -152,6 +213,11 @@ export function endTurn(state: GameStateExtension): void {
   tickCultureResearch(state);
 }
 
+/**
+ * Ticks the production of a city.
+ * @param state - The game state extension.
+ * @param city - The city.
+ */
 export function tickCityProduction(state: GameStateExtension, city: City): void {
   if (city.productionQueue.length === 0) return;
   const head = city.productionQueue[0];
@@ -206,6 +272,12 @@ export function tickCityProduction(state: GameStateExtension, city: City): void 
   }
 }
 
+/**
+ * Begins researching a technology.
+ * @param state - The game state extension.
+ * @param techId - The ID of the technology to research.
+ * @returns True if the research was started, false otherwise.
+ */
 export function beginResearch(state: GameStateExtension, techId: string) {
   // ensure prerequisites
   const tech = state.techs[techId];
@@ -215,6 +287,10 @@ export function beginResearch(state: GameStateExtension, techId: string) {
   return true;
 }
 
+/**
+ * Ticks the current research.
+ * @param state - The game state extension.
+ */
 export function tickResearch(state: GameStateExtension) {
   if (!state.playerState.research) return;
   const { techId } = state.playerState.research;
@@ -240,6 +316,12 @@ export function tickResearch(state: GameStateExtension) {
   }
 }
 
+/**
+ * Begins researching a civic.
+ * @param state - The game state extension.
+ * @param civicId - The ID of the civic to research.
+ * @returns True if the research was started, false otherwise.
+ */
 export function beginCultureResearch(state: GameStateExtension, civicId: string) {
   const civic = state.civics?.[civicId];
   if (!civic) return false;
@@ -249,6 +331,10 @@ export function beginCultureResearch(state: GameStateExtension, civicId: string)
   return true;
 }
 
+/**
+ * Ticks the current culture research.
+ * @param state - The game state extension.
+ */
 export function tickCultureResearch(state: GameStateExtension) {
   if (!state.playerState.cultureResearch) return;
   const { civicId } = state.playerState.cultureResearch;
@@ -274,6 +360,15 @@ export function tickCultureResearch(state: GameStateExtension) {
   }
 }
 
+/**
+ * Builds an improvement with a worker.
+ * @param state - The game state extension.
+ * @param unitId - The ID of the worker unit.
+ * @param tileId - The ID of the tile to build on.
+ * @param improvementId - The ID of the improvement to build.
+ * @param progressByUnit - A record of the progress of each unit's build action.
+ * @returns An object indicating if the build is complete and the current progress.
+ */
 export function workerBuildImprovement(
   state: GameStateExtension,
   unitId: string,
@@ -297,13 +392,26 @@ export function workerBuildImprovement(
   return { complete: false, progress: next };
 }
 
+/**
+ * The result of a found city action.
+ * @property success - Whether the city was founded successfully.
+ * @property cityId - The ID of the founded city.
+ * @property ownerId - The ID of the owner of the city.
+ * @property tileId - The ID of the tile the city was founded on.
+ * @property reason - The reason for failure, if any.
+ */
 export type FoundCityResult =
   | { success: true; cityId: string; ownerId: string; tileId: string }
   | { success: false; reason: string };
 
 /**
- * Attempt to found a city by a unit (typically a settler).
- * Returns success + created city info or failure reason.
+ * Attempts to found a city with a unit.
+ * @param state - The game state extension.
+ * @param unitId - The ID of the unit founding the city.
+ * @param tileId - The ID of the tile to found the city on.
+ * @param cityId - The ID to give the new city.
+ * @param name - The name of the new city.
+ * @returns The result of the found city action.
  */
 export function foundCity(
   state: GameStateExtension,

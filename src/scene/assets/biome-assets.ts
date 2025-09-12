@@ -5,13 +5,29 @@ import type { BufferAttribute, BufferGeometry, Material, Mesh, Object3D } from '
 import { DoubleSide } from 'three';
 import { setVariantAssets } from './biome-variants-registry';
 
+/**
+ * @file This file contains functions for loading biome assets.
+ */
+
+/**
+ * The name of the event that is dispatched when biome assets are loaded.
+ */
 export const BIOME_ASSETS_EVENT = 'civweblite:biomeAssetsLoaded';
 
-// Resolve URLs relative to this module; Vite will bundle/copy these.
+/**
+ * Resolves a URL relative to this module.
+ * @param name - The name of the file.
+ * @returns The resolved URL.
+ */
 function urlFor(name: string): string {
   return new URL(`./${name}`, import.meta.url).toString();
 }
 
+/**
+ * Finds all meshes in an Object3D.
+ * @param root - The root Object3D.
+ * @returns An array of meshes.
+ */
 function findMeshes(root: Object3D): Mesh[] {
   const out: Mesh[] = [] as any;
   root.traverse((o: any) => {
@@ -20,6 +36,11 @@ function findMeshes(root: Object3D): Mesh[] {
   return out;
 }
 
+/**
+ * Picks the best mesh from an array of meshes.
+ * @param meshes - The array of meshes.
+ * @returns The best mesh, or undefined if the array is empty.
+ */
 function pickBestMesh(meshes: Mesh[]): Mesh | undefined {
   if (meshes.length === 0) return undefined;
   // 1) Prefer name hints
@@ -43,6 +64,12 @@ function pickBestMesh(meshes: Mesh[]): Mesh | undefined {
   return best;
 }
 
+/**
+ * Clones a subset of a buffer geometry.
+ * @param source - The source geometry.
+ * @param indices - The indices to clone.
+ * @returns The cloned geometry.
+ */
 function cloneSubsetGeometry(source: BufferGeometry, indices: number[]): BufferGeometry {
   const dst = new (source.constructor as any)() as BufferGeometry;
   const attributeNames = Object.keys(source.attributes) as (keyof typeof source.attributes)[];
@@ -79,6 +106,12 @@ function cloneSubsetGeometry(source: BufferGeometry, indices: number[]): BufferG
   return dst;
 }
 
+/**
+ * Splits a geometry by material.
+ * @param geometry - The geometry to split.
+ * @param material - The material or array of materials.
+ * @returns An object containing the split geometries and materials.
+ */
 function splitGeometryByMaterial(
   geometry: BufferGeometry,
   material: Material | Material[]
@@ -98,6 +131,11 @@ function splitGeometryByMaterial(
   return { geos, mats };
 }
 
+/**
+ * Loads a GLTF file once.
+ * @param url - The URL of the GLTF file.
+ * @returns A promise that resolves to an object containing the geometry, material, chosen mesh name, and triangle count.
+ */
 async function loadGLTFOnce(
   url: string
 ): Promise<{
@@ -172,6 +210,10 @@ async function loadGLTFOnce(
   return { geometry, material: mats, chosen, tris: Math.floor(totalTris) };
 }
 
+/**
+ * Loads the biome variants for a given biome.
+ * @param biome - The name of the biome.
+ */
 export async function loadBiomeVariants(biome: string): Promise<void> {
   if (globalThis.window === undefined) return; // no-op in tests/SSR
   if (biome === 'grass') {

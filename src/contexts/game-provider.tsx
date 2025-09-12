@@ -12,11 +12,29 @@ import { DEFAULT_MAP_SIZE } from '../game/world/config';
 import { techCatalog } from '../game/tech/tech-catalog';
 import { evaluateAI } from '../game/ai/ai';
 
+/**
+ * @file This file contains the GameProvider component, which is the main context provider for the game state.
+ */
+
+/**
+ * The dispatch function type for game actions.
+ */
 export type Dispatch = (action: GameAction) => void;
 
+/**
+ * The context for the game state.
+ */
 export const GameStateContext = createContext<GameState | null>(null);
+
+/**
+ * The context for the game dispatch function.
+ */
 export const GameDispatchContext = createContext<Dispatch | null>(null);
 
+/**
+ * The initial state of the game.
+ * @returns The initial game state.
+ */
 export const initialState = (): GameState => ({
   schemaVersion: 1,
   seed: 'default',
@@ -35,6 +53,12 @@ export const initialState = (): GameState => ({
   contentExt: createContentExtension(),
 });
 
+/**
+ * The main context provider for the game state.
+ * @param props - The component properties.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatchBase] = useReducer(applyAction, undefined, initialState);
 
@@ -154,9 +178,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// small runtime export for tests
+/**
+ * A marker for tests to identify the GameProvider.
+ * @internal
+ */
 export const GAME_PROVIDER_MARKER = true;
-// exported helper for tests: advances a turn given state and dispatch
+
+/**
+ * A helper function for tests to simulate advancing a turn.
+ * @param s - The current game state.
+ * @param dispatch - The dispatch function.
+ * @internal
+ */
 export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
   const start = performance.now();
   globalGameBus.emit('turn:start', { turn: s.turn });
@@ -175,12 +208,21 @@ export function simulateAdvanceTurn(s: GameState, dispatch: Dispatch) {
   );
 }
 
-// Export initialState for tests
+/**
+ * A helper function for tests to get the initial state.
+ * @returns The initial game state.
+ * @internal
+ */
 export function initialStateForTests(): GameState {
   return initialState();
 }
 
-// Coverage helper to execute some branches
+/**
+ * A helper function for tests to cover some branches.
+ * @param forceElse - Whether to force the else branch.
+ * @returns A boolean value.
+ * @internal
+ */
 export function coverForTestsGameProvider(forceElse = false): boolean {
   let x = 0;
   for (let index = 0; index < 5; index++) {
@@ -194,7 +236,11 @@ export function coverForTestsGameProvider(forceElse = false): boolean {
   return x > 0;
 }
 
-// Large pad to exercise many statements during tests
+/**
+ * A helper function for tests to cover many statements.
+ * @returns A number.
+ * @internal
+ */
 export function coverAllGameProviderHuge(): number {
   let s = 0;
   for (let index = 0; index < 80; index++) {
@@ -205,7 +251,13 @@ export function coverAllGameProviderHuge(): number {
   return s;
 }
 
-// Test helper that exercises provider-like effects synchronously without starting RAF
+/**
+ * A helper function for tests to cover provider-like effects synchronously.
+ * @param s - The current game state.
+ * @param dispatch - The dispatch function.
+ * @param forceThrow - Whether to force an error.
+ * @internal
+ */
 export function coverGameProviderEffects(s: GameState, dispatch: Dispatch, forceThrow = false) {
   // emulate the init effect path
   dispatch({ type: 'INIT' });
@@ -226,7 +278,12 @@ export function coverGameProviderEffects(s: GameState, dispatch: Dispatch, force
   }
 }
 
-// small helper to hit extra branches during tests
+/**
+ * A small helper function for tests to hit extra branches.
+ * @param n - A number.
+ * @returns A number.
+ * @internal
+ */
 export function coverGameProviderExtra(n = 1): number {
   let r = 0;
   r = n > 0 ? n * 2 : -n;
@@ -234,7 +291,12 @@ export function coverGameProviderExtra(n = 1): number {
   return r;
 }
 
-// Extra function to exercise a branch that depends on players array length
+/**
+ * A helper function for tests to cover remaining paths.
+ * @param s - The current game state.
+ * @param dispatch - The dispatch function.
+ * @internal
+ */
 export function coverRemainingGameProviderPaths(s: GameState, dispatch: Dispatch) {
   // if no players, do another small branch
   if (!s.players || s.players.length === 0) {
@@ -245,7 +307,12 @@ export function coverRemainingGameProviderPaths(s: GameState, dispatch: Dispatch
   }
 }
 
-// Extra inline exerciser to hit small conditional branches depending on players
+/**
+ * A helper function for tests to cover inline extras.
+ * @param s - The current game state.
+ * @param dispatch - The dispatch function.
+ * @internal
+ */
 export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) {
   if (!s.players || s.players.length === 0) {
     dispatch({ type: 'LOG', payload: 'none' } as any);
@@ -267,7 +334,13 @@ export function coverGameProviderInlineExtras(s: GameState, dispatch: Dispatch) 
   }
 }
 
-// Alternate helper to force the no-players branch or the multi-players branch
+/**
+ * A helper function for tests to force paths.
+ * @param s - The current game state.
+ * @param dispatch - The dispatch function.
+ * @param mode - The mode to force.
+ * @internal
+ */
 export function coverGameProviderForcePaths(
   s: GameState,
   dispatch: Dispatch,
@@ -337,8 +410,11 @@ export function coverGameProviderForcePaths(
   }
 }
 
-// Test-only helper to touch module-level and branching logic that coverage
-// reports as missed. This function is safe and used only by tests.
+/**
+ * A helper function for tests to touch module-level and branching logic that coverage reports as missed.
+ * @returns A number.
+ * @internal
+ */
 export function coverGameProviderUncovered() {
   let x = 0;
   // simulate initialization branching
@@ -358,7 +434,13 @@ export function coverGameProviderUncovered() {
   return x;
 }
 
-// Helper to deterministically exercise the autoSim loop body without scheduling RAF
+/**
+ * A helper function for tests to trigger the auto-sim loop body once.
+ * @param s - The current game state.
+ * @param dispatch - The dispatch function.
+ * @returns A boolean indicating if the loop body was triggered.
+ * @internal
+ */
 export function triggerAutoSimOnce(s: GameState, dispatch: Dispatch) {
   // emulate the loop body once
   if (s.autoSim) {
@@ -373,8 +455,9 @@ export function triggerAutoSimOnce(s: GameState, dispatch: Dispatch) {
 // named GameProvider so consumers using default imports still work.
 export default GameProvider;
 
-// UI event handler stubs for early wiring from UI components.
-// These can be replaced to dispatch real actions in later phases.
+/**
+ * A collection of UI event handler stubs.
+ */
 export const uiHandlers = Object.freeze({
   selectUnit(unitId: string) {
     console.debug('[ui] selectUnit', unitId);

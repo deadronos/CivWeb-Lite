@@ -1,5 +1,10 @@
+/**
+ * @file This file re-exports all the types from the game directory.
+ */
+
 export * from '../game/types';
 
-// Runtime marker exported to allow test-suite to import this module and exercise
-// a tiny runtime path (the main types are compile-time only).
+/**
+ * A runtime marker exported to allow the test suite to import this module and exercise a tiny runtime path.
+ */
 export const RUNTIME_TYPES_MARKER = true;

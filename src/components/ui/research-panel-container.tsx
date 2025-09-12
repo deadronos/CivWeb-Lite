@@ -3,6 +3,17 @@ import { useGame } from '../../hooks/use-game';
 import { useAvailableTechs } from '../../hooks/use-available-techs';
 import { ResearchPanel } from './research-panel';
 
+/**
+ * @file This file contains the ResearchPanelContainer component, which is a container for the ResearchPanel component.
+ */
+
+/**
+ * A container component for the ResearchPanel component.
+ * It fetches the research data for a player and passes it to the ResearchPanel component.
+ * @param props - The component properties.
+ * @param props.playerId - The ID of the player.
+ * @returns The rendered component, or null if the player or game state extension is not found.
+ */
 export function ResearchPanelContainer({ playerId }: { playerId: string }) {
   const { state, dispatch } = useGame();
   const player = state.players.find(p => p.id === playerId);

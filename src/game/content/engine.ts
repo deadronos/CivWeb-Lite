@@ -2,6 +2,14 @@ import type { GameStateExtension, Technology, Civic } from './types';
 import { TECHS } from './registry';
 import { loadTechs, loadCivics } from '../../data/loader';
 
+/**
+ * @file This file contains functions for creating and initializing the game state extension.
+ */
+
+/**
+ * Creates an empty game state extension.
+ * @returns An empty game state extension.
+ */
 export function createEmptyState(): GameStateExtension {
   return {
     tiles: {},
@@ -22,7 +30,10 @@ export function createEmptyState(): GameStateExtension {
   };
 }
 
-// Optional: load techs from JSON data and build a state using those
+/**
+ * Creates a game state extension with data loaded from JSON files.
+ * @returns A promise that resolves to the new game state extension.
+ */
 export async function createStateWithLoadedData(): Promise<GameStateExtension> {
   const base = createEmptyState();
   try {

@@ -5,6 +5,10 @@ import './scene/fiber-shims';
 import App from './app';
 import './styles.css';
 
+/**
+ * @file This file is the main entry point for the application.
+ */
+
 // Safely bootstrap the app. In test environments (or when the DOM isn't
 // ready) calling createRoot/render can throw or trigger long-running
 // browser-only behavior. Guard the call and swallow errors so importing

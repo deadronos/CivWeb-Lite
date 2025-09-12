@@ -2,8 +2,20 @@ import { seedFrom, next, RNGState } from '../rng';
 import { BiomeType, Tile } from '../types';
 import { DEFAULT_MAP_SIZE } from './config';
 
-// Periodic cosine-based fractal noise. Horizontal axis (q) is fully periodic
-// so left/right edges wrap seamlessly. Vertical axis (r) is non-periodic.
+/**
+ * @file This file contains functions for generating the game world.
+ */
+
+/**
+ * Generates a periodic cosine-based fractal noise value.
+ * @param x - The x-coordinate (0-1).
+ * @param y - The y-coordinate (0-1).
+ * @param phases - An array of phase shifts.
+ * @param freqsX - An array of x-frequencies.
+ * @param freqsY - An array of y-frequencies.
+ * @param amps - An array of amplitudes.
+ * @returns A noise value between 0 and 1.
+ */
 function cosineFractal(
   x: number, // 0..1
   y: number, // 0..1
@@ -23,10 +35,22 @@ function cosineFractal(
   return sum / (ampSum || 1);
 }
 
+/**
+ * Clamps a number between 0 and 1.
+ * @param n - The number to clamp.
+ * @returns The clamped number.
+ */
 function clamp01(n: number) {
   return Math.max(0, Math.min(1, n));
 }
 
+/**
+ * Chooses a biome based on elevation, moisture, and latitude.
+ * @param e - The elevation (0-1).
+ * @param m - The moisture (0-1).
+ * @param lat - The latitude (0-1).
+ * @returns The chosen biome type.
+ */
 function chooseBiome(e: number, m: number, lat: number): BiomeType {
   // Order matters: ocean/ice/mountain first
   const waterline = 0.48; // tuned for continent sizes
@@ -44,6 +68,13 @@ function chooseBiome(e: number, m: number, lat: number): BiomeType {
   return BiomeType.Grassland;
 }
 
+/**
+ * Generates a new game world.
+ * @param seed - The seed for the random number generator.
+ * @param width - The width of the world.
+ * @param height - The height of the world.
+ * @returns An object containing the generated tiles and the new RNG state.
+ */
 export function generateWorld(
   seed: string | RNGState,
   width: number = DEFAULT_MAP_SIZE.width,

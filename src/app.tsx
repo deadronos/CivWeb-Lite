@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
 // Render a hidden Stats component during tests so the mocked @react-three/drei
 // export is exercised and test expectations that query `data-testid="stats"`
@@ -18,6 +18,14 @@ import { useGame } from './hooks/use-game';
 import ErrorBoundary from './components/common/error-boundary';
 // Camera controls and dev stats are managed within the Scene module.
 
+/**
+ * @file This file contains the root Application component.
+ */
+
+/**
+ * The root Application component.
+ * @returns The rendered component.
+ */
 export default function App() {
   const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
   const [started, setStarted] = React.useState(false);
@@ -94,6 +102,12 @@ export default function App() {
   );
 }
 
+/**
+ * A component that listens for the 'civweblite:loadState' event and dispatches the LOAD_STATE action.
+ * @param props - The component properties.
+ * @param props.onLoaded - A callback function to call when the state is loaded.
+ * @returns null
+ */
 function LoadListener({ onLoaded }: { onLoaded: () => void }) {
   const game = useGame();
   React.useEffect(() => {

@@ -19,6 +19,16 @@ import { UNIT_TYPES, IMPROVEMENTS, BUILDINGS } from './content/registry';
 import { computePath } from './pathfinder';
 import { generateAIDecisions } from './ai';
 
+/**
+ * @file This file contains the main reducer function for the game state.
+ * It handles all game actions and updates the state accordingly.
+ */
+
+/**
+ * Maps a core biome type to an extension biome type.
+ * @param b - The core biome type.
+ * @returns The corresponding extension biome type.
+ */
 function mapBiome(b: BiomeType): ExtensionBiome {
   switch (b) {
     case BiomeType.Grassland: {
@@ -48,6 +58,11 @@ function mapBiome(b: BiomeType): ExtensionBiome {
   }
 }
 
+/**
+ * Populates the extension tiles from the core game tiles.
+ * @param ext - The game state extension.
+ * @param tiles - The array of core game tiles.
+ */
 function populateExtensionTiles(ext: GameStateExtension, tiles: Tile[]) {
   ext.tiles = {};
   for (const t of tiles) {
@@ -66,11 +81,21 @@ function populateExtensionTiles(ext: GameStateExtension, tiles: Tile[]) {
   }
 }
 
+/**
+ * Finds a player by their ID.
+ * @param players - The array of players.
+ * @param id - The ID of the player to find.
+ * @returns The player state, or undefined if not found.
+ */
 function findPlayer(players: PlayerState[], id: string) {
   return players.find((p) => p.id === id);
 }
 
-// Helper function to check if a biome is suitable for unit spawning
+/**
+ * Checks if a biome is suitable for spawning a unit.
+ * @param biome - The biome type.
+ * @returns True if the biome is suitable, false otherwise.
+ */
 function isSuitableSpawnTerrain(biome: BiomeType): boolean {
   switch (biome) {
     case BiomeType.Grassland:
@@ -87,7 +112,16 @@ function isSuitableSpawnTerrain(biome: BiomeType): boolean {
   }
 }
 
-// Helper function to find a suitable spawn position near a preferred location
+/**
+ * Finds a suitable spawn position for a unit near a preferred location.
+ * @param tiles - The array of tiles.
+ * @param preferredQ - The preferred q coordinate.
+ * @param preferredR - The preferred r coordinate.
+ * @param width - The width of the map.
+ * @param height - The height of the map.
+ * @param searchRadius - The radius to search for a suitable tile.
+ * @returns The ID of a suitable tile, or null if none is found.
+ */
 function findSuitableSpawnPosition(
   tiles: Tile[],
   preferredQ: number,
@@ -137,7 +171,12 @@ function findSuitableSpawnPosition(
   return fallback ? fallback.id : null;
 }
 
-// Helper to get item cost for production calculation
+/**
+ * Gets the cost of a producible item.
+ * @param type - The type of the item ('unit', 'building', 'improvement').
+ * @param itemId - The ID of the item.
+ * @returns The cost of the item.
+ */
 function getItemCost(type: string, itemId: string): number {
   switch (type) {
     case 'unit':
@@ -151,6 +190,12 @@ function getItemCost(type: string, itemId: string): number {
   }
 }
 
+/**
+ * Applies a game action to the current state and returns the new state.
+ * @param state - The current game state.
+ * @param action - The game action to apply.
+ * @returns The new game state.
+ */
 export function applyAction(state: GameState, action: GameAction): GameState {
   if (action.type === 'LOAD_STATE') {
     globalGameBus.emit('action:applied', { action });
@@ -239,7 +284,11 @@ export function applyAction(state: GameState, action: GameAction): GameState {
         const total = Math.max(1, Math.min(6, action.payload.totalPlayers));
         const humans = Math.max(0, Math.min(total, action.payload.humanPlayers ?? 1));
         draft.players = [] as PlayerState[];
-        // small deterministic hash from seed for leader randomization fallback
+        /**
+         * A small deterministic hash function for strings.
+         * @param string_ - The string to hash.
+         * @returns The hash value.
+         */
         const hash = (string_: string) =>
           [...string_].reduce((a, c) => (a + c.charCodeAt(0)) >>> 0, 0);
         const chosen = action.payload.selectedLeaders ?? [];

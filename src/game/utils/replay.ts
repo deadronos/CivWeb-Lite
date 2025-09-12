@@ -2,6 +2,10 @@ import { GameAction } from '../actions';
 import { GameState } from '../types';
 import { applyAction } from '../reducer';
 
+/**
+ * @file This file contains functions for replaying game actions and hashing the game state.
+ */
+
 // Stable stringify to ensure identical key order for hashing
 function stableStringify(value: unknown): string {
   const seen = new WeakSet();
@@ -36,8 +40,11 @@ function stableStringify(value: unknown): string {
   return JSON.stringify(stringify(value));
 }
 
-// Simple djb2 hash over the stable-stringified state
-// Decode textual BigInt markers (e.g. "123n") back into BigInt numbers.
+/**
+ * Decodes textual BigInt markers (e.g. "123n") back into BigInt numbers.
+ * @param object - The object to decode.
+ * @returns The decoded object.
+ */
 export function decodeBigIntMarkers<T>(object: T): T {
   const visit = (v: any): any => {
     if (v === null) return null;
@@ -60,19 +67,32 @@ export function decodeBigIntMarkers<T>(object: T): T {
   return visit(object) as T;
 }
 
-// Parse a serialized JSON string and decode BigInt markers back into BigInt values.
+/**
+ * Parses a serialized JSON string and decodes BigInt markers back into BigInt values.
+ * @param serialized - The serialized JSON string.
+ * @returns The parsed object.
+ */
 export function parseState(serialized: string): any {
   const parsed = JSON.parse(serialized);
   return decodeBigIntMarkers(parsed);
 }
 
-// Helper to produce a stable JSON string suitable for persistence
+/**
+ * Produces a stable JSON string suitable for persistence.
+ * @param state - The state to stringify.
+ * @returns The stringified state.
+ */
 export function stringifyState(state: unknown): string {
   return stableStringify(state);
 }
 
 import { createHash } from 'node:crypto';
 
+/**
+ * Hashes the game state to a SHA-256 string.
+ * @param state - The game state to hash.
+ * @returns A promise that resolves to the hash of the game state.
+ */
 export async function hashState(state: GameState): Promise<string> {
   const string_ = stableStringify(state);
   // Use Web Crypto API when available (browser-friendly). Fallback to Node's crypto.
@@ -90,11 +110,22 @@ export async function hashState(state: GameState): Promise<string> {
   return createHash('sha256').update(string_, 'utf8').digest('hex');
 }
 
+/**
+ * Represents a replay of a game.
+ * @property actions - An array of game actions to replay.
+ * @property startSeed - The seed to use for the replay.
+ */
 export type Replay = {
   actions: GameAction[];
   startSeed?: string;
 };
 
+/**
+ * Runs a replay of a game.
+ * @param initial - The initial game state.
+ * @param replay - The replay to run.
+ * @returns A promise that resolves to an object containing the final game state and its hash.
+ */
 export async function runReplay(
   initial: GameState,
   replay: Replay
@@ -106,6 +137,11 @@ export async function runReplay(
   return { final: state, hash: await hashState(state) };
 }
 
+/**
+ * Records a series of game actions into a replay object.
+ * @param actions - The game actions to record.
+ * @returns A replay object.
+ */
 export function record(...actions: GameAction[]): Replay {
   return { actions };
 }

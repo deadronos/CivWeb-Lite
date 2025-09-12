@@ -1,6 +1,22 @@
 import React from 'react';
 import type { ResearchPanelProps as ResearchPanelProperties } from '../../game/types/ui';
 
+/**
+ * @file This file contains the ResearchPanel component, which displays the research options for a player.
+ */
+
+/**
+ * A component that displays the research options for a player.
+ * @param props - The component properties.
+ * @param props.playerId - The ID of the player.
+ * @param props.currentResearch - The technology the player is currently researching.
+ * @param props.queue - The research queue of the player.
+ * @param props.availableTechs - An array of technologies that can be researched.
+ * @param props.onStartResearch - A callback function to start researching a technology.
+ * @param props.onQueueResearch - A callback function to queue a technology for research.
+ * @param props.onAutoRecommend - A callback function to automatically recommend a technology to research.
+ * @returns The rendered component.
+ */
 export function ResearchPanel({
   playerId,
   currentResearch,

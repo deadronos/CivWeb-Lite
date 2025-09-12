@@ -2,9 +2,18 @@ import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import leaders from '../../data/leaders.json';
 import { MAP_PRESETS } from '../../game/world/config';
+
+/**
+ * @file This file contains the MainMenu component, which is displayed when the game starts.
+ */
+
 const LS_KEY = 'civweblite:newgame';
 
 type MapSizeKey = 'small' | 'medium' | 'large' | 'xlarge';
+
+/**
+ * A record of available map sizes.
+ */
 const MAP_SIZES: Record<MapSizeKey, { width: number; height: number; label: string }> = {
   small: {
     ...MAP_PRESETS.small,
@@ -24,6 +33,15 @@ const MAP_SIZES: Record<MapSizeKey, { width: number; height: number; label: stri
   },
 };
 
+/**
+ * Represents the configuration for a new game.
+ * @property width - The width of the map.
+ * @property height - The height of the map.
+ * @property seed - The seed for the random number generator.
+ * @property totalPlayers - The total number of players.
+ * @property humanPlayers - The number of human players.
+ * @property selectedLeaders - An array of selected leader IDs.
+ */
 type StartConfig = {
   width: number;
   height: number;
@@ -33,6 +51,12 @@ type StartConfig = {
   selectedLeaders?: Array<string | 'random' | undefined>;
 };
 
+/**
+ * A component that displays the main menu, allowing the user to start a new game or load a save.
+ * @param props - The component properties.
+ * @param props.onStart - A callback function to start a new game.
+ * @returns The rendered component.
+ */
 export default function MainMenu({ onStart }: { onStart(config: StartConfig): void }) {
   const { dispatch } = useGame();
   const [size, setSize] = React.useState<MapSizeKey>('medium');
@@ -214,6 +238,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
+/**
+ * Handles the file load event.
+ * @param event - The file load event.
+ */
 async function onLoadFile(event: React.ChangeEvent<HTMLInputElement>) {
   const input = event.currentTarget;
   if (!input.files || input.files.length === 0) return;

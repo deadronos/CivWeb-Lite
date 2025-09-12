@@ -4,6 +4,21 @@ import { Vector3 } from 'three';
 import { useGame } from '../../hooks/use-game';
 import { axialToWorld, DEFAULT_HEX_SIZE } from '../utils/coords';
 
+/**
+ * @file This file contains the CameraControls component, which provides custom camera controls for the scene.
+ */
+
+/**
+ * Represents the properties for the CameraControls component.
+ * @property enabled - Whether the controls are enabled.
+ * @property minPitch - The minimum pitch of the camera in radians.
+ * @property maxPitch - The maximum pitch of the camera in radians.
+ * @property minDistance - The minimum distance of the camera from the target.
+ * @property maxDistance - The maximum distance of the camera from the target.
+ * @property moveSpeed - The movement speed of the camera.
+ * @property rotateSpeed - The rotation speed of the camera.
+ * @property zoomSpeed - The zoom speed of the camera.
+ */
 type Properties = {
   enabled?: boolean;
   minPitch?: number; // radians
@@ -15,11 +30,11 @@ type Properties = {
   zoomSpeed?: number; // distance delta per wheel notch
 };
 
-// Custom camera controls with:
-// - WASD movement on map plane
-// - Left mouse drag to rotate (yaw) within pitch limits
-// - Wheel zoom in/out (distance clamp)
-// - Camera target clamped to map bounds, and pitch prevents going under map
+/**
+ * A component that provides custom camera controls for the scene.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export default function CameraControls({
   enabled = true,
   minPitch = 0.25,

@@ -2,6 +2,15 @@ import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import LeftPanel from './left-panel';
 
+/**
+ * @file This file contains the ExtensionTechPanelContainer component, which is a container for the LeftPanel component.
+ */
+
+/**
+ * A container component for the LeftPanel component.
+ * It fetches the available technologies from the game state extension and passes them to the LeftPanel component.
+ * @returns The rendered component, or null if the game state extension is not available.
+ */
 export default function ExtensionTechPanelContainer() {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;

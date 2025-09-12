@@ -2,6 +2,15 @@ import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import LeftPanel from './left-panel';
 
+/**
+ * @file This file contains the LeftPanelContainer component, which is a container for the LeftPanel component.
+ */
+
+/**
+ * A container component for the LeftPanel component.
+ * It fetches the available technologies for the human player and passes them to the LeftPanel component.
+ * @returns The rendered component.
+ */
 export default function LeftPanelContainer() {
   const { state, dispatch } = useGame();
   const human = state.players.find((p) => p.isHuman);

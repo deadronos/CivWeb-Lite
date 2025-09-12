@@ -1,5 +1,16 @@
-﻿import React from 'react';
+import React from 'react';
 
+/**
+ * @file This file contains the Minimap component, which displays a minimap of the game world.
+ */
+
+/**
+ * Represents the properties for the Minimap component.
+ * @property width - The width of the minimap.
+ * @property height - The height of the minimap.
+ * @property onPickCoord - A callback function to handle clicks on the minimap.
+ * @property highlightedTileIds - An array of tile IDs to highlight on the minimap.
+ */
 export type MinimapProps = {
   width: number;
   height: number;
@@ -7,6 +18,11 @@ export type MinimapProps = {
   highlightedTileIds?: string[];
 };
 
+/**
+ * A component that displays a minimap of the game world.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export default function Minimap({ width, height, onPickCoord, highlightedTileIds }: MinimapProps) {
   const reference = React.useRef<HTMLDivElement | null>(null);
   const onClick = (e: React.MouseEvent) => {

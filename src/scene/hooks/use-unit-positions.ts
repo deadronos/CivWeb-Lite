@@ -2,12 +2,29 @@ import React from 'react';
 import { useGame } from '../../hooks/use-game';
 import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension } from '../utils/coords';
 
+/**
+ * @file This file contains hooks for getting the positions of units.
+ */
+
+/**
+ * Represents the position of a unit.
+ * @property id - The unique ID of the unit.
+ * @property type - The type of the unit.
+ * @property position - The position of the unit in world coordinates.
+ */
 export type UnitPosition = {
   id: string;
   type: string;
   position: [number, number, number];
 };
 
+/**
+ * Represents the options for the useUnitPositions hook.
+ * @property y - The y-coordinate to use for the unit positions.
+ * @property ownerId - The ID or IDs of the owner of the units to get.
+ * @property unitType - The type or types of the units to get.
+ * @property predicate - A function to filter the units.
+ */
 export type UseUnitPositionsOptions = {
   y?: number;
   ownerId?: string | string[];
@@ -20,6 +37,11 @@ function toSet(v?: string | string[]) {
   return new Set(Array.isArray(v) ? v : [v]);
 }
 
+/**
+ * A hook that returns the positions of units.
+ * @param options - The options for the hook.
+ * @returns An array of unit positions.
+ */
 export function useUnitPositions(options: UseUnitPositionsOptions = {}): UnitPosition[] {
   const y = options.y ?? 0;
   const { state } = useGame();
@@ -56,6 +78,11 @@ export function useUnitPositions(options: UseUnitPositionsOptions = {}): UnitPos
   ]);
 }
 
+/**
+ * A hook that returns a map of unit positions, indexed by unit ID.
+ * @param options - The options for the hook.
+ * @returns A map of unit positions.
+ */
 export function useUnitPositionMap(
   options: UseUnitPositionsOptions = {}
 ): Record<string, UnitPosition> {

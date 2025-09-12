@@ -1,7 +1,14 @@
 import { GameAction } from './actions';
 
+/**
+ * @file This file defines the game's event bus, which is used for communication between different parts of the game engine.
+ */
+
 type Listener<T> = (payload: T) => void;
 
+/**
+ * Defines the types of events that can be emitted by the game engine.
+ */
 export interface GameEvents {
   'turn:start': { turn: number };
   'turn:end': { turn: number };
@@ -26,9 +33,19 @@ export interface GameEvents {
   'ai:decisions': { playerId: string; actions: GameAction[]; duration: number };
 }
 
+/**
+ * A generic event bus for handling game events.
+ * @template E - A record of event names to payload types.
+ */
 export class GameEventBus<E extends Record<string, any>> {
   private listeners: Map<keyof E & string, Set<Listener<any>>> = new Map();
 
+  /**
+   * Registers a listener for a given event.
+   * @param event - The name of the event to listen for.
+   * @param function_ - The callback function to execute when the event is emitted.
+   * @returns A function that can be called to unregister the listener.
+   */
   on<K extends keyof E & string>(event: K, function_: Listener<E[K]>) {
     const set = this.listeners.get(event) ?? new Set();
     set.add(function_ as Listener<any>);
@@ -36,6 +53,11 @@ export class GameEventBus<E extends Record<string, any>> {
     return () => this.off(event, function_);
   }
 
+  /**
+   * Unregisters a listener for a given event.
+   * @param event - The name of the event to stop listening for.
+   * @param function_ - The callback function to remove.
+   */
   off<K extends keyof E & string>(event: K, function_: Listener<E[K]>) {
     const set = this.listeners.get(event);
     if (!set) return;
@@ -43,6 +65,11 @@ export class GameEventBus<E extends Record<string, any>> {
     if (set.size === 0) this.listeners.delete(event);
   }
 
+  /**
+   * Emits an event to all registered listeners.
+   * @param event - The name of the event to emit.
+   * @param payload - The payload to send to the listeners.
+   */
   emit<K extends keyof E & string>(event: K, payload: E[K]) {
     const set = this.listeners.get(event);
     if (!set) return;
@@ -56,4 +83,7 @@ export class GameEventBus<E extends Record<string, any>> {
   }
 }
 
+/**
+ * The global instance of the game event bus.
+ */
 export const globalGameBus = new GameEventBus<GameEvents>();

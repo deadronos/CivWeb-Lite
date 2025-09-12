@@ -2,6 +2,17 @@ import React from 'react';
 import Icon from './icon';
 import { MdScience, MdTheaterComedy } from 'react-icons/md';
 
+/**
+ * @file This file contains the TopBar component, which displays the top bar of the HUD.
+ */
+
+/**
+ * Represents the properties for the TopBar component.
+ * @property turn - The current turn number.
+ * @property resources - A record of resources to display.
+ * @property onOpenLoad - A callback function to open the load modal.
+ * @property onOpenLoadPaste - A callback function to open the load modal with the text area focused.
+ */
 export type TopBarProps = {
   turn: number;
   resources: Record<string, number | { value: number; delta?: number }>;
@@ -9,6 +20,11 @@ export type TopBarProps = {
   onOpenLoadPaste?: () => void;
 };
 
+/**
+ * A component that displays the top bar of the HUD.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste }: TopBarProps) {
   const getValue = (v: number | { value: number; delta?: number } | undefined) => {
     if (v === undefined) return 0;

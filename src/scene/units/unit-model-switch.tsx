@@ -10,6 +10,23 @@ import { SpearmanModel } from './procedural/spearman-model';
 import { GalleyModel } from './procedural/galley-model';
 import { getModelComponent } from './model-registry';
 
+/**
+ * @file This file contains the UnitModelSwitch component, which displays the correct model for a given unit type.
+ */
+
+/**
+ * Represents the properties for the UnitModelSwitch component.
+ * @property type - The type of the unit.
+ * @property teamColor - The color of the team.
+ * @property position - The position of the unit.
+ * @property scale - The scale of the unit.
+ * @property id - The unique ID of the unit.
+ * @property rangedReady - Whether the unit is ready to make a ranged attack.
+ * @property model - The model to use for the unit.
+ * @property offsetY - The vertical offset of the unit.
+ * @property anim - Animation properties for the unit.
+ * @property gltf - The GLTF label or path for the unit.
+ */
 export type UnitModelProperties = {
   type: string;
   teamColor?: string;
@@ -37,6 +54,11 @@ const LazyGLTFModel = React.lazy(() =>
   import(String.raw`../drei/gltf-model`).then((m) => ({ default: m.default }))
 );
 
+/**
+ * A component that displays the correct model for a given unit type.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export const UnitModelSwitch: React.FC<UnitModelProps> = ({
   type,
   teamColor = '#bdc3c7',

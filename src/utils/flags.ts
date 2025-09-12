@@ -1,3 +1,11 @@
+/**
+ * @file This file contains utility functions for working with feature flags.
+ */
+
+/**
+ * Checks if GLTF models are enabled.
+ * @returns True if GLTF models are enabled, false otherwise.
+ */
 export function gltfEnabled(): boolean {
   const v = (import.meta as any)?.env?.VITE_ENABLE_GLTF;
   if (typeof v === 'string')

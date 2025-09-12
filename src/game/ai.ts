@@ -3,6 +3,11 @@ import type { GameAction, ProductionOrder } from './actions';
 import { globalGameBus } from './events';
 import { UNIT_TYPES, IMPROVEMENTS, BUILDINGS } from './content/registry';
 
+/**
+ * @file This file contains the core logic for the AI players.
+ * It includes functions for making decisions about research, production, and unit movement.
+ */
+
 // Basic AI decision weights (0-1 scale, tunable)
 const AI_WEIGHTS = {
   science: 0.3, // Prioritize tech unlocks
@@ -11,14 +16,25 @@ const AI_WEIGHTS = {
   economy: 0.1, // Improvements for yields
 } as const;
 
-// Top-level estimated turns function
+/**
+ * Estimates the number of turns required to produce an item.
+ * @param type - The type of item to produce.
+ * @param itemId - The ID of the item to produce.
+ * @returns The estimated number of turns.
+ */
 function getEstimatedTurns(type: ProductionOrder['type'], itemId: string): number {
   const baseCosts = { unit: 40, improvement: 20, building: 60 } as const;
   const baseYield = 1; // Assume basic city yield
   return Math.ceil((baseCosts[type] || 10) / baseYield);
 }
 
-// Score a tech based on player personality and state
+/**
+ * Scores a technology for a given player based on their personality and the current game state.
+ * @param player - The player state.
+ * @param tech - The technology to score.
+ * @param state - The current game state.
+ * @returns A numerical score for the technology.
+ */
 function scoreTech(player: PlayerState, tech: TechNode, state: GameState): number {
   const leader = player.leader as LeaderPersonality;
   let score = 0;
@@ -43,7 +59,12 @@ function scoreTech(player: PlayerState, tech: TechNode, state: GameState): numbe
   return score;
 }
 
-// Generate research queue for AI (top 3 available techs)
+/**
+ * Generates a research queue for an AI player.
+ * @param player - The player state.
+ * @param state - The current game state.
+ * @returns An array of technology IDs to queue for research.
+ */
 function generateResearchQueue(player: PlayerState, state: GameState): string[] {
   const available = state.techCatalog.filter(tech => 
     !player.researchedTechIds?.includes(tech.id) &&
@@ -59,7 +80,13 @@ function generateResearchQueue(player: PlayerState, state: GameState): string[] 
     .map(({ tech }) => tech.id);
 }
 
-// Basic production decision: Queue based on expansionism (e.g., settlers) or economy
+/**
+ * Generates a production queue for a city.
+ * @param player - The player state.
+ * @param cityId - The ID of the city.
+ * @param state - The current game state.
+ * @returns An array of production orders.
+ */
 function generateProductionQueue(player: PlayerState, cityId: string, state: GameState): ProductionOrder[] {
   const leader = player.leader as LeaderPersonality;
   const queue: ProductionOrder[] = [];
@@ -78,8 +105,13 @@ function generateProductionQueue(player: PlayerState, cityId: string, state: Gam
   return queue;
 }
 
-// Main AI turn decision function (called in reducer's AI phase)
-export function generateAIDecisions(state: GameState, playerId: string): GameAction[] {
+/**
+ * Generates a list of actions for an AI player to perform on their turn.
+ * @param state - The current game state.
+ * @param playerId - The ID of the player to generate decisions for.
+ * @returns An array of game actions.
+ */
+export function generateAIDecisions(state: GameState, playerId:string): GameAction[] {
   const player = state.players.find(p => p.id === playerId);
   if (!player || player.isHuman) return [];
 

@@ -3,6 +3,17 @@ import { useGame } from '../../hooks/use-game';
 import { CityPanel } from './city-panel';
 import { ProductionOrder } from '../../game/types/ui';
 
+/**
+ * @file This file contains the CityPanelContainer component, which is a container for the CityPanel component.
+ */
+
+/**
+ * A container component for the CityPanel component.
+ * It fetches the city data from the game state and passes it to the CityPanel component.
+ * @param props - The component properties.
+ * @param props.cityId - The ID of the city to display.
+ * @returns The rendered component, or null if the city is not found.
+ */
 export function CityPanelContainer({ cityId }: { cityId: string }) {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;

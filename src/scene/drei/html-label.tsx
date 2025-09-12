@@ -1,6 +1,16 @@
 import React from 'react';
 import { Html } from '@react-three/drei';
 
+/**
+ * @file This file contains the HtmlLabel component, which is a wrapper around the drei Html component.
+ */
+
+/**
+ * Represents the properties for the HtmlLabel component.
+ * @property className - The CSS class name for the label.
+ * @property 'data-testid' - Testing-only DOM attribute.
+ * @property testid - Alias for testing-only attribute.
+ */
 type Properties = React.ComponentProps<typeof Html> & {
   className?: string;
   // allow optional test ids and ARIA attributes which we will apply to inner div
@@ -8,6 +18,11 @@ type Properties = React.ComponentProps<typeof Html> & {
   testid?: string;
 } & React.AriaAttributes;
 
+/**
+ * A wrapper component around the drei Html component.
+ * @param props - The component properties.
+ * @returns The rendered component.
+ */
 export default function HtmlLabel({
   children,
   className: cssClass = 'label',

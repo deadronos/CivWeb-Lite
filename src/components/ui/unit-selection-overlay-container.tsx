@@ -3,6 +3,17 @@ import { useGame } from '../../hooks/use-game';
 import { UnitSelectionOverlay } from './unit-selection-overlay';
 import { computeMovementRange } from '../../game/pathfinder';
 
+/**
+ * @file This file contains the UnitSelectionOverlayContainer component, which is a container for the UnitSelectionOverlay component.
+ */
+
+/**
+ * A container component for the UnitSelectionOverlay component.
+ * It fetches the selected unit's data and passes it to the UnitSelectionOverlay component.
+ * @param props - The component properties.
+ * @param props.selectedUnitId - The ID of the selected unit.
+ * @returns The rendered component, or null if no unit is selected or the game state extension is not available.
+ */
 export function UnitSelectionOverlayContainer({ selectedUnitId }: { selectedUnitId?: string }) {
   const { state, dispatch } = useGame();
   const extension = state.contentExt;

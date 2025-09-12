@@ -1,10 +1,16 @@
 /**
- * World wrapping utilities for seamless cylindrical world experience.
- * Implements left/right wrapping with camera teleportation and edge rendering.
+ * @file This file contains world wrapping utilities for a seamless cylindrical world experience.
  */
 
 import { DEFAULT_HEX_SIZE } from './coords';
 
+/**
+ * Represents the configuration for world wrapping.
+ * @property worldWidth - The width of the world in tiles.
+ * @property worldHeight - The height of the world in tiles.
+ * @property wrapBuffer - The number of columns to render beyond the edges for seamless wrapping.
+ * @property teleportThreshold - The camera teleport threshold in world units from the edge.
+ */
 export interface WrappingConfig {
   /** Width of the world in tiles */
   worldWidth: number;
@@ -16,6 +22,9 @@ export interface WrappingConfig {
   teleportThreshold: number;
 }
 
+/**
+ * The default configuration for world wrapping.
+ */
 export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
   worldWidth: 106, // Default medium map
   worldHeight: 66,
@@ -24,7 +33,10 @@ export const DEFAULT_WRAPPING_CONFIG: WrappingConfig = {
 };
 
 /**
- * Calculate world boundaries for wrapping system
+ * Calculates the world boundaries for the wrapping system.
+ * @param config - The wrapping configuration.
+ * @param hexSize - The size of the hexes.
+ * @returns An object containing the world boundaries.
  */
 export function getWorldBounds(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
   const leftEdge = 0;
@@ -42,15 +54,22 @@ export function getWorldBounds(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZ
 }
 
 /**
- * Exact horizontal wrap delta for pointy-top axial: moving q by ±worldWidth
- * shifts X by √3 * size * worldWidth, independent of r.
+ * Gets the exact horizontal wrap delta for pointy-top axial layout.
+ * @param config - The wrapping configuration.
+ * @param hexSize - The size of the hexes.
+ * @returns The horizontal wrap delta.
  */
 export function getHorizontalWrapDelta(config: WrappingConfig, hexSize = DEFAULT_HEX_SIZE) {
   return Math.sqrt(3) * hexSize * config.worldWidth;
 }
 
 /**
- * Generate wrapped tile positions - original tiles plus wrapped edge columns
+ * Generates wrapped tile positions, including the original tiles and the wrapped edge columns.
+ * @param originalPositions - The original tile positions.
+ * @param tiles - The array of tiles.
+ * @param config - The wrapping configuration.
+ * @param hexSize - The size of the hexes.
+ * @returns An array of wrapped tile positions.
  */
 export function generateWrappedPositions(
   originalPositions: Array<[number, number, number]>,
@@ -90,7 +109,12 @@ export function generateWrappedPositions(
 }
 
 /**
- * Generate wrapped biome groups with edge duplication
+ * Generates wrapped biome groups with edge duplication.
+ * @param originalBiomeGroups - The original biome groups.
+ * @param tiles - The array of tiles.
+ * @param config - The wrapping configuration.
+ * @param hexSize - The size of the hexes.
+ * @returns An array of wrapped biome groups.
  */
 export function generateWrappedBiomeGroups(
   originalBiomeGroups: Array<{
@@ -169,7 +193,11 @@ export function generateWrappedBiomeGroups(
 }
 
 /**
- * Check if camera needs to be teleported and return new position
+ * Checks if the camera needs to be teleported and returns the new position.
+ * @param cameraX - The current x-coordinate of the camera.
+ * @param config - The wrapping configuration.
+ * @param hexSize - The size of the hexes.
+ * @returns The new x-coordinate of the camera, or null if no teleport is needed.
  */
 export function checkCameraTeleport(
   cameraX: number,
@@ -193,7 +221,11 @@ export function checkCameraTeleport(
 }
 
 /**
- * Calculate wrapped camera position for smooth movement
+ * Calculates the wrapped camera position for smooth movement.
+ * @param cameraX - The current x-coordinate of the camera.
+ * @param config - The wrapping configuration.
+ * @param hexSize - The size of the hexes.
+ * @returns The wrapped x-coordinate of the camera.
  */
 export function wrapCameraPosition(
   cameraX: number,
