@@ -1,6 +1,6 @@
 # [TASK-051] Deterministic replay harness verification
 
-**Status:** Not Started
+**Status:** Completed on 2025-09-12
 
 **Added:** 2025-09-12
 
@@ -30,9 +30,9 @@ Plan marks deterministic replay as complete but notes that automated verificatio
 
 ## Tasks
 
-- [ ] Add `tests/deterministic-replay.test.ts` with basic K=10 run and replay assertions.
-- [ ] Add `docs/replay-verification.md` with run instructions and CI notes.
-- [ ] Add small utility `tests/utils/replay-helper.ts` if helpful to isolate record/replay logic.
+- [x] Add `tests/deterministic-replay.test.ts` with basic K=10 run and replay assertions.
+- [x] Add `docs/replay-verification.md` with run instructions and CI notes.
+- [x] Add small utility `tests/utils/replay-helper.ts` if helpful to isolate record/replay logic.
 
 ## ETA
 
