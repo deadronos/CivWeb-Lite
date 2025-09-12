@@ -1,8 +1,8 @@
 ---
 title: CivWeb-Lite Core Architecture & Product Vision Specification
-version: 1.0
+version: 2.0
 date_created: 2025-09-08
-last_updated: 2025-09-11
+last_updated: 2025-09-12
 owner: deadronos
 tags: [architecture, design, game, turn-based, react, threejs]
 ---
@@ -42,18 +42,9 @@ This specification defines the high-level architecture, scope, requirements, dat
 
 ## 1. Purpose & Scope
 
-The purpose of this document is to establish a shared, unambiguous foundation for implementing the core game loop, world representation, AI systems, technology progression, and persistence (save/load). Scope includes:
+This specification defines the high-level architecture, scope, requirements, data contracts, and testability expectations for "CivWeb-Lite" — a lightweight, Civilization‑inspired, turn‑based strategy web game built with TypeScript, React, @react-three/fiber (Three.js), and Vite. It focuses on clarity, determinism, modularity, and extensibility while remaining small enough for rapid iteration.
 
-- Procedurally (or seed) generated hex tile world with multiple biomes.
-- Turn-based progression with deterministic state advancement.
-- Player vs AI and AI-only simulation modes.
-- Leader personalities influencing AI decisions.
-- Dual-path technology system (e.g., Science and Culture tracks) with unlock trees.
-- JSON save/load system (localStorage or downloadable file).
-- Lightweight rendering of a 3D hex map (isometric or free camera) using react-three-fiber.
-- Extensible modular systems for future features (resources, diplomacy, cities, fog of war, combat).
-
-Out of scope (initial version): networking/multiplayer, complex animations, full UI theming system, robust modding pipeline (may be future enhancements).
+**Implementation Status (as of 2025-09-12):** The core game foundation (world generation, turn engine, tech trees, AI, save/load) is fully implemented and tested per the requirements in this spec. The HUD/UI components are partially implemented; see `plan/hud-ui-implementation-plan.md` for current status. Additional features (cities, units, combat) are specified in related specs but not yet implemented.
 
 Assumptions:
 
@@ -425,9 +416,29 @@ Edge Cases:
 
 ## 11. Related Specifications / Further Reading
 
-- (Planned) `spec-design-ai-decision-engine.md` — AI heuristic scoring.
-- (Planned) `spec-data-tech-tree-schema.md` — Tech tree declarative format.
-- (Planned) `spec-process-testing-strategy.md` — Extended test/perf plan.
+- `spec/spec-biomes-units-tech.spec.md` — Detailed specification for biomes, units, and technology systems.
+- `spec/spec-data-tech-tree-schema.md` — Data schema for tech trees and prerequisites.
+- `spec/spec-design-ai-decision-engine.md` — AI decision-making heuristics and leader personalities.
+- `spec/spec-game-layout-and-lifecycle.spec.md` — Game lifecycle, layout, and extended UI interactions.
+- `spec/spec-process-testing-strategy.md` — Comprehensive testing strategy and automation.
+- `spec/spec-ui-interactions.spec.md` — UI interaction patterns and controls.
+- `plan/feature-core-game-foundation-1.md` — Implementation plan for core features (completed).
+- `plan/hud-ui-implementation-plan.md` — HUD/UI implementation plan (in progress).
+- `docs/state-architecture.md` — Developer documentation on state patterns and invariants.
+
+**Missing Specifications (Future Work):**
+
+- Networking/multiplayer architecture (out of scope for initial version).
+- Combat and unit movement systems.
+- Diplomacy and alliances.
+- Fog of war mechanics.
+- Resource management and economy.
+- City growth and production queues.
+- Achievements and milestones.
+- Procedural content generation (beyond basic world gen).
+- Modding pipeline and extensibility APIs.
+
+These areas are referenced as "future/optional features" in section 3 but lack detailed specs. Prioritize based on project roadmap.
 
 ---
 

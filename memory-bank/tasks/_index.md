@@ -2,11 +2,15 @@
 
 ## In Progress
 
-- [TASK001] Refactor scene and game provider - Modularize and clean up (see `memory-bank/tasks/TASK001-refactor-scene-and-game-provider.md`)
+
 
 ## Pending
-
-- [TASK002] Implement advanced HUD/UI - Planned for next sprint
+ 
+- [TASK032-033] AI micro-benchmarks - Create micro-bench scripts, capture results, and document optimizations
+- [TASK051] Deterministic replay verification - Add Vitest/utility for seedable RNG validation and replay tests
+- [TASK052..054] Performance benchmarks & rendering - Bench instanced vs non-instanced rendering and collect metrics
+- [TASK047..049] HUD accessibility & keyboard tests - Playwright/Vitest axe scans and keyboard focus tests for HUD
+- [TASK055..057] CI & E2E stability - Investigate flaky tests, improve Playwright resilience, and CI test stability
 
 ## Completed
 

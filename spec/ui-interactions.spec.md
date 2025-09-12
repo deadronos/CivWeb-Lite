@@ -6,6 +6,8 @@ This spec captures user stories, UI flows, action payloads, and acceptance tests
 - City production selection (choose unit/building/improvement, queue, reorder)
 - Research selection (choose tech, queue, auto-recommend)
 
+**Implementation Status (as of 2025-09-12):** This specification describes advanced UI interactions that are planned but not yet implemented. The core game foundation (world generation, turn engine, tech trees, AI, save/load) is complete, and basic HUD components are partially implemented per `plan/hud-ui-implementation-plan.md`. These interactions (unit movement, city production, combat) are future features requiring additional specification and implementation.
+
 Audience: frontend engineers, game logic engineers, QA.
 
 1. User stories and flows
@@ -130,7 +132,7 @@ This section describes how a single-player or hotseat/AI turn can play out, the 
 - endTurn(playerId)
   - System: validate queued actions, process movement/combat resolution, consume production, advance tech progress, run end-of-turn triggers, then pass control to next player or AI.
 
-1. Player & AI actions (user stories + payloads)
+2. Player & AI actions (user stories + payloads)
 
 2.1 Move/Action Resolution
 
@@ -211,13 +213,13 @@ Acceptance tests:
 - Resource accumulation matches the sums of yields from tiles and city modifiers for the player at each applyResourceTick.
 - Completing a tech emits researchProgress with completed=true and the player's availableUnits/Improvements update accordingly.
 
-1. Failure modes & edge cases
+3. Failure modes & edge cases
 
 - Partially-applied action batches: If some actions in a batch are invalid, the engine may (A) reject the entire batch, (B) accept a prefix up to the first invalid action, or (C) apply valid actions and reject invalid ones. The project should pick one policy; tests should assert the chosen policy.
 - Interleaved AI & Player turns (asynchronous): For hotseat or simultaneous turns with AI concurrently computing, ensure action timestamps and ordering are well-defined; use a tick/sequence number to sequence actions.
 - Rollback and replays: All action events must include a requestId and deterministic inputs so replays and rollback are possible for debugging and AI training.
 
-1. UI contracts and replay
+4. UI contracts and replay
 
 - The UI should listen for engine events (actionAccepted, actionsResolved, combatResolved, productionCompleted, researchProgress) and render safe, consistent animations.
 - For replays or deterministic testing, the UI can replay the event stream; events must contain enough information to reproduce state changes (e.g., unit id, before/after HP, positions).

@@ -292,6 +292,73 @@ High-level status
 - Core types, RNG, event bus, immutable helpers, GameProvider scaffold, world generation, basic turn engine, tech system, save/load, and many unit tests are documented as completed.
 - Several engineering and UX items remain uncompleted or marked blank (noted as open below): AI micro-benchmarks and optimization (TASK-032/033), HUD detail panels (TASK-047..049), deterministic replay harness (TASK-051), larger performance and rendering optimizations (TASK-052..054), CI / coverage enforcement (TASK-055..056), E2E smoke (TASK-057), and documentation/logging tasks in Phase 9.
 
+## Reconciliation log (auto-generated 2025-09-12)
+
+Purpose: reconcile plan tables (which are largely filled) with runtime/author notes that flagged several items as still open. This section records the authoritative "needs follow-up" items, why they need verification, and an explicit next-step for each.
+
+
+Verified-complete (no action unless regression found):
+
+- Core types, RNG, event bus, immutable helpers, GameProvider scaffolding (Phase 1)
+
+- World generation & seed exposure (Phase 2)
+
+- Turn engine, actions, reducer, and basic autosim instrumentation (Phase 3)
+
+- Tech tree, dependency validation, and research progression (Phase 4)
+
+- Save/load JSON schema, serialize/deserialize, roundtrip tests (Phase 6)
+
+- Most HUD elements and basic GameHUD wiring (Phase 7) — review suggested below for UX polish
+
+Needs follow-up (authoritative open items):
+
+
+
+1. TASK-032 / TASK-033 — AI micro-benchmarks & optimizations
+
+   - Why: tables mark AI work complete but commentary notes micro-benchmarks are blank. The AI decision function exists but performance has not been measured across representative states.
+
+   - Next step: Add `scripts/ai-bench.ts` to run the AI decision function across seeds/map-sizes and produce mean/median/95th percentiles. If mean > 50ms, create follow-up PR(s) for heuristic pruning and memoization.
+
+
+
+2. TASK-051 — Deterministic replay harness verification
+
+   - Why: table marks this complete but plan notes replay is important and should be verified against seeds. Confirm the replay hash test exists and runs in CI/offline.
+
+   - Next step: Add a small Vitest that runs N random seeds, records actions during a run, replays them against isolated RNG, and asserts the final canonical hash matches.
+
+
+
+3. TASK-052..054 — Performance benchmarks and rendering optimizations reconciliation
+
+   - Why: tables show benchmarks and instancing as complete, but commentary flags larger perf tasks as still open. We must ensure benchmarks run and that instancing is actually wired/practical.
+
+   - Next step: Run `scripts/benchWorld.ts` (or add `scripts/bench-world.ts`) for map sizes 30/50/100, record results, and add a short doc `docs/perf-bench-results.md`. If render perf is suboptimal, follow-up with targeted PR to enable instancing behind a feature flag.
+
+
+
+4. TASK-047..049 & accessibility checks (HUD polish)
+
+   - Why: UI elements are implemented but accessibility scans, keyboard-focus tests, and some UX flows (city production targeting) need finishing.
+
+   - Next step: Add axe-core scan into Playwright smoke or a dedicated Vitest; add keyboard focus tests for TopBar & NextTurnControl; implement `targetTileId` internal format in `src/components/ui/city-panel-container.tsx` and add unit tests.
+
+
+
+5. CI / coverage / E2E stability (TASK-055..057)
+
+   - Why: CI workflow and coverage config exist but must be validated for flakiness and optional dependency issues (Rollup note in HUD plan).
+
+   - Next step: Run CI locally via the workflow or reproduce steps; fix any install/test build failures. Ensure Playwright smoke test is stable by making locators resilient.
+
+How to mark an item resolved
+
+- For each "Needs follow-up" item above, create a small PR that includes: (1) test/benchmark/additional test added, (2) doc update summarizing results, and (3) a short follow-up note in this plan referencing the PR.
+
+Owner suggestions and quick ETAs are listed in the Open items and next steps section above. After these reconciliations are completed, remove this Reconciliation log or mark items as resolved with PR links.
+
 Quick risk re-evaluation
 
 - AI performance (REQ-011) remains unverified: TASK-032 and TASK-033 are required to ensure AI meets the ≤50ms per-turn budget. This is a gating risk for larger maps and multi-AI games.
