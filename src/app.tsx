@@ -65,13 +65,9 @@ export default function App() {
                 <Stats data-testid="stats" />
               </div>
             ) : undefined}
-            {/* New overlay UI replacing demo HUD */}
             <React.Suspense fallback={<LazySpinner corner="top-right" />}>
               <OverlayUI />
             </React.Suspense>
-            <div className="hud-cam-status" aria-label="camera position">
-              Camera: {cam ? `${cam.q},${cam.r}` : '-'}
-            </div>
           </CameraProvider>
         </HoverProvider>
       </SelectionProvider>
