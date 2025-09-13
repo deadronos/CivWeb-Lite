@@ -49,7 +49,12 @@ export function MovementRangeOverlay({ selectedUnitId }: MovementRangeOverlayPro
   const unitOwner = unit.ownerId;
 
   return (
-    <group data-testid="movement-range-overlay">
+    <group>
+      {/* Hidden DOM test hook: Html mounts a real DOM node so tests and Playwright can query
+          the presence of the overlay without forwarding data-* props into three.js objects. */}
+      <Html center style={{ pointerEvents: 'none' }}>
+        <div data-testid="movement-range-overlay" className="e2e-hidden-helper" />
+      </Html>
       {range.reachable.map((tileId) => {
         const tile = content.tiles[tileId];
         if (!tile) {

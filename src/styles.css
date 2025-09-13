@@ -484,3 +484,11 @@ canvas {
 .e2e-hex-proxy.enemy {
   background: rgba(255,0,0,0.35);
 }
+
+/* Hidden DOM helpers rendered inside the scene for testing */
+.movement-preview-dom-helper {
+  display: none;
+}
+
+/* Hidden helper used to expose test-only DOM nodes without affecting layout */
+.e2e-hidden-helper { display: none; }

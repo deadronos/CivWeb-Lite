@@ -1,4 +1,5 @@
 import React from 'react';
+import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGame } from '../../hooks/use-game';
 import { UnitState } from '../../types/unit';
@@ -24,7 +25,10 @@ export function PathPreviewOverlay({ selectedUnitId }: PathPreviewOverlayPropert
   if (!unit) return;
 
   return (
-    <group data-testid="path-preview-overlay">
+    <group>
+      <Html center style={{ pointerEvents: 'none' }}>
+        <div data-testid="path-preview-overlay" className="e2e-hidden-helper" />
+      </Html>
       {path.map((tileId, index) => {
   const tile = extension.tiles[tileId];
   if (!tile || index === 0) return; // Skip first if it's current position

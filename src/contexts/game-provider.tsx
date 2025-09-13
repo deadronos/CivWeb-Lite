@@ -14,8 +14,8 @@ import { evaluateAI } from '../game/ai/ai';
 
 export type Dispatch = (action: GameAction) => void;
 
-export const GameStateContext = createContext<GameState | null>(null);
-export const GameDispatchContext = createContext<Dispatch | null>(null);
+export const GameStateContext = createContext<GameState | undefined>(undefined);
+export const GameDispatchContext = createContext<Dispatch | undefined>(undefined);
 
 export const initialState = (): GameState => ({
   schemaVersion: 1,
@@ -147,6 +147,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [state.autoSim, advanceTurn]);
 
   const frozen = useMemo(() => Object.freeze(state), [state]);
+  // Expose a tiny test-only helper for E2E tests so they can reliably select units
+  // without relying on DOM interactions that are flaky in headless environments.
+  // Only attach in test or non-production environments.
+  if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+    // Attach a tiny test-only helper to globalThis. Tests can call
+    // `globalThis.__civweblite_test_helpers.selectUnit(id)` to programmatically
+    // select a unit without using fragile DOM interactions.
+    // This intentionally exists only in non-production builds.
+    // @ts-ignore - test-only global
+    globalThis.__civweblite_test_helpers = {
+      selectUnit: (id: string) => {
+        try {
+          dispatch({ type: 'SELECT_UNIT', payload: { unitId: id } } as any);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+    } as any;
+  }
   return (
     <GameStateContext.Provider value={frozen}>
       <GameDispatchContext.Provider value={dispatch}>{children}</GameDispatchContext.Provider>
