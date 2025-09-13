@@ -45,6 +45,7 @@ export interface CityProductionOrder {
   type: 'unit' | 'improvement' | 'building';
   item: string;
   turnsRemaining: number;
+  targetTileId?: string;
 }
 
 export interface City {
