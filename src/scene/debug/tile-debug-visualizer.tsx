@@ -27,7 +27,8 @@ export function TileDebugVisualizer() {
           Ice: '#E3F2FD',
         };
 
-        const color = colors[String(tile.biome)] || '#FF0000'; // Red for unknown biomes
+  // colors is a fixed mapping; TS warns when indexing by string so cast to any for lookup
+  const color = (colors as any)[String(tile.biome)] || '#FF0000'; // Red for unknown biomes
 
         return (
           <mesh key={tile.id} position={[x, 0.1, z]}>
@@ -39,14 +40,14 @@ export function TileDebugVisualizer() {
 
       {/* Reference grid for coordinate system verification */}
       <group>
-        {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={`grid-x-${i}`} position={[i * 2, 0.05, 0]}>
+        {Array.from({ length: 5 }, (_, index) => (
+          <mesh key={`grid-x-${index}`} position={[index * 2, 0.05, 0]}>
             <boxGeometry args={[0.1, 0.1, 2]} />
             <meshBasicMaterial color="#FFFFFF" opacity={0.3} transparent />
           </mesh>
         ))}
-        {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={`grid-z-${i}`} position={[0, 0.05, i * 2]}>
+        {Array.from({ length: 5 }, (_, index) => (
+          <mesh key={`grid-z-${index}`} position={[0, 0.05, index * 2]}>
             <boxGeometry args={[2, 0.1, 0.1]} />
             <meshBasicMaterial color="#FFFFFF" opacity={0.3} transparent />
           </mesh>

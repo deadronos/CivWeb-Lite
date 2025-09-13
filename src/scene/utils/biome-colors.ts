@@ -6,7 +6,7 @@ function hash2(q: number, r: number): number {
   x = (x ^ (x >>> 13)) * 1_274_126_177;
   x = x ^ (x >>> 16);
   // 0..1
-  return (x >>> 0) / 0xff_ff_ff_ff;
+  return (x >>> 0) / 0xFF_FF_FF_FF;
 }
 
 // Helper: clamp 0..1

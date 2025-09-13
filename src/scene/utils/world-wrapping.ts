@@ -66,7 +66,7 @@ export function generateWrappedPositions(
   for (let q = config.worldWidth - config.wrapBuffer; q < config.worldWidth; q++) {
     for (let r = 0; r < config.worldHeight; r++) {
       const tileIndex = tiles.findIndex((t) => t.coord.q === q && t.coord.r === r);
-      if (tileIndex >= 0) {
+      if (tileIndex !== -1) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
         // Shift to left side by exact wrap delta
         wrappedPositions.push([origX - wrapDelta, origY, origZ]);
@@ -78,7 +78,7 @@ export function generateWrappedPositions(
   for (let q = 0; q < config.wrapBuffer; q++) {
     for (let r = 0; r < config.worldHeight; r++) {
       const tileIndex = tiles.findIndex((t) => t.coord.q === q && t.coord.r === r);
-      if (tileIndex >= 0) {
+      if (tileIndex !== -1) {
         const [origX, origY, origZ] = originalPositions[tileIndex];
         // Shift to right side by exact wrap delta
         wrappedPositions.push([origX + wrapDelta, origY, origZ]);
@@ -117,12 +117,12 @@ export function generateWrappedBiomeGroups(
 
   // Create lookup for quick tile access
   const tileMap = new Map();
-  tiles.forEach((tile, index) => {
+  for (const [index, tile] of tiles.entries()) {
     tileMap.set(`${tile.coord.q},${tile.coord.r}`, { tile, index });
-  });
+  }
 
   // Add wrapped positions to existing biome groups
-  originalBiomeGroups.forEach((group, groupIndex) => {
+  for (const [groupIndex, group] of originalBiomeGroups.entries()) {
     // Left wrap buffer - add rightmost columns on left side
     for (let q = config.worldWidth - config.wrapBuffer; q < config.worldWidth; q++) {
       for (let r = 0; r < config.worldHeight; r++) {
@@ -131,7 +131,7 @@ export function generateWrappedBiomeGroups(
         if (tileData && String(tileData.tile.biome).toLowerCase() === group.biome) {
           // Find the exact original index by (q,r) match instead of approximate X
           const origIndex = group.hexCoords.findIndex((h) => h.q === q && h.r === r);
-          if (origIndex >= 0) {
+          if (origIndex !== -1) {
             const [origX, origY, origZ] = group.positions[origIndex];
             wrappedGroups[groupIndex].positions.push([origX - wrapDelta, origY, origZ]);
             wrappedGroups[groupIndex].elevations.push(group.elevations[origIndex]);
@@ -151,7 +151,7 @@ export function generateWrappedBiomeGroups(
         const tileData = tileMap.get(tileKey);
         if (tileData && String(tileData.tile.biome).toLowerCase() === group.biome) {
           const origIndex = group.hexCoords.findIndex((h) => h.q === q && h.r === r);
-          if (origIndex >= 0) {
+          if (origIndex !== -1) {
             const [origX, origY, origZ] = group.positions[origIndex];
             wrappedGroups[groupIndex].positions.push([origX + wrapDelta, origY, origZ]);
             wrappedGroups[groupIndex].elevations.push(group.elevations[origIndex]);
@@ -163,7 +163,7 @@ export function generateWrappedBiomeGroups(
         }
       }
     }
-  });
+  }
 
   return wrappedGroups;
 }

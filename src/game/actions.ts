@@ -1,10 +1,8 @@
 import { GameState } from './types';
-
-export type ProductionOrder = {
-  type: 'unit' | 'building' | 'improvement';
-  item: string;
-  turnsRemaining: number;
-};
+import { UnitState } from '../types/unit';
+import type { ProductionOrder } from './types/production';
+// Re-export ProductionOrder for modules that import it from ../actions
+export type { ProductionOrder } from './types/production';
 
 export type UnitMovePayload = {
   unitId: string;
@@ -34,13 +32,17 @@ export type GameAction =
   | { type: 'RECORD_AI_PERF'; payload: { duration: number } }
   // UI Interaction Actions (from spec)
   | { type: 'SELECT_UNIT'; payload: { unitId: string } }
-  | { type: 'PREVIEW_PATH'; payload: { targetTileId: string } } // unitId from ui.selectedUnitId
+  | { type: 'PREVIEW_PATH'; payload: { targetTileId: string; unitId?: string } } // unitId from ui.selectedUnitId
   | { type: 'ISSUE_MOVE'; payload: UnitMovePayload }
-  | { type: 'CANCEL_SELECTION' }
+  | { type: 'CANCEL_SELECTION'; payload?: { unitId?: string } }
   | { type: 'OPEN_CITY_PANEL'; payload: { cityId: string } }
-  | { type: 'CLOSE_CITY_PANEL' }
-  | { type: 'OPEN_RESEARCH_PANEL' }
-  | { type: 'CLOSE_RESEARCH_PANEL' }
+  | { type: 'CLOSE_CITY_PANEL'; payload?: { cityId?: string } }
+  | { type: 'OPEN_RESEARCH_PANEL'; payload?: {} }
+  | { type: 'CLOSE_RESEARCH_PANEL'; payload?: {} }
+  | { type: 'OPEN_SPEC_PANEL' }
+  | { type: 'CLOSE_SPEC_PANEL' }
+  | { type: 'OPEN_DEV_PANEL' }
+  | { type: 'CLOSE_DEV_PANEL' }
   | { type: 'CHOOSE_PRODUCTION_ITEM'; payload: { cityId: string; order: ProductionOrder } }
   | { type: 'REORDER_PRODUCTION_QUEUE'; payload: { cityId: string; reorderedQueue: ProductionOrder[] } }
   | { type: 'CANCEL_PRODUCTION_ORDER'; payload: { cityId: string; orderIndex: number } }
@@ -58,6 +60,7 @@ export type GameAction =
         order: ProductionOrder;
       };
     }
+  | { type: 'EXT_MOVE_UNIT'; payload: { unitId: string; toTileId: string } }
   | { type: 'EXT_ADD_TILE'; payload: { tile: { id: string; q: number; r: number; biome: string } } }
   | {
       type: 'EXT_ADD_CITY';
@@ -80,7 +83,8 @@ export type GameAction =
   | { type: 'SET_TILE_IMPROVEMENT'; payload: { tileId: string; improvementId: string } }
   | { type: 'REMOVE_TILE_IMPROVEMENT'; payload: { tileId: string; improvementId: string } }
   | { type: 'SET_CITY_TILE'; payload: { cityId: string; tileId: string } }
-  | { type: 'SET_UNIT_STATE'; payload: { unitId: string; state: string } }
+  | { type: 'ADD_UNIT_STATE'; payload: { unitId: string; state: UnitState } }
+  | { type: 'REMOVE_UNIT_STATE'; payload: { unitId: string; state: UnitState } }
   | { type: 'SET_UNIT_LOCATION'; payload: { unitId: string; tileId: string } }
   | { type: 'SET_PLAYER_SCORES'; payload: { players: Array<{ id: string; sciencePoints: number; culturePoints: number }> } };
 
@@ -106,6 +110,10 @@ export const GAME_ACTION_TYPES = [
   'CANCEL_PRODUCTION_ORDER',
   'OPEN_RESEARCH_PANEL',
   'CLOSE_RESEARCH_PANEL',
+  'OPEN_SPEC_PANEL',
+  'CLOSE_SPEC_PANEL',
+  'OPEN_DEV_PANEL',
+  'CLOSE_DEV_PANEL',
   'CLOSE_CITY_PANEL',
   'START_RESEARCH',
   'QUEUE_RESEARCH',
@@ -115,6 +123,7 @@ export const GAME_ACTION_TYPES = [
   'EXT_BEGIN_RESEARCH',
   'EXT_BEGIN_CULTURE_RESEARCH',
   'EXT_QUEUE_PRODUCTION',
+  'EXT_MOVE_UNIT',
   'EXT_ADD_TILE',
   'EXT_ADD_CITY',
   'EXT_ADD_UNIT',
@@ -125,7 +134,8 @@ export const GAME_ACTION_TYPES = [
   'SET_TILE_IMPROVEMENT',
   'REMOVE_TILE_IMPROVEMENT',
   'SET_CITY_TILE',
-  'SET_UNIT_STATE',
+  'ADD_UNIT_STATE',
+  'REMOVE_UNIT_STATE',
   'SET_UNIT_LOCATION',
   'SET_PLAYER_SCORES',
 ] as const;

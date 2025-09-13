@@ -13,6 +13,7 @@ import CameraControls from './drei/camera-controls';
 import HtmlLabel from './drei/html-label';
 import UnitMeshes from './unit-meshes';
 import UnitMarkers from './unit-markers';
+import SelectedHexOutline from './selected-hex-outline';
 import { useTexture } from '@react-three/drei';
 import dragonMapUrl from './background/dragonmap.png';
 import InstancedModels, { InstanceTransform } from './instanced-models';
@@ -33,7 +34,7 @@ function variantIndexFor(q: number, r: number, count: number): number {
   let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
   x = (x ^ (x >>> 13)) * 1_274_126_177;
   x = x ^ (x >>> 16);
-  const f = (x >>> 0) / 0xff_ff_ff_ff; // 0..1
+  const f = (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
   return Math.floor(f * count) % count;
 }
 
@@ -99,9 +100,9 @@ function transformsForBucket(bucket: Bucket): InstanceTransform[] {
   const out: InstanceTransform[] = [];
   const base = 0.06; // base tile height
   const amp = 0.22; // elevation scale
-  for (let i = 0; i < bucket.positions.length; i++) {
-    const [x, , z] = bucket.positions[i];
-    const yScale = base + amp * bucket.elevations[i];
+  for (let index = 0; index < bucket.positions.length; index++) {
+    const [x, , z] = bucket.positions[index];
+    const yScale = base + amp * bucket.elevations[index];
     // position Y so tile rests on ground plane
     const posY = yScale * 0.5;
     out.push({ position: [x, posY, z], scale: [1, yScale, 1], rotationY: 0 });
@@ -168,11 +169,11 @@ export function ConnectedScene() {
   const [assetVersion, setAssetVersion] = React.useState(0);
   React.useEffect(() => {
     // Only on client
-    if (typeof window === 'undefined') return;
+    if (globalThis.window === undefined) return;
     loadBiomeVariants('grass').catch(() => {});
     const handler = () => setAssetVersion((v) => v + 1);
-    window.addEventListener(BIOME_ASSETS_EVENT, handler as any);
-    return () => window.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
+    globalThis.addEventListener(BIOME_ASSETS_EVENT, handler as any);
+    return () => globalThis.removeEventListener(BIOME_ASSETS_EVENT, handler as any);
   }, []);
 
   // Load background texture via hook (must be unconditionally called to keep hook order stable)
@@ -329,6 +330,7 @@ export function ConnectedScene() {
       {/* Units & labels */}
       <UnitMeshes />
       <UnitMarkers />
+      <SelectedHexOutline />
 
       {/* Hovered tile */}
       {hoverPos ? (

@@ -64,7 +64,8 @@ export default function App() {
               <Canvas key={canvasKey} camera={{ position: [8, 12, 12], fov: 50 }}>
                 <ambientLight intensity={0.8} />
                 {/** Soft sky/ground fill to improve tile readability regardless of view angle */}
-                <hemisphereLight skyColor={'#99bbff'} groundColor={'#222533'} intensity={0.5} />
+                {/* HemisphereLight constructor: (skyColor, groundColor, intensity) */}
+                <hemisphereLight args={['#99bbff', '#222533', 0.5]} />
                 <directionalLight position={[5, 10, 5]} intensity={0.75} />
                 {/** Do not render DOM inside Canvas; use a Three primitive as fallback */}
                 <React.Suspense fallback={<group />}>
@@ -74,7 +75,9 @@ export default function App() {
             </ErrorBoundary>
             {/* Render hidden Stats only in tests to satisfy unit tests that mock drei */}
             {process.env.NODE_ENV === 'test' ? (
-              <Stats data-testid="stats" style={{ display: 'none' }} />
+              <div style={{ display: 'none' }}>
+                <Stats data-testid="stats" />
+              </div>
             ) : null}
             {/* New overlay UI replacing demo HUD */}
             <React.Suspense fallback={<LazySpinner corner="top-right" />}>

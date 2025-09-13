@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2025-09-12T14:21:21.852Z",
+  "iterations": 5,
+  "configs": [
+    {
+      "seed": "bench-1",
+      "mapSize": 30,
+      "leaderCount": 4,
+      "stats": {
+        "mean": 0.01688695,
+        "median": 0.001891,
+        "p95": 0.241262,
+        "count": 20
+      }
+    },
+    {
+      "seed": "bench-1",
+      "mapSize": 50,
+      "leaderCount": 4,
+      "stats": {
+        "mean": 0.0024874499999999996,
+        "median": 0.000915,
+        "p95": 0.008775,
+        "count": 20
+      }
+    },
+    {
+      "seed": "bench-2",
+      "mapSize": 30,
+      "leaderCount": 4,
+      "stats": {
+        "mean": 0.0015421,
+        "median": 0.000446,
+        "p95": 0.014018,
+        "count": 20
+      }
+    },
+    {
+      "seed": "bench-2",
+      "mapSize": 50,
+      "leaderCount": 4,
+      "stats": {
+        "mean": 0.0011738,
+        "median": 0.000515,
+        "p95": 0.003625,
+        "count": 20
+      }
+    }
+  ]
+}

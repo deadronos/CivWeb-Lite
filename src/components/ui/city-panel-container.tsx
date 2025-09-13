@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useGame } from '../../hooks/use-game';
 import { CityPanel } from './city-panel';
-import { ProductionOrder } from '../../game/types/ui';
+import type { ProductionOrder } from '../../game/types/production';
 
 export function CityPanelContainer({ cityId }: { cityId: string }) {
   const { state, dispatch } = useGame();
@@ -13,28 +13,13 @@ export function CityPanelContainer({ cityId }: { cityId: string }) {
   // Convert internal production queue to UI format
   const productionQueue: ProductionOrder[] = city.productionQueue.map(order => ({
     type: order.type,
-    itemId: order.item,
+    item: order.item,
     // TODO: Store targetTileId in internal format when implementing improvement targeting
   }));
 
-  const player = state.players.find(p => p.ownerId === city.ownerId); // Assume ownerId on city
+  // Players are keyed by `id` in GameState.PlayerState; cities use ownerId to reference player.id
+  const player = state.players.find(p => p.id === city.ownerId);
   if (!player) return null;
-
-  // Memoized available production items (units, improvements, buildings unlocked by techs)
-  const availableProduction = useMemo(() => {
-    const { researchedTechIds } = player;
-    const allUnits = Object.values(UNIT_TYPES).filter(u => 
-      researchedTechIds.includes(u.requires) || u.requires === null // Assume 'requires' field
-    );
-    const allImprovements = Object.values(IMPROVEMENTS).filter(i => 
-      researchedTechIds.includes(i.requires) || i.requires === null
-    );
-    const allBuildings = Object.values(BUILDINGS).filter(b => 
-      researchedTechIds.includes(b.requires) || b.requires === null
-    );
-    return { units: allUnits, improvements: allImprovements, buildings: allBuildings };
-  }, [player.researchedTechIds.length]); // Optimize dep on length; full array if needed for specifics
-
   // Mock available items for now - in a real implementation this would come from tech tree
   const availableItems = useMemo(() => [
     { id: 'warrior', type: 'unit' as const, label: 'Warrior', cost: 40 },
@@ -56,11 +41,11 @@ export function CityPanelContainer({ cityId }: { cityId: string }) {
       onChooseItem={(order) => {
         dispatch({ type: 'CHOOSE_PRODUCTION_ITEM', payload: { cityId, order } });
       }}
-      onReorderQueue={(newQueue) => {
-        dispatch({ type: 'REORDER_PRODUCTION_QUEUE', payload: { cityId, newQueue } });
+      onReorderQueue={(reorderedQueue) => {
+        dispatch({ type: 'REORDER_PRODUCTION_QUEUE', payload: { cityId, reorderedQueue } });
       }}
       onCancelOrder={(orderIndex) => {
-        dispatch({ type: 'CANCEL_ORDER', payload: { cityId, orderIndex } });
+        dispatch({ type: 'CANCEL_PRODUCTION_ORDER', payload: { cityId, orderIndex } });
       }}
     />
   );

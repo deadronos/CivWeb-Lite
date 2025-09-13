@@ -13,35 +13,35 @@ import {
 
 export function useCameraWrapping(config: WrappingConfig = DEFAULT_WRAPPING_CONFIG) {
   const { camera } = useThree();
-  const lastPositionRef = useRef(new Vector3());
-  const teleportCooldownRef = useRef(0);
+  const lastPositionReference = useRef(new Vector3());
+  const teleportCooldownReference = useRef(0);
 
   // Initialize last position
   useEffect(() => {
-    lastPositionRef.current.copy(camera.position);
+    lastPositionReference.current.copy(camera.position);
   }, [camera]);
 
   useFrame((state, delta) => {
     // Reduce teleport cooldown
-    if (teleportCooldownRef.current > 0) {
-      teleportCooldownRef.current -= delta;
+    if (teleportCooldownReference.current > 0) {
+      teleportCooldownReference.current -= delta;
       return;
     }
 
     const currentX = camera.position.x;
     const newX = checkCameraTeleport(currentX, config);
 
-    if (newX !== null) {
+    if (newX === null) {
+      lastPositionReference.current.copy(camera.position);
+    } else {
       // Teleport camera
       camera.position.setX(newX);
-      lastPositionRef.current.copy(camera.position);
+      lastPositionReference.current.copy(camera.position);
 
       // Set cooldown to prevent rapid teleporting
-      teleportCooldownRef.current = 0.5; // 500ms cooldown
+      teleportCooldownReference.current = 0.5; // 500ms cooldown
 
       console.log(`Camera teleported from X=${currentX.toFixed(2)} to X=${newX.toFixed(2)}`);
-    } else {
-      lastPositionRef.current.copy(camera.position);
     }
   });
 }

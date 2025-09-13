@@ -1,6 +1,15 @@
 ---
-title: Game Layout & Lifecycle Specification (CivWeb‑Lite)
-version: 1.0
+title: Game Layout & LifecycleMandatory menu actions
+
+- New Game: opens Game Setup wizard (see Section 3).
+- Load Game: open file dialog or paste JSON to import save (see Section 7).
+- Continue (optional, not implemented in MVP): resume last autosave from localStorage if present and schema-compatible.ification (CivWeb  3.2 Players
+
+- Player count: 1–6 total.
+- Humans: 1 (default, MVP: one human only).
+- AI count: derived from total − humans.
+- Leaders: for each slot choose specific or Random; initial set leverages `src/data/leaders.json`.
+- Difficulty: placeholder for AI biases (Easy/Standard/Hard).version: 1.0
 date_created: 2025-09-09
 last_updated: 2025-09-09
 owner: deadronos
@@ -49,9 +58,9 @@ The setup configures world, players, and starting conditions. Defaults mirror a 
 
 3.1 Map & World
 
-- Map size: Small (30x30), Standard (50x50, default), Large (70x70).
+- Map size: Small (80x50), Medium (106x66, default), Large (128x80), XL (160x100).
 - Seed: text input (default random); seed is persisted in save.
-- Terrain/climate: slider or presets affecting biome diversity (Low/Medium/High). Maps to existing world gen config.
+- Terrain/climate: placeholder for future biome diversity sliders (Low/Medium/High). Maps to existing world gen config.
 - Resources: density preset (Low/Standard/High) — wire to improvements/resources when enabled.
 
   3.2 Players
@@ -141,7 +150,7 @@ This section summarizes involved systems and points to their detailed specs/impl
 
 # 6. Victory & Game End
 
-Provide multiple clear win vectors inspired by Civ‑style games. For MVP, track progress and trigger an end screen when conditions met. Exact thresholds are tunable.
+Provide multiple clear win vectors inspired by Civ‑style games. For MVP, victory detection is not implemented; this section outlines future requirements. Exact thresholds are tunable.
 
 6.1 Domination Victory
 

@@ -1,6 +1,7 @@
 import { movementCost, isPassable } from './biomes';
-import type { City, GameStateExt as GameStateExtension, Hextile, Unit } from './types';
+import type { City, GameStateExtensionAlias as GameStateExtension, Hextile, Unit } from './types';
 import { IMPROVEMENTS, UNIT_TYPES, BUILDINGS } from './registry';
+import { UnitState } from '../../types/unit';
 
 export type TileYield = {
   food: number;
@@ -102,6 +103,12 @@ export function moveUnit(state: GameStateExtension, unitId: string, toTileId: st
     if (fromTile && fromTile.occupantUnitId === unit.id) fromTile.occupantUnitId = null;
     unit.location = tile.id;
     tile.occupantUnitId = unit.id;
+    if (unit.activeStates) {
+      unit.activeStates.delete(UnitState.Idle);
+      unit.activeStates.add(UnitState.Moved);
+      if (tile.biome === 'coast') unit.activeStates.add(UnitState.Embarked);
+      else unit.activeStates.delete(UnitState.Embarked);
+    }
     return true;
   }
   return false;
@@ -121,6 +128,10 @@ export function endTurn(state: GameStateExtension): void {
         }
       }
     }
+    if (!unit.activeStates) unit.activeStates = new Set<UnitState>();
+    unit.activeStates.delete(UnitState.Moved);
+    unit.activeStates.delete(UnitState.Selected);
+    unit.activeStates.add(UnitState.Idle);
   }
   // city production
   for (const city of Object.values(state.cities)) {
@@ -170,6 +181,7 @@ export function tickCityProduction(state: GameStateExtension, city: City): void 
           state.units[id] = {
             id,
             type: head.item,
+            category: udef.category,
             ownerId: city.ownerId,
             location: city.location,
             hp: udef.base.hp ?? 100,
@@ -178,7 +190,7 @@ export function tickCityProduction(state: GameStateExtension, city: City): void 
             attack: udef.base.attack,
             defense: udef.base.defense,
             sight: udef.base.sight,
-            state: 'idle',
+            activeStates: new Set<UnitState>([UnitState.Idle]),
             abilities: udef.abilities ?? [],
           };
         }

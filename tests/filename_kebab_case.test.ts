@@ -19,6 +19,8 @@ const LEGACY_ALLOWLIST = new Set([
   // LeftPanel, container and TopBar shims removed — canonical kebab-case files are used
   // removed PascalCase shim entries: GameHUD, UnitSelectionOverlayContainer
   'contexts/HoverContext.tsx',
+  'components/UnitCategoryBadge.tsx',
+  'utils/unitIcons.ts',
   // GameProvider and SelectionContext shims removed; canonical kebab-case context files are used
   'game/tech/tech-catalog.ts',
   'hooks/useCamera.tsx',
@@ -44,6 +46,7 @@ const LEGACY_ALLOWLIST = new Set([
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // TopBar, TopBarContainer, SelectionContext shims removed in safe batch
   // GameProvider, SelectionContext, HoverContext PascalCase shims have been untracked; keep kebab-case files
+  'env.d.ts', // Vite TypeScript env declarations
 ]);
 
 function isKebabCase(name: string) {
