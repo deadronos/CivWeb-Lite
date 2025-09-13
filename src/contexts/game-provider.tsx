@@ -165,6 +165,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
           return false;
         }
       },
+      // Programmatically request a preview for a given unit -> target tile
+      // This lets E2E tests short-circuit hover interactions and deterministically
+      // set previewPath in the app during tests.
+      requestPreview: (unitId: string, targetTileId: string) => {
+        try {
+          dispatch({ type: 'PREVIEW_PATH', payload: { unitId, targetTileId } } as any);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      // Directly set the UI preview path (test-only). Accepts an array of tile ids.
+      setPreviewPath: (path: string[]) => {
+        try {
+          dispatch({ type: 'EXT_SET_PREVIEW', payload: { path } } as any);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      getState: () => frozen,
     } as any;
   }
   return (

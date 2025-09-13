@@ -49,6 +49,12 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   EXT_ADD_CITY: worldReducer,
   EXT_FOUND_CITY: worldReducer,
   EXT_ISSUE_MOVE_PATH: worldReducer,
+  // Test-only: allow external tests to set previewPath directly
+  EXT_SET_PREVIEW: (draft: Draft<GameState>, action: GameAction) => {
+    const p = (action as any).payload?.path as string[] | undefined;
+    if (!draft.ui) draft.ui = { openPanels: {} } as any;
+    draft.ui.previewPath = p && Array.isArray(p) ? p : undefined;
+  },
   FORTIFY_UNIT: worldReducer, // Route FORTIFY_UNIT to worldReducer for state addition
   MOVE_UNIT: worldReducer,
 

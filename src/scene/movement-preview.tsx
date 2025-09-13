@@ -38,6 +38,14 @@ export const MovementPreview: React.FC<Properties> = ({ selectedUnitId }) => {
           data-testid="movement-preview"
           data-x={dataX}
           data-z={dataZ}
+            // In test/dev environments we make the helper visible and give it a
+            // small size so Playwright considers it "visible". In production it
+            // remains hidden via CSS.
+            style={
+              (globalThis as any).__civweblite_test_helpers
+                ? { display: 'block', width: '8px', height: '8px', background: 'rgba(255,0,0,0.6)' }
+                : { display: 'none' }
+            }
           className="movement-preview-dom-helper"
         />
       </Html>

@@ -101,7 +101,7 @@ export function MovementRangeOverlay({ selectedUnitId }: MovementRangeOverlayPro
         return (
           <group key={tileId}>
             {hint}
-            <Html center position={[x, 0.06, z] as any} occlude>
+            <Html center position={[x, 0.06, z] as any}>
               <div
                 // Use role button for accessibility and visibility to Playwright
                 role="button"

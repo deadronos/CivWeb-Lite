@@ -16,7 +16,17 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { browserName: 'chromium' },
+      use: {
+        browserName: 'chromium',
+        // Launch Chromium with SwiftShader (software GL) to avoid driver/GPU issues in headless CI
+        launchOptions: {
+          args: [
+            '--disable-gpu',
+            '--enable-unsafe-swiftshader',
+            '--use-gl=swiftshader',
+          ],
+        },
+      },
     },
   ],
   testDir: 'playwright/tests',
