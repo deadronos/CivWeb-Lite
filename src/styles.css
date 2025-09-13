@@ -308,3 +308,8 @@ canvas {
   border: 1px solid transparent;
   color: inherit;
 }
+.ui-dev-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

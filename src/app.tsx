@@ -19,7 +19,7 @@ import ErrorBoundary from './components/common/error-boundary';
 // Camera controls and dev stats are managed within the Scene module.
 
 export default function App() {
-  const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
+  const [cam, setCam] = React.useState<{ q: number; r: number } | undefined>();
   const [started, setStarted] = React.useState(false);
   const [canvasKey, setCanvasKey] = React.useState(0);
   return (
@@ -78,7 +78,7 @@ export default function App() {
               <div style={{ display: 'none' }}>
                 <Stats data-testid="stats" />
               </div>
-            ) : null}
+            ) : undefined}
             {/* New overlay UI replacing demo HUD */}
             <React.Suspense fallback={<LazySpinner corner="top-right" />}>
               <OverlayUI />
@@ -100,8 +100,8 @@ export default function App() {
 function LoadListener({ onLoaded }: { onLoaded: () => void }) {
   const game = useGame();
   React.useEffect(() => {
-    const handler = (e: any) => {
-      game.dispatch({ type: 'LOAD_STATE', payload: e.detail });
+    const handler = (event: any) => {
+      game.dispatch({ type: 'LOAD_STATE', payload: event.detail });
       onLoaded();
     };
     globalThis.addEventListener('civweblite:loadState', handler);

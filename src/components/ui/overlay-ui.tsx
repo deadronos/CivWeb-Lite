@@ -97,7 +97,7 @@ function TopMenu({
         <Item>Manual</Item>
       </div>
       <div className="ui-topmenu-right">
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <label className="ui-dev-toggle">
           <input
             type="checkbox"
             // guard access in case ui or openPanels are undefined
