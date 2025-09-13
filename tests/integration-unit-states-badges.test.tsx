@@ -15,10 +15,16 @@ vi.doMock('../src/game/events', () => ({ globalGameBus: { emit: () => {}, on: ()
 function TestApp() {
   const { state, dispatch } = useGame();
   const unit1 = state.contentExt?.units?.['unit1'];
+  const moveDispatched = React.useRef(false);
+  const stateDispatched = React.useRef(false);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!unit1) {
-      // Ensure minimal tiles and unit exist in the content extension for the test.
+      // NOTE: We create minimal extension fixtures here (EXT_ADD_TILE / EXT_ADD_UNIT)
+      // to keep the test deterministic. Relying on implicit provider-side setup
+      // caused timing races and flakiness in CI; creating the tiles/units inside
+      // the test guarantees the scenario is present and easier for future
+      // maintainers to reason about.
       // Add tiles t1 and t2 then add unit1 at t1 so the other effect can operate when unit appears.
       dispatch({ type: 'EXT_ADD_TILE', payload: { tile: { id: 't1', q: 0, r: 0, biome: 'grassland' } } } as any);
       dispatch({ type: 'EXT_ADD_TILE', payload: { tile: { id: 't2', q: 1, r: 0, biome: 'grassland' } } } as any);
@@ -26,11 +32,18 @@ function TestApp() {
       return;
     }
 
-    // Dispatch to set multi-states once unit exists
-    dispatch({ type: 'ISSUE_MOVE', payload: { unitId: 'unit1', path: ['t1', 't2'] } } as any);
-    setTimeout(() => {
-      dispatch({ type: 'ADD_UNIT_STATE', payload: { unitId: 'unit1', state: UnitState.Fortified } } as any);
-    }, 0); // Async to simulate
+    // Dispatch to set multi-states once unit exists — only once
+    if (!moveDispatched.current) {
+      dispatch({ type: 'ISSUE_MOVE', payload: { unitId: 'unit1', path: ['t1', 't2'] } } as any);
+      moveDispatched.current = true;
+    }
+    if (!stateDispatched.current) {
+      // Async to simulate
+      setTimeout(() => {
+        dispatch({ type: 'ADD_UNIT_STATE', payload: { unitId: 'unit1', state: UnitState.Fortified } } as any);
+        stateDispatched.current = true;
+      }, 0);
+    }
   }, [dispatch, unit1]);
 
   if (!unit1) return <div>Loading...</div>;
@@ -50,13 +63,11 @@ describe('Integration: Unit States Badges (Plan Phase 5, REQ-003)', () => {
       </GameProvider>
     );
 
-    // Wait for INIT, actions, and re-render
+    // Wait for category svg and at least two state svgs (Idle + Fortified/Moved)
     await waitFor(() => {
-      expect(screen.queryByText(/loading/i)).toBeNull();
-    }, { timeout: 2000 });
-
-    // Assert: Multiple badges (icons) rendered for states + category
-    const badges = screen.getAllByRole('img'); // react-icons as img
-    expect(badges.length).toBeGreaterThanOrEqual(2); // At least category + one state; passes with multi
+      expect(screen.queryByTestId('category-icon')).toBeTruthy();
+      const states = screen.queryAllByTestId('state-icon');
+      expect(states.length).toBeGreaterThanOrEqual(2);
+    }, { timeout: 3000 });
   });
 });
