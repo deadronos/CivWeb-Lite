@@ -66,8 +66,8 @@ function TopMenu({
   onOpenResearch: () => void;
   onOpenCities: () => void;
 }) {
-  const { dispatch } = useGame();
-  const { state } = useGame();
+  // call hook once to avoid subtle mismatches and keep values in sync
+  const { state, dispatch } = useGame();
   
   const Item = (p: React.PropsWithChildren<{ onClick?: () => void }>) => (
     <button className="ui-topmenu-item" onClick={p.onClick}>
@@ -97,10 +97,12 @@ function TopMenu({
         <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <input
             type="checkbox"
-            checked={!!state.ui.openPanels.devPanel}
-            onChange={(e) =>
-              dispatch(e.target.checked ? ({ type: 'OPEN_DEV_PANEL' } as any) : ({ type: 'CLOSE_DEV_PANEL' } as any))
-            }
+            // guard access in case ui or openPanels are undefined
+            checked={!!state.ui?.openPanels?.devPanel}
+            onChange={(event) => {
+              const action = event.target.checked ? { type: 'OPEN_DEV_PANEL' } : { type: 'CLOSE_DEV_PANEL' };
+              dispatch(action as any);
+            }}
           />
           Dev
         </label>
