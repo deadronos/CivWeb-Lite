@@ -45,8 +45,8 @@ export default function OverlayUI():ReactNode {
         }} 
       />
       <StatsBar />
-      <LogListContainer />  
-      <GameHUD />
+      <LogListContainer />
+       {/* <GameHUD /> */}
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
           setShowLeft(false);

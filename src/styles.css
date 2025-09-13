@@ -65,6 +65,20 @@ canvas {
   padding: 6px 12px;
   font-weight: 700;
 }
+.ui-log-list-container {
+  position: fixed;
+  right: 12px;
+  top: 88px;
+  width: 300px;
+  max-height: 200px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 8px;
+  overflow: auto;
+  font-size: 12px;
+  z-index: 19;
+}
 .ui-statsbar {
   position: fixed;
   left: 12px;
