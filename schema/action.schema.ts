@@ -34,6 +34,14 @@ export const RemoveUnitStateActionSchema = z.object({
   payload: z.object({ unitId: z.string(), state: UnitStateSchema }),
 });
 
+export const IssueMoveActionSchema = z.object({
+  type: z.literal('ISSUE_MOVE'),
+  payload: z.object({
+    unitId: z.string(),
+    path: z.array(z.string()),
+    confirmCombat: z.boolean().optional(),
+  }),
+});
 
 export const GameActionSchema = z.discriminatedUnion('type', [
   MoveActionSchema,
@@ -48,6 +56,7 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   RecordAIPerfSchema,
   AddUnitStateActionSchema,
   RemoveUnitStateActionSchema,
+  IssueMoveActionSchema,
 ]);
 
 // permissive catch-all for runtime events that are not strict game actions

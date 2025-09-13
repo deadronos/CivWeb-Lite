@@ -26,20 +26,20 @@ This task focuses on the unit movement interactions, which are core to gameplay.
 
 ## Progress Tracking
 
-**Overall Status:** Not Started - 0%
+**Overall Status:** In Progress - 50%
 
 ### Subtasks
 
 
 | ID | Description | Status | Updated | Notes |
 |----|-------------|--------|---------|-------|
-| 58.1 | Enhance uiReducer for unit states | Not Started |  |  |
-| 58.2 | Implement MovementRangeOverlay component | Not Started |  |  |
-| 58.3 | Implement PathPreviewOverlay component | Not Started |  |  |
-| 58.4 | Implement CombatPreviewOverlay component | Not Started |  |  |
+| 58.1 | Enhance uiReducer for unit states | Completed | 2025-09-13 | Enhanced SELECT_UNIT to prevent selecting moved units and ensured Selected state is cleared after ISSUE_MOVE. |
+| 58.2 | Implement MovementRangeOverlay component | Completed | 2025-09-13 | Created movement-range-overlay.tsx with proper hex overlay rendering for reachable tiles. |
+| 58.3 | Implement PathPreviewOverlay component | Completed | 2025-09-13 | Created path-preview-overlay.tsx with arrow visualization for path. |
+| 58.4 | Implement CombatPreviewOverlay component | Completed | 2025-09-13 | Created combat-preview-overlay.tsx with HTML overlay for combat details. |
 | 58.5 | Modify src/scene/scene.tsx for events | Not Started |  |  |
-| 58.6 | Update ISSUE_MOVE action and uiReducer | Not Started |  |  |
-| 58.7 | Add unit tests for overlays | Not Started |  |  |
+| 58.6 | Update ISSUE_MOVE action and uiReducer | Completed | 2025-09-13 | Added confirmCombat flag to action payload and schema, updated reducer to handle it. |
+| 58.7 | Add unit tests for overlays | Completed | 2025-09-13 | Added Vitest unit tests for all three overlay components. |
 | 58.8 | Add integration tests for movement flows | Not Started |  |  |
 
 
@@ -50,3 +50,9 @@ This task focuses on the unit movement interactions, which are core to gameplay.
 
 
 - Task created based on plan-full-ui-logic.md
+- Completed subtask 58.1: Enhanced uiReducer for better unit state management (prevent select moved units, clear selection after move).
+- Completed subtask 58.2: Implemented MovementRangeOverlay component with visual feedback for unit movement range.
+- Completed subtask 58.3: Implemented PathPreviewOverlay with path arrows.
+- Completed subtask 58.4: Implemented CombatPreviewOverlay with combat info display.
+- Completed subtask 58.6: Updated ISSUE_MOVE to include confirmCombat and handled in reducer.
+- Completed subtask 58.7: Added unit tests for the overlay components.

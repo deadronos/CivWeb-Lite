@@ -24,6 +24,9 @@ import { getVariantCount, getVariantAssets } from './assets/biome-variants-regis
 import { BIOME_ASSETS_EVENT, loadBiomeVariants } from './assets/biome-assets';
 import { DEFAULT_WRAPPING_CONFIG, generateWrappedBiomeGroups } from './utils/world-wrapping';
 import { useCameraWrapping } from './hooks/use-camera-wrapping';
+import MovementRangeOverlay from '../components/game/movement-range-overlay';
+import PathPreviewOverlay from '../components/game/path-preview-overlay';
+import CombatPreviewOverlay from '../components/game/combat-preview-overlay';
 
 function findTileByCoord(tiles: Tile[], q: number, r: number): Tile | undefined {
   return tiles.find((t) => t.coord.q === q && t.coord.r === r);
@@ -165,7 +168,27 @@ export function ConnectedScene() {
   const { state, dispatch } = useGame();
   const { selectedUnitId, setSelectedUnitId } = useSelection();
 
-  const handleHexClick = (event: any) => {
+  const handleTileHover = (event: any) => {
+    if (!selectedUnitId) return;
+    // Find tile from event
+    let hoveredTileId;
+    // similar logic as click to find tileId from instanceId
+    let count = 0;
+    for (const bucket of buckets) {
+      if (event.instanceId < count + bucket.positions.length) {
+        const hexCoord = bucket.hexCoords[event.instanceId - count];
+        hoveredTileId = findTileByCoord(state.map.tiles, hexCoord.q, hexCoord.r)?.id;
+        break;
+      }
+      count += bucket.positions.length;
+    }
+
+    if (hoveredTileId) {
+      dispatch({ type: 'PREVIEW_PATH', payload: { unitId: selectedUnitId, targetTileId: hoveredTileId } });
+    }
+  };
+
+  const handleTileClick = (event: any) => {
     if (event.instanceId === undefined) return;
 
     // This is a bit of a hack to find the tile that was clicked.
@@ -191,14 +214,21 @@ export function ConnectedScene() {
 
     if (unitOnTile) {
       setSelectedUnitId(unitOnTile.id);
-    } else {
-      if (selectedUnitId) {
-        // TODO: pathfinding
-        // For now, just move to the clicked tile
-        dispatch({
-          type: 'MOVE_UNIT',
-          payload: { unitId: selectedUnitId, toTileId: clickedTile.id },
-        });
+    } else if (selectedUnitId) {
+      let targetTileId;
+      // find targetTileId
+      count = 0;
+      for (const bucket of buckets) {
+        if (event.instanceId < count + bucket.positions.length) {
+          const hexCoord = bucket.hexCoords[event.instanceId - count];
+          targetTileId = findTileByCoord(state.map.tiles, hexCoord.q, hexCoord.r)?.id;
+          break;
+        }
+        count += bucket.positions.length;
+      }
+      if (targetTileId) {
+        const confirmCombat = state.ui.previewCombat ? true : false; // assume confirm if combat preview
+        dispatch({ type: 'ISSUE_MOVE', payload: { unitId: selectedUnitId, path: state.ui.previewPath || [targetTileId], confirmCombat } });
       }
     }
   };
@@ -370,7 +400,7 @@ export function ConnectedScene() {
       ) : undefined}
 
       {/* Terrain */}
-      <HexBucketsInstanced buckets={buckets} onClick={handleHexClick} />
+      <HexBucketsInstanced buckets={buckets} onClick={handleTileClick} onPointerMove={handleTileHover} />
 
       {/* Units & labels */}
       <UnitMeshes />
@@ -390,6 +420,15 @@ export function ConnectedScene() {
           {selectedUnitLabel.id}
         </HtmlLabel>
       ) : undefined}
+
+      {/* Overlays */}
+      {selectedUnitId && (
+        <>
+          <MovementRangeOverlay selectedUnitId={selectedUnitId} />
+          <PathPreviewOverlay selectedUnitId={selectedUnitId} />
+          <CombatPreviewOverlay selectedUnitId={selectedUnitId} />
+        </>
+      )}
     </group>
   );
 }

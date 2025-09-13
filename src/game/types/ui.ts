@@ -50,3 +50,19 @@ export interface ResearchPanelProperties {
   onQueueResearch: (techId: string) => void;
   onAutoRecommend?: () => void;
 }
+
+export interface UIState {
+  openPanels: {
+    cityPanel?: string;
+    researchPanel?: boolean;
+    specPanel?: boolean;
+    devPanel?: boolean;
+  };
+  selectedUnitId?: string;
+  previewPath?: string[];
+  previewCombat?: {
+    attackerStrength: number;
+    defenderStrength: number;
+    outcome: string;
+  };
+}
