@@ -27,6 +27,8 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   ADVANCE_RESEARCH: playerReducer,
   QUEUE_RESEARCH: playerReducer,
   CHOOSE_PRODUCTION_ITEM: playerReducer,
+  REORDER_PRODUCTION_QUEUE: playerReducer,
+  CANCEL_PRODUCTION_ORDER: playerReducer,
   SET_PLAYER_SCORES: playerReducer,
 
   // Turn actions

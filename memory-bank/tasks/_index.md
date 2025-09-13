@@ -4,7 +4,6 @@
 
 ## Pending
 
-- [TASK059] Implement City Production Selection UI - Panels, item display, queue management, target tiles
 - [TASK060] Implement Research Selection UI - Tech tree display, selection, queuing, policy switching
 - [TASK061] Update Schemas and Add New Actions - REORDER_PRODUCTION_QUEUE, CANCEL_PRODUCTION_ORDER, SWITCH_RESEARCH_POLICY, ISSUE_MOVE updates
 - [TASK062] Add Testing for UI Interactions - Unit, integration, and E2E tests for new UI features
@@ -20,6 +19,7 @@
 - [TASK004] Integrate Visuals into Scene and HUD - Phase 4 of unit states implementation - Completed on 2025-09-12
 - [TASK005] Testing, Validation, and Polish - Phase 5 of unit states implementation - Completed on 2025-09-13
 - [TASK058] Implement Unit Movement UI - Selection, range, path preview, combat, and movement execution - Completed on 2025-09-13
+- [TASK059] Implement City Production Selection UI - Panels, item display, queue management, target tiles - Completed on 2025-09-13
 
 ## Abandoned
 

@@ -11,7 +11,12 @@ export function CityPanel({
   onCancelOrder,
 }: CityPanelProperties) {
   const choose = (itemId: string, type: ProductionOrder['type']) => {
-    onChooseItem({ type, item: itemId });
+    if (type === 'improvement') {
+      const targetTileId = typeof window !== 'undefined' ? window.prompt('Target tile id?') || undefined : undefined;
+      onChooseItem({ type, item: itemId, targetTileId });
+    } else {
+      onChooseItem({ type, item: itemId });
+    }
   };
   return (
     <div data-testid="city-panel">

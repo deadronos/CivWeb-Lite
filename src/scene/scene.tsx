@@ -213,9 +213,12 @@ export function ConnectedScene() {
     const unitOnTile = Object.values(state.contentExt?.units ?? {}).find(
       (u) => u.location === clickedTile?.id
     );
+    const cityId = clickedTile.occupantCityId;
 
     if (unitOnTile) {
       setSelectedUnitId(unitOnTile.id);
+    } else if (cityId) {
+      dispatch({ type: 'OPEN_CITY_PANEL', payload: { cityId } });
     } else if (selectedUnitId) {
       let targetTileId;
       // find targetTileId

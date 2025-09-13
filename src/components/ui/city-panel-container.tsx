@@ -14,7 +14,7 @@ export function CityPanelContainer({ cityId }: { cityId: string }) {
   const productionQueue: ProductionOrder[] = city.productionQueue.map(order => ({
     type: order.type,
     item: order.item,
-    // TODO: Store targetTileId in internal format when implementing improvement targeting
+    targetTileId: order.targetTileId,
   }));
 
   // Players are keyed by `id` in GameState.PlayerState; cities use ownerId to reference player.id
