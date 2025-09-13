@@ -11,10 +11,10 @@ export const UnitMarkers: React.FC = () => {
     <group>
       {positions.map((u) => {
         const unit = state.contentExt?.units[u.id];
-        if (!unit) return null;
+  if (!unit) return;
         return (
           <HtmlLabel key={u.id} position={u.position} data-testid={`unit-marker-${u.id}`}>
-            <div style={{ position: 'relative' }}>
+            <div className="unit-marker-wrap">
               <UnitBadgeContainer
                 category={unit.category}
                 activeStates={unit.activeStates}

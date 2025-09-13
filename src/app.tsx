@@ -31,24 +31,10 @@ export default function App() {
             <LoadListener onLoaded={() => setStarted(true)} />
             <ErrorBoundary
               fallback={({ error, reset }) => (
-                <div
-                  role="alert"
-                  style={{
-                    padding: 12,
-                    position: 'fixed',
-                    left: 12,
-                    bottom: 180,
-                    zIndex: 1000,
-                    background: 'rgba(20,20,25,0.8)',
-                    color: '#fff',
-                    borderRadius: 6,
-                  }}
-                >
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>3D view crashed</div>
-                  <div style={{ fontSize: 12, opacity: 0.9, maxWidth: 560 }}>
-                    {String(error?.message || error)}
-                  </div>
-                  <div style={{ marginTop: 8 }}>
+                <div role="alert" className="app-error-alert">
+                  <div className="app-error-title">3D view crashed</div>
+                  <div className="app-error-body">{String(error?.message || error)}</div>
+                  <div className="app-error-footer">
                     <button
                       onClick={() => {
                         setCanvasKey((k) => k + 1);
@@ -75,7 +61,7 @@ export default function App() {
             </ErrorBoundary>
             {/* Render hidden Stats only in tests to satisfy unit tests that mock drei */}
             {process.env.NODE_ENV === 'test' ? (
-              <div style={{ display: 'none' }}>
+              <div className="app-hidden-stats">
                 <Stats data-testid="stats" />
               </div>
             ) : undefined}
@@ -83,11 +69,7 @@ export default function App() {
             <React.Suspense fallback={<LazySpinner corner="top-right" />}>
               <OverlayUI />
             </React.Suspense>
-            <div
-              className="hud-cam-status"
-              aria-label="camera position"
-              style={{ position: 'fixed', right: 12, bottom: 192, color: 'var(--color-fg)' }}
-            >
+            <div className="hud-cam-status" aria-label="camera position">
               Camera: {cam ? `${cam.q},${cam.r}` : '-'}
             </div>
           </CameraProvider>

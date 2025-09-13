@@ -22,17 +22,17 @@ function GameHUDInner() {
       .catch((error) => console.error(error));
   };
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     handleFile(file);
   };
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    handleFile(e.dataTransfer.files[0]);
+  const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    handleFile(event.dataTransfer.files[0]);
   };
 
-  const onDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
+  const onDragOver = (event: React.DragEvent<HTMLDivElement>) => event.preventDefault();
 
   const toggleAuto = () => dispatch({ type: 'AUTO_SIM_TOGGLE' });
 
@@ -118,7 +118,7 @@ function GameHUDInner() {
 
   const playersSummary =
     state.players.length > 0 ? (
-      <div aria-label="game summary" style={{ margin: '6px 0', opacity: 0.85 }}>
+      <div aria-label="game summary" className="players-summary">
         Players:{' '}
         {state.players
           .map((p) => {
@@ -128,7 +128,7 @@ function GameHUDInner() {
           })
           .join(' · ')}
       </div>
-    ) : null;
+  ) : undefined;
 
   return (
     <div
@@ -141,7 +141,7 @@ function GameHUDInner() {
   <div>Seed: {state.seed}</div>
   <div>Mode: {state.mode}</div>
       {playersSummary}
-      <div style={{ display: 'flex', gap: 8, margin: '8px 0' }}>
+      <div className="hud-actions">
         <button aria-label="save game" onClick={handleSave}>
           Save…
         </button>
@@ -153,16 +153,14 @@ function GameHUDInner() {
           aria-label="load file"
           type="file"
           accept="application/json"
-          style={{ display: 'none' }}
+          className="hidden-file-input"
           onChange={onFileChange}
         />
       </div>
       {techSummary && <div>Research: {techSummary}</div>}
       {extension && (
         <>
-          <div style={{ display: 'flex', gap: 12 }}>
-            
-          </div>
+          <div />
           <div>Cities: {cityCount}</div>
           <div>Science per turn {extension.playerState.science}</div>
           {typeof extension.playerState.culture === 'number' && (
@@ -172,7 +170,7 @@ function GameHUDInner() {
           {extensionCultureResearch && <div>Ext Civic: {extensionCultureResearch}</div>}
           {state.ui?.openPanels?.devPanel && (
             <>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <div className="spec-toggle-row">
                 <button
                   aria-label="toggle spec controls"
                   onClick={() =>
@@ -195,12 +193,12 @@ function GameHUDInner() {
         onClose={() => setShowLoad(false)}
         autoFocusText={loadFocusPaste}
       />
-      <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+      <div className="hud-section">
         <div>
-          <div style={{ fontWeight: 600 }}>Units</div>
+          <div className="section-title">Units</div>
           <ul
             aria-label="catalog units"
-            style={{ maxHeight: 120, overflow: 'auto', margin: 0, paddingLeft: 16 }}
+            className="catalog-list"
           >
             {(extension
               ? unitList.filter(
@@ -212,20 +210,20 @@ function GameHUDInner() {
               : unitList
             ).map((u) => (
               <li key={u.id}>
-                {u.name} <span style={{ opacity: 0.6 }}>({u.category})</span>
+                {u.name} <span className="muted">({u.category})</span>
               </li>
             ))}
           </ul>
         </div>
         <div>
-          <div style={{ fontWeight: 600 }}>Buildings</div>
+          <div className="section-title">Buildings</div>
           <ul
             aria-label="catalog buildings"
-            style={{ maxHeight: 120, overflow: 'auto', margin: 0, paddingLeft: 16 }}
+            className="catalog-list"
           >
             {(extension
               ? buildingList.filter((b) => {
-                  const request = (b as any).requires ?? null;
+                  const request = (b as any).requires ?? undefined;
                   return (
                     !request ||
                     extension.playerState.researchedTechs.includes(request) ||
@@ -235,7 +233,7 @@ function GameHUDInner() {
               : buildingList
             ).map((b) => (
               <li key={b.id}>
-                {b.name} <span style={{ opacity: 0.6 }}>({b.cost})</span>
+                {b.name} <span className="muted">({b.cost})</span>
               </li>
             ))}
           </ul>
@@ -404,9 +402,9 @@ function SpecControls() {
     : 'Start Agriculture';
 
   return (
-    <div style={{ marginTop: 8, padding: 8, borderTop: '1px solid #444' }}>
-      <div style={{ fontWeight: 600 }}>Spec Controls</div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+    <div className="spec-controls">
+      <div className="strong">Spec Controls</div>
+      <div className="spec-controls-row">
         <button onClick={ensureDemoCity}>Add Demo City</button>
         <button onClick={startAgriculture} disabled={!!extension.playerState.research}>
           {researchLabel}
@@ -418,7 +416,7 @@ function SpecControls() {
           <select
             aria-label="spawn unit select"
             value={spawnUnitType}
-            onChange={(e) => setSpawnUnitType(e.target.value)}
+              onChange={(event) => setSpawnUnitType(event.target.value)}
           >
             {catalogUnits
               .filter(
@@ -441,7 +439,7 @@ function SpecControls() {
           <input
             aria-label="unit id"
             value={moveUnitId}
-            onChange={(e) => setMoveUnitId(e.target.value)}
+            onChange={(event) => setMoveUnitId(event.target.value)}
             placeholder="unit_..."
           />
         </label>
@@ -450,7 +448,7 @@ function SpecControls() {
           <input
             aria-label="to tile id"
             value={moveToTileId}
-            onChange={(e) => setMoveToTileId(e.target.value)}
+            onChange={(event) => setMoveToTileId(event.target.value)}
             placeholder="hex_..."
           />
         </label>
@@ -459,7 +457,7 @@ function SpecControls() {
           Start Civic
           <select
             aria-label="start civic select"
-            onChange={(e) => startCivic(e.target.value)}
+            onChange={(event) => startCivic(event.target.value)}
             value=""
           >
             <option value="" disabled>
@@ -484,12 +482,12 @@ function SpecControls() {
           <select
             aria-label="queue building select"
             value={queueBuildingId}
-            onChange={(e) => setQueueBuildingId(e.target.value)}
+            onChange={(event) => setQueueBuildingId(event.target.value)}
           >
             {catalogBuildings.map((b) => {
               // Avoid side-effects during render: don't call ensureDemoCity() here
               // which may dispatch and trigger "update a component while rendering" errors.
-              const demoCityId = Object.keys(extension.cities)[0] ?? null;
+              const demoCityId = Object.keys(extension.cities)[0] ?? undefined;
               const built = demoCityId
                 ? (extension.cities[demoCityId]?.buildings ?? []).includes(b.id)
                 : false;
