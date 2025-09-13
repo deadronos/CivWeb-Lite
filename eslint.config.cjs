@@ -141,50 +141,7 @@ module.exports = [
     },
   },
 
-  // Temporary allowlist for legacy PascalCase filenames. New files must be kebab-case.
-  {
-    files: [
-      'src/App.tsx',
-      'src/components/common/LazySpinner.tsx',
-      'src/components/overhaul/LeftCivicPanel.tsx',
-      'src/components/overhaul/RightProductionPanel.tsx',
-  // removed shim: 'src/components/ui/ContextPanel.tsx',
-      'src/components/ui/Icon.tsx',
-      'src/components/ui/Minimap.tsx',
-    // TopBar/LeftPanel shims removed in safe batches; canonical kebab-case files are tracked instead
-  // TopBar/LeftPanel shims removed in safe batches; canonical kebab-case files are tracked instead
-  // removed PascalCase shim entries: game-hud, unit-selection-overlay-container
-  // HoverContext/GameProvider/SelectionContext PascalCase shims removed from index; canonical kebab-case files are tracked
-  'src/game/tech/tech-catalog.ts',
-  // 'src/hooks/useCamera.tsx', (removed shim)
-  // 'src/hooks/useGame.ts', (removed shim)
-      'src/scene/InstancedTiles.tsx',
-      'src/scene/Scene.tsx',
-      'src/scene/TileMesh.tsx',
-      'src/scene/UnitMarkers.tsx',
-      'src/scene/UnitMeshes.tsx',
-      'src/scene/drei/BillboardLabel.tsx',
-      'src/scene/drei/CameraControls.tsx',
-      'src/scene/drei/DevStats.tsx',
-      'src/scene/drei/GLTFModel.tsx',
-      'src/scene/drei/HtmlLabel.tsx',
-      'src/scene/units/Bob.tsx',
-      'src/scene/units/gltfRegistry.ts',
-      'src/scene/units/modelRegistry.tsx',
-      'src/scene/units/ProceduralPreload.tsx',
-      // Additional legacy shims still present; keep these paths in the allowlist
-  // legacy shims still present (to be removed in subsequent safe batches)
-  // left-panel, minimap-container, next-turn-control-container, top-bar shims — keep in allowlist until filesystem
-  // case-sensitive removals can be applied safely on CI or via git mv on case-sensitive FS.
-  // LeftPanel, MinimapContainer, NextTurnControlContainer, TopBar, TopBarContainer removed in safe batch
-    // contexts/game-provider.tsx and related kebab-case files are tracked instead
-    ],
-    // Turn off filename-case enforcement for these legacy shim files while they are being migrated
-    rules: {
-      'unicorn/filename-case': 'off',
-    },
-  },
-
+  
   // Test files override (vitest/playwright/testing-library)
   {
     files: ['**/*.test.{ts,tsx}', 'tests/**', 'playwright/**', '**/*.spec.{ts,tsx}'],
