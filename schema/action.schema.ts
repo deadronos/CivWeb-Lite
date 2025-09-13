@@ -50,6 +50,21 @@ export const IssueMoveActionSchema = z.object({
   }),
 });
 
+export const MoveUnitUpperSchema = z.object({
+  type: z.literal('MOVE_UNIT'),
+  payload: z.object({ unitId: z.string(), toTileId: z.string() }),
+});
+
+export const ExtMoveUnitSchema = z.object({
+  type: z.literal('EXT_MOVE_UNIT'),
+  payload: z.object({ unitId: z.string(), toTileId: z.string() }),
+});
+
+export const ExtIssueMovePathSchema = z.object({
+  type: z.literal('EXT_ISSUE_MOVE_PATH'),
+  payload: z.object({ unitId: z.string(), path: z.array(z.string()), confirmCombat: z.boolean().optional() }),
+});
+
 export const ReorderProductionQueueActionSchema = z.object({
   type: z.literal('REORDER_PRODUCTION_QUEUE'),
   payload: z.object({
@@ -88,6 +103,9 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   AddUnitStateActionSchema,
   RemoveUnitStateActionSchema,
   IssueMoveActionSchema,
+  MoveUnitUpperSchema,
+  ExtMoveUnitSchema,
+  ExtIssueMovePathSchema,
   ReorderProductionQueueActionSchema,
   CancelProductionOrderActionSchema,
   SwitchResearchPolicyActionSchema,
