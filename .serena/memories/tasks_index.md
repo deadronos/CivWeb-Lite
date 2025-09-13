@@ -7,6 +7,7 @@
 ## Pending
 
 - [TASK002] Implement advanced HUD/UI - Planned for next sprint
+- [TASK003] Standardize hook exports - Prefer named exports for hooks in `src/hooks/`
 
 ## Completed
 
