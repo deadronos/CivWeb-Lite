@@ -11,9 +11,9 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
     case 'SELECT_UNIT': {
       const unitId = (action as any).payload?.unitId as string | undefined;
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
-      const prev = draft.ui.selectedUnitId;
-      if (draft.contentExt && prev && draft.contentExt.units[prev]) {
-        draft.contentExt.units[prev].activeStates?.delete(UnitState.Selected);
+      const previous = draft.ui.selectedUnitId;
+      if (draft.contentExt && previous && draft.contentExt.units[previous]) {
+        draft.contentExt.units[previous].activeStates?.delete(UnitState.Selected);
       }
       if (draft.contentExt && unitId && draft.contentExt.units[unitId]) {
         const unit = draft.contentExt.units[unitId];
@@ -26,9 +26,9 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
 
     case 'CANCEL_SELECTION': {
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
-      const prev = draft.ui.selectedUnitId;
-      if (draft.contentExt && prev && draft.contentExt.units[prev]) {
-        draft.contentExt.units[prev].activeStates?.delete(UnitState.Selected);
+      const previous = draft.ui.selectedUnitId;
+      if (draft.contentExt && previous && draft.contentExt.units[previous]) {
+        draft.contentExt.units[previous].activeStates?.delete(UnitState.Selected);
       }
       draft.ui.selectedUnitId = undefined;
       draft.ui.previewPath = undefined;
