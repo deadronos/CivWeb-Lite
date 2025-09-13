@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { UnitState } from '../src/types/unit';
 const UnitStateSchema = z.nativeEnum(UnitState);
+const ProductionOrderSchema = z.object({
+  type: z.enum(['unit', 'improvement', 'building']),
+  item: z.string(),
+  turnsRemaining: z.number().optional(),
+  turns: z.number().optional(),
+  targetTileId: z.string().optional(),
+});
 
 export const MoveActionSchema = z.object({ type: z.literal('move'), unitId: z.string(), path: z.array(z.string()) });
 export const AttackActionSchema = z.object({
@@ -43,6 +50,30 @@ export const IssueMoveActionSchema = z.object({
   }),
 });
 
+export const ReorderProductionQueueActionSchema = z.object({
+  type: z.literal('REORDER_PRODUCTION_QUEUE'),
+  payload: z.object({
+    cityId: z.string(),
+    reorderedQueue: z.array(ProductionOrderSchema),
+  }),
+});
+
+export const CancelProductionOrderActionSchema = z.object({
+  type: z.literal('CANCEL_PRODUCTION_ORDER'),
+  payload: z.object({
+    cityId: z.string(),
+    orderIndex: z.number(),
+  }),
+});
+
+export const SwitchResearchPolicyActionSchema = z.object({
+  type: z.literal('SWITCH_RESEARCH_POLICY'),
+  payload: z.object({
+    playerId: z.string(),
+    policy: z.enum(['preserveProgress', 'discardProgress']),
+  }),
+});
+
 export const GameActionSchema = z.discriminatedUnion('type', [
   MoveActionSchema,
   AttackActionSchema,
@@ -57,6 +88,9 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   AddUnitStateActionSchema,
   RemoveUnitStateActionSchema,
   IssueMoveActionSchema,
+  ReorderProductionQueueActionSchema,
+  CancelProductionOrderActionSchema,
+  SwitchResearchPolicyActionSchema,
 ]);
 
 // permissive catch-all for runtime events that are not strict game actions
