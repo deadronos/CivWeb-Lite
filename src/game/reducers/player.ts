@@ -62,6 +62,17 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
       }
       break;
     }
+    case 'SWITCH_RESEARCH_POLICY': {
+      const { playerId, policy } = action.payload;
+      const player = findPlayer(draft.players, playerId);
+      if (player) {
+        player.researchPolicy = policy;
+        if (policy === 'discardProgress' && player.researching) {
+          player.researching.progress = 0;
+        }
+      }
+      break;
+    }
     case 'CHOOSE_PRODUCTION_ITEM': {
       if (draft.contentExt) {
         const extension = draft.contentExt;

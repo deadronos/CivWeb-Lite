@@ -11,7 +11,7 @@ function openLoadPaste() {
 }
 
 export default function TopBarContainer() {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
   const human = state.players.find((p) => p.isHuman);
   const resources = React.useMemo(() => {
     return {
@@ -26,6 +26,7 @@ export default function TopBarContainer() {
       resources={resources}
       onOpenLoad={openLoad}
       onOpenLoadPaste={openLoadPaste}
+      onOpenResearch={() => dispatch({ type: 'OPEN_RESEARCH_PANEL', payload: {} })}
     />
   );
 }
