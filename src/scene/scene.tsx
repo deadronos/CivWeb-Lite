@@ -27,6 +27,7 @@ import { useCameraWrapping } from './hooks/use-camera-wrapping';
 import MovementRangeOverlay from '../components/game/movement-range-overlay';
 import PathPreviewOverlay from '../components/game/path-preview-overlay';
 import CombatPreviewOverlay from '../components/game/combat-preview-overlay';
+import MovementPreview from './movement-preview';
 
 function findTileByCoord(tiles: Tile[], q: number, r: number): Tile | undefined {
   return tiles.find((t) => t.coord.q === q && t.coord.r === r);
@@ -213,7 +214,7 @@ export function ConnectedScene() {
     const unitOnTile = Object.values(state.contentExt?.units ?? {}).find(
       (u) => u.location === clickedTile?.id
     );
-    const cityId = clickedTile.occupantCityId;
+    const cityId = state.contentExt?.tiles?.[clickedTile.id]?.occupantCityId;
 
     if (unitOnTile) {
       setSelectedUnitId(unitOnTile.id);
@@ -432,6 +433,7 @@ export function ConnectedScene() {
           <MovementRangeOverlay selectedUnitId={selectedUnitId} />
           <PathPreviewOverlay selectedUnitId={selectedUnitId} />
           <CombatPreviewOverlay selectedUnitId={selectedUnitId} />
+          <MovementPreview selectedUnitId={selectedUnitId} />
         </>
       )}
     </group>
