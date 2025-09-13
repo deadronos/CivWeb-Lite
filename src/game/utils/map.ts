@@ -114,6 +114,6 @@ export function findSuitableSpawnPosition(
   }
 
   // Fallback: return any suitable tile if nothing found in search radius
-  const fallback = tiles.find((t) => isSuitableSpawnTerrain(t.biome));
+  const fallback = tiles.find((t) => isSuitableSpawnTerrain(t.biome));  
   return fallback ? fallback.id : null;
 }

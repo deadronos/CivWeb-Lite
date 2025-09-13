@@ -44,7 +44,7 @@
     "@vitejs/plugin-react": "*",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "*",
-    "axe-core": "*",
+    "axe-core": "^4.8.0",
     "eslint": "*",
     "eslint-config-prettier": "*",
     "eslint-import-resolver-typescript": "*",

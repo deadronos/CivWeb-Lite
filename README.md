@@ -27,6 +27,18 @@ npm install
 npm run dev
 ```
 
+## Testing & Accessibility
+
+We add testing and accessibility verification as part of Phase 5 (unit-states). Key commands and artifacts:
+
+- Run unit & integration tests: `npm test` or `npm run test:watch` for iterative work.
+- Run Playwright E2E tests: `npm run test:e2e` (this runs the Playwright suite and writes any artifacts into `test-results/`).
+- Performance benches include `npm run bench:world`, `npm run bench:turn`, and `npm run bench:ai`.
+- Accessibility: a Playwright accessibility smoke test is available at `playwright/tests/accessibility-badges.spec.ts`. It writes `a11y-badges-<timestamp>.json` and `a11y-axe-<timestamp>.json` into `test-results/`.
+
+If you add or change accessibility-sensitive UI, run the accessibility test and inspect the axe JSON output in `test-results/`.
+```
+
 Build for production:
 
 ```powershell
