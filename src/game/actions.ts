@@ -48,6 +48,10 @@ export type GameAction =
   | { type: 'CANCEL_PRODUCTION_ORDER'; payload: { cityId: string; orderIndex: number } }
   | { type: 'START_RESEARCH'; payload: { playerId: string; techId: string } }
   | { type: 'QUEUE_RESEARCH'; payload: { playerId: string; techId: string } }
+  | {
+      type: 'SWITCH_RESEARCH_POLICY';
+      payload: { playerId: string; policy: 'preserveProgress' | 'discardProgress' };
+    }
   | { type: 'BEGIN_TURN'; payload: { playerId: string } }
   | { type: 'END_PLAYER_PHASE'; payload: { playerId: string } }
   // Extension actions (biomes/units/cities/tech)
@@ -119,6 +123,7 @@ export const GAME_ACTION_TYPES = [
   'CLOSE_CITY_PANEL',
   'START_RESEARCH',
   'QUEUE_RESEARCH',
+  'SWITCH_RESEARCH_POLICY',
   'BEGIN_TURN',
   'END_PLAYER_PHASE',
   // Extension actions
