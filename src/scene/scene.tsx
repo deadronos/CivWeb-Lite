@@ -171,6 +171,17 @@ export function ConnectedScene() {
   const { state, dispatch } = useGame();
   const { selectedUnitId, setSelectedUnitId } = useSelection();
 
+  // Schedule state mutations to the next frame to avoid unmounting three/fiber
+  // objects while the event system is still traversing. This prevents
+  // removeChild() errors inside the R3F events manager when clicking tiles/units.
+  const schedule = React.useCallback((task: () => void) => {
+    try {
+      requestAnimationFrame(() => task());
+    } catch {
+      setTimeout(task, 0);
+    }
+  }, []);
+
   const handleTileHover = (event: any) => {
     if (!selectedUnitId) return;
     // Find tile from event
@@ -192,6 +203,9 @@ export function ConnectedScene() {
   };
 
   const handleTileClick = (event: any) => {
+    if (typeof event?.stopPropagation === 'function') {
+      try { event.stopPropagation(); } catch { /* ignore */ }
+    }
     if (event.instanceId === undefined) return;
 
     // This is a bit of a hack to find the tile that was clicked.
@@ -217,9 +231,9 @@ export function ConnectedScene() {
     const cityId = state.contentExt?.tiles?.[clickedTile.id]?.occupantCityId;
 
     if (unitOnTile) {
-      setSelectedUnitId(unitOnTile.id);
+      schedule(() => setSelectedUnitId(unitOnTile.id));
     } else if (cityId) {
-      dispatch({ type: 'OPEN_CITY_PANEL', payload: { cityId } });
+      schedule(() => dispatch({ type: 'OPEN_CITY_PANEL', payload: { cityId } }));
     } else if (selectedUnitId) {
       let targetTileId;
       // find targetTileId
@@ -234,7 +248,7 @@ export function ConnectedScene() {
       }
       if (targetTileId) {
         const confirmCombat = state.ui.previewCombat ? true : false; // assume confirm if combat preview
-        dispatch({ type: 'ISSUE_MOVE', payload: { unitId: selectedUnitId, path: state.ui.previewPath || [targetTileId], confirmCombat } });
+        schedule(() => dispatch({ type: 'ISSUE_MOVE', payload: { unitId: selectedUnitId, path: state.ui.previewPath || [targetTileId], confirmCombat } }));
       }
     }
   };
