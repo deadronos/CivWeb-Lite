@@ -77,7 +77,7 @@ canvas {
   padding: 8px;
   overflow: auto;
   font-size: 12px;
-  z-index: 19;
+  z-index: 15;
 }
 .ui-statsbar {
   position: fixed;

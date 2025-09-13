@@ -1,26 +1,13 @@
-# Tech Context
+## Technology Context
 
-**Technologies Used:**
+This project, CivWeb-Lite, is built with the following technologies:
 
-- React 18
-- TypeScript
-- Vite
-- three.js
-- @react-three/fiber
-- @react-three/drei
+*   **Framework:** React, TypeScript, Vite
+*   **3D Graphics:** Three.js, @react-three/fiber, @react-three/drei
+*   **State Management:** React Context (as per GEMINI.md)
+*   **Styling:** CSS (as per GEMINI.md)
+*   **Linting/Formatting:** ESLint, Prettier
+*   **Testing:** Vitest, Playwright, @testing-library/react, @testing-library/jest-dom
+*   **Other notable dependencies:** immer (for immutable state), ajv (JSON schema validation), react-icons, zod (schema declaration and validation).
 
-**Development Setup:**
-
-- Node >= 18
-- npm or yarn
-- Entry: index.html -> src/main.tsx -> src/App.tsx
-
-**Technical Constraints:**
-
-- Keep bundle size minimal
-- Avoid direct DOM manipulation in scene logic
-- Use strict types for public APIs
-
-**Dependencies:**
-
-- See package.json for full list
+The `vite.config.ts` shows a focus on build optimization with `ViteImageOptimizer` and manual chunking for `three`, `r3f`, and `react` libraries.
