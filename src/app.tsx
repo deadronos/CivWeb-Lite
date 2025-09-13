@@ -8,7 +8,7 @@ import { GameProvider } from './contexts/game-provider';
 const Scene = React.lazy(() =>
   import('./scene/scene').then((m) => ({ default: m.ConnectedScene }))
 );
-const OverlayUI = React.lazy(() => import('./components/overhaul/overlay-ui'));
+const OverlayUI = React.lazy(() => import('./components/ui/overlay-ui'));
 import LazySpinner from './components/common/lazy-spinner';
 import { CameraProvider } from './hooks/use-camera';
 import { SelectionProvider } from './contexts/selection-context';

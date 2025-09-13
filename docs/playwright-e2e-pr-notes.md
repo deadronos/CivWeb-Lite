@@ -21,7 +21,7 @@ Notes and recommended follow-ups
 Files changed (high-level)
 
 - `src/components/game-hud.tsx` — mounted `MinimapContainer`
-- `src/components/overhaul/overlay-ui.tsx` — mounted `GameHUD`, added `aria-label="turn"` on StatsBar turn span
+- `src/components/ui/overlay-ui.tsx` — mounted `GameHUD`, added `aria-label="turn"` on StatsBar turn span
 - `src/components/ui/main-menu.tsx` — backdrop pointer-events change
 - `src/styles.css` — `.hud-minimap` position, z-index, and pointer-events
 - `playwright/tests/newgame-start.spec.ts` — updated test to use `page.getByLabel('turn')`
