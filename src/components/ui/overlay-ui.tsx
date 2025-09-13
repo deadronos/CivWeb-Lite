@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
 import GameHUD from '../game-hud';
@@ -9,7 +9,7 @@ const RightProductionPanel = React.lazy(() => import('./right-production-panel')
 
 type PanelProperties = { open: boolean; onClose: () => void };
 
-export default function OverlayUI() {
+export default function OverlayUI():ReactNode {
   const { state, dispatch } = useGame();
   const [showRight, setShowRight] = React.useState(false);
   const [showLeft, setShowLeft] = React.useState(false);
@@ -17,7 +17,8 @@ export default function OverlayUI() {
   // Sync with game state
   const researchPanelOpen = state.ui.openPanels.researchPanel || showLeft;
   const cityPanelOpen = !!state.ui.openPanels.cityPanel || showRight;
-  
+  const LogEntries : { type: string; }[] = state.log.slice(-10);
+
   // Prefetch likely-next chunks shortly after mount (warm-up without blocking):
   React.useEffect(() => {
     const id = setTimeout(() => {
@@ -44,7 +45,7 @@ export default function OverlayUI() {
         }} 
       />
       <StatsBar />
-      <LogListContainer />
+      <LogListContainer />  
       <GameHUD />
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
@@ -62,7 +63,7 @@ export default function OverlayUI() {
   );
 }
 
-function TopMenu({
+export function TopMenu({
   onOpenResearch,
   onOpenCities,
 }: {
@@ -149,7 +150,7 @@ function StatsBar() {
   );
 }
 
-function LogListContainer() {
+export function LogListContainer() {
   const { state } = useGame();
   return (
     <div className="ui-log-list-container" role="log" aria-label="event log" aria-live="polite">
