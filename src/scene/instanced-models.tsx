@@ -16,6 +16,7 @@ type Properties = {
   name?: string;
   frustumCulled?: boolean; // default false: instances can extend far due to wrapping
   onClick?: (event: any) => void;
+  onPointerMove?: (event: any) => void;
 };
 
 // Lightweight helper to render arbitrary geometry via InstancedMesh.
@@ -29,12 +30,13 @@ export default function InstancedModels({
   name,
   frustumCulled = false,
   onClick,
+  onPointerMove,
 }: Properties) {
-  const meshReference = React.useRef<InstancedMesh>(null!);
+  const meshReference = React.useRef<InstancedMesh | null>(null);
 
   // Apply matrices whenever transforms change
   React.useEffect(() => {
-    const mesh = meshReference.current as any;
+  const mesh = meshReference.current as any;
     if (!mesh || typeof mesh.setMatrixAt !== 'function') return; // tests/jsdom may stub this
     const temporary = new Object3D();
     const count = transforms.length;
@@ -53,7 +55,7 @@ export default function InstancedModels({
     if (mesh.instanceMatrix) mesh.instanceMatrix.needsUpdate = true;
   }, [transforms]);
 
-  if (!geometry || !material || transforms.length === 0) return null;
+  if (!geometry || !material || transforms.length === 0) return;
   return (
     <instancedMesh
       ref={meshReference}
@@ -63,6 +65,7 @@ export default function InstancedModels({
       name={name}
       frustumCulled={frustumCulled}
       onClick={onClick}
+      onPointerMove={onPointerMove}
     />
   );
 }

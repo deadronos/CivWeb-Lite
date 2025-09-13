@@ -26,7 +26,13 @@ export default function App() {
     <GameProvider>
       <SelectionProvider>
         <HoverProvider>
-          <CameraProvider api={{ centerOn: (coord) => setCam(coord) }}>
+          <CameraProvider
+            api={{
+              centerOn: (coord) => setCam(coord),
+              getPositionLabel: () =>
+                cam ? `q:${cam.q}, r:${cam.r}` : 'q:0, r:0',
+            }}
+          >
             {!started && <MainMenu onStart={() => setStarted(true)} />}
             <LoadListener onLoaded={() => setStarted(true)} />
             <ErrorBoundary
@@ -85,5 +91,5 @@ function LoadListener({ onLoaded }: { onLoaded: () => void }) {
     globalThis.addEventListener('civweblite:loadState', handler);
     return () => globalThis.removeEventListener('civweblite:loadState', handler);
   }, [game.dispatch, onLoaded]);
-  return null;
+  return undefined as unknown as null;
 }

@@ -17,6 +17,11 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
       }
       if (draft.contentExt && unitId && draft.contentExt.units[unitId]) {
         const unit = draft.contentExt.units[unitId];
+        // Enhancement: Prevent selecting moved units
+        if (unit.activeStates?.has(UnitState.Moved)) {
+          // Don't select moved units; optionally log or dispatch error
+          break;
+        }
         (unit.activeStates ||= new Set<UnitState>()).add(UnitState.Selected);
       }
       draft.ui.selectedUnitId = unitId;
@@ -88,21 +93,20 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
     case 'PREVIEW_PATH': {
       const targetTileId = (action as any).payload?.targetTileId as string | undefined;
       const unitIdPayload = (action as any).payload?.unitId as string | undefined;
-      if (!draft.ui) draft.ui = { openPanels: {} } as any;
       const uid = unitIdPayload ?? draft.ui.selectedUnitId;
       if (!uid || !draft.contentExt || !targetTileId) {
         draft.ui.previewPath = undefined;
         break;
       }
       try {
-        const res = computePath(draft.contentExt, uid, targetTileId, draft.map.width, draft.map.height);
-        if (res.path && Array.isArray(res.path)) {
+        const result = computePath(draft.contentExt, uid, targetTileId, draft.map.width, draft.map.height);
+        if (result.path && Array.isArray(result.path)) {
           // store minimal preview structure as spec suggests
           // keep just path array on ui.previewPath for consumers/tests
-          (draft.ui as any).previewPath = res.path;
+          (draft.ui as any).previewPath = result.path;
           // attach combat preview into ui for tests if present
-          if (res.combatPreview) {
-            (draft.ui as any).previewCombat = res.combatPreview;
+          if (result.combatPreview) {
+            (draft.ui as any).previewCombat = result.combatPreview;
           } else {
             (draft.ui as any).previewCombat = undefined;
           }
@@ -118,7 +122,7 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
     }
 
     case 'ISSUE_MOVE': {
-      const { unitId, path, confirmCombat } = (action as any).payload || {};
+      const { unitId, path, confirmCombat = false } = (action as any).payload || {};
       if (!path || !Array.isArray(path) || path.length === 0) break;
       const extension = (draft.contentExt ||= createContentExtension());
       const uid = unitId ?? draft.ui?.selectedUnitId;
@@ -139,6 +143,25 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
         }
         break;
       }
+      const tid = path[path.length - 1];
+      // Check for enemy at target
+      let enemyPresent = false;
+      const tile = extension.tiles[tid];
+      if (tile) {
+        if (tile.occupantUnitId) {
+          const occ = extension.units[tile.occupantUnitId];
+          if (occ && occ.ownerId !== unit.ownerId) enemyPresent = true;
+        }
+        if (tile.occupantCityId) {
+          const city = extension.cities[tile.occupantCityId];
+          if (city && city.ownerId !== unit.ownerId) enemyPresent = true;
+        }
+      }
+      if (enemyPresent && !confirmCombat) {
+        // Don't move if combat not confirmed
+        break;
+      }
+      // Proceed with move
       // iterate through path steps (skip first element when it equals current location)
       const startIndex = path[0] === unit.location ? 1 : 0;
       for (let index = startIndex; index < path.length; index++) {
@@ -167,6 +190,7 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
           break;
         }
       }
+      // Ensure Selected is cleared after move
       if (draft.contentExt && draft.contentExt.units[uid]) {
         draft.contentExt.units[uid].activeStates?.delete(UnitState.Selected);
       }

@@ -1,7 +1,7 @@
 # TASK061 - Update Schemas and Add New Actions
 
-**Status:** Pending  
-**Added:** 2025-09-13  
+**Status:** Completed
+**Added:** 2025-09-13
 **Updated:** 2025-09-13
 
 ## Original Request
@@ -23,21 +23,22 @@ Schemas ensure runtime validation. This task centralizes new action definitions 
 
 ## Progress Tracking
 
-**Overall Status:** Not Started - 0%
+**Overall Status:** Completed - 100%
 
 ### Subtasks
 
 | ID | Description | Status | Updated | Notes |
 |----|-------------|--------|---------|-------|
-| 61.1 | Define new action payloads | Not Started |  |  |
-| 61.2 | Update ISSUE_MOVE schema | Not Started |  |  |
-| 61.3 | Integrate new actions into GameActionSchema | Not Started |  |  |
-| 61.4 | Update reducers for new actions | Not Started |  |  |
-| 61.5 | Add schema validation tests | Not Started |  |  |
-| 61.6 | Update existing action tests | Not Started |  |  |
+| 61.1 | Define new action payloads | Completed | 2025-09-13 | |
+| 61.2 | Update ISSUE_MOVE schema | Completed | 2025-09-13 | |
+| 61.3 | Integrate new actions into GameActionSchema | Completed | 2025-09-13 | |
+| 61.4 | Update reducers for new actions | Completed | 2025-09-13 | already handled in previous tasks |
+| 61.5 | Add schema validation tests | Completed | 2025-09-13 | |
+| 61.6 | Update existing action tests | Completed | 2025-09-13 | |
 
 ## Progress Log
 
 ### 2025-09-13
 
 - Task created based on plan-full-ui-logic.md
+- Added schemas and tests for REORDER_PRODUCTION_QUEUE, CANCEL_PRODUCTION_ORDER, SWITCH_RESEARCH_POLICY, and ISSUE_MOVE confirmCombat flag

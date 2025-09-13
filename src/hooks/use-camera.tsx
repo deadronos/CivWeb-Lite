@@ -2,10 +2,13 @@ import React, { createContext, useContext } from 'react';
 
 export type CameraAPI = {
   centerOn: (coord: { q: number; r: number }) => void;
+  // Human-readable camera status for HUD/tests. Optional; empty string when unavailable.
+  getPositionLabel?: () => string;
 };
 
 const defaultAPI: CameraAPI = {
   centerOn: () => {},
+  getPositionLabel: () => '',
 };
 
 const CameraContext = createContext<CameraAPI>(defaultAPI);

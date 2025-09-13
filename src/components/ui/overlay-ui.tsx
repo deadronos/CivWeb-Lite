@@ -46,7 +46,7 @@ export default function OverlayUI():ReactNode {
       />
       <StatsBar />
       <LogListContainer />
-       {/* <GameHUD /> */}
+      <GameHUD />
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
           setShowLeft(false);
@@ -111,7 +111,7 @@ export function TopMenu({
           Dev
         </label>
         <button className="ui-turn" onClick={() => dispatch({ type: 'END_TURN' })}>
-          Turn Done
+          End Turn
         </button>
       </div>
     </div>

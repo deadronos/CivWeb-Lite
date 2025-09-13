@@ -60,3 +60,23 @@ test('AUTO_SIM_TOGGLE flips autoSim flag', () => {
   const next = applyAction(s, { type: 'AUTO_SIM_TOGGLE', payload: { enabled: true } } as any);
   expect(next.autoSim).toBe(true);
 });
+
+test('SWITCH_RESEARCH_POLICY sets policy and clears progress when discarding', () => {
+  const s = initialStateForTests();
+  const player = {
+    id: 'p1',
+    isHuman: true,
+    researchPolicy: 'preserveProgress',
+    researching: { techId: 'pottery', progress: 5 },
+  } as any;
+  s.players = [player];
+  const next = applyAction(
+    s,
+    {
+      type: 'SWITCH_RESEARCH_POLICY',
+      payload: { playerId: 'p1', policy: 'discardProgress' },
+    } as any,
+  );
+  expect(next.players[0].researchPolicy).toBe('discardProgress');
+  expect(next.players[0].researching?.progress).toBe(0);
+});

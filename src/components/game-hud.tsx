@@ -5,10 +5,12 @@ import { TECHS } from '../game/content/registry';
 import { loadUnits, loadBuildings } from '../data/loader';
 import LoadModal from './ui/load-modal';
 import MinimapContainer from './ui/minimap-container';
+import { useCamera } from '../hooks/use-camera';
 
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();
+  const camera = useCamera();
 
   const handleSave = async () => {
     // Export using statically imported helper
@@ -140,6 +142,8 @@ function GameHUDInner() {
     >
   <div>Seed: {state.seed}</div>
   <div>Mode: {state.mode}</div>
+      {/* Camera status for tests and quick debug */}
+      <div aria-label="camera position">{camera.getPositionLabel ? camera.getPositionLabel() : ''}</div>
       {playersSummary}
       <div className="hud-actions">
         <button aria-label="save game" onClick={handleSave}>
@@ -245,10 +249,6 @@ function GameHUDInner() {
       <button onClick={regenerate} aria-label="regenerate seed">
         Regenerate Seed
       </button>
-      <button onClick={handleSave} aria-label="save game">
-        Save
-      </button>
-      <input type="file" accept="application/json" aria-label="load file" onChange={onFileChange} />
       <div><MinimapContainer /></div >
     </div>
   );
