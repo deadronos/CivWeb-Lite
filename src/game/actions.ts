@@ -78,6 +78,7 @@ export type GameAction =
       type: 'EXT_ISSUE_MOVE_PATH';
       payload: UnitMovePayload;
     }
+  | { type: 'MOVE_UNIT'; payload: { unitId: string; toTileId: string } }
   // Additional actions from reducer
   | { type: 'AI_PERFORM_ACTIONS'; payload: { playerId: string } }
   | { type: 'SET_TILE_IMPROVEMENT'; payload: { tileId: string; improvementId: string } }
@@ -129,6 +130,7 @@ export const GAME_ACTION_TYPES = [
   'EXT_ADD_UNIT',
   'EXT_FOUND_CITY',
   'EXT_ISSUE_MOVE_PATH',
+  'MOVE_UNIT',
   // New actions
   'AI_PERFORM_ACTIONS',
   'SET_TILE_IMPROVEMENT',

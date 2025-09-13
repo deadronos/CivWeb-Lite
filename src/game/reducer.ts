@@ -47,6 +47,7 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   EXT_FOUND_CITY: worldReducer,
   EXT_ISSUE_MOVE_PATH: worldReducer,
   FORTIFY_UNIT: worldReducer, // Route FORTIFY_UNIT to worldReducer for state addition
+  MOVE_UNIT: worldReducer,
 
   // Lifecycle actions
   INIT: lifecycleReducer,

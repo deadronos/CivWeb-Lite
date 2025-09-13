@@ -15,6 +15,7 @@ type Properties = {
   receiveShadow?: boolean;
   name?: string;
   frustumCulled?: boolean; // default false: instances can extend far due to wrapping
+  onClick?: (event: any) => void;
 };
 
 // Lightweight helper to render arbitrary geometry via InstancedMesh.
@@ -27,6 +28,7 @@ export default function InstancedModels({
   receiveShadow,
   name,
   frustumCulled = false,
+  onClick,
 }: Properties) {
   const meshReference = React.useRef<InstancedMesh>(null!);
 
@@ -60,6 +62,7 @@ export default function InstancedModels({
       receiveShadow={receiveShadow}
       name={name}
       frustumCulled={frustumCulled}
+      onClick={onClick}
     />
   );
 }

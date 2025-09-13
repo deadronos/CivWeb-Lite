@@ -25,6 +25,10 @@ import { BIOME_ASSETS_EVENT, loadBiomeVariants } from './assets/biome-assets';
 import { DEFAULT_WRAPPING_CONFIG, generateWrappedBiomeGroups } from './utils/world-wrapping';
 import { useCameraWrapping } from './hooks/use-camera-wrapping';
 
+function findTileByCoord(tiles: Tile[], q: number, r: number): Tile | undefined {
+  return tiles.find((t) => t.coord.q === q && t.coord.r === r);
+}
+
 // Public runtime marker used by tests
 export const SCENE_RUNTIME_MARKER = true;
 
@@ -110,7 +114,7 @@ function transformsForBucket(bucket: Bucket): InstanceTransform[] {
   return out;
 }
 
-function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
+function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?: (event: any) => void }) {
   // Attempt to render GLTF assets when available per variant; fallback to hex cylinders otherwise
   return (
     <group name="hex-buckets">
@@ -129,6 +133,7 @@ function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
               receiveShadow
               castShadow
               name={`bucket-${b.biome}-${b.variantIndex}`}
+              onClick={onClick}
             />
           );
         }
@@ -147,6 +152,7 @@ function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
             receiveShadow
             castShadow
             name={`bucket-fallback-${b.biome}-${b.variantIndex}`}
+            onClick={onClick}
           />
         );
       })}
@@ -156,8 +162,47 @@ function HexBucketsInstanced({ buckets }: { buckets: Bucket[] }) {
 
 // Main scene component
 export function ConnectedScene() {
-  const { state } = useGame();
-  const { selectedUnitId } = useSelection();
+  const { state, dispatch } = useGame();
+  const { selectedUnitId, setSelectedUnitId } = useSelection();
+
+  const handleHexClick = (event: any) => {
+    if (event.instanceId === undefined) return;
+
+    // This is a bit of a hack to find the tile that was clicked.
+    // We're iterating through all the buckets and all the hexes in each bucket
+    // to find the one that matches the instanceId.
+    // A better approach would be to have a map from instanceId to tileId.
+    let clickedTile: Tile | undefined;
+    let count = 0;
+    for (const bucket of buckets) {
+      if (event.instanceId < count + bucket.positions.length) {
+        const hexCoord = bucket.hexCoords[event.instanceId - count];
+        clickedTile = findTileByCoord(state.map.tiles, hexCoord.q, hexCoord.r);
+        break;
+      }
+      count += bucket.positions.length;
+    }
+
+    if (!clickedTile) return;
+
+    const unitOnTile = Object.values(state.contentExt?.units ?? {}).find(
+      (u) => u.location === clickedTile?.id
+    );
+
+    if (unitOnTile) {
+      setSelectedUnitId(unitOnTile.id);
+    } else {
+      if (selectedUnitId) {
+        // TODO: pathfinding
+        // For now, just move to the clicked tile
+        dispatch({
+          type: 'MOVE_UNIT',
+          payload: { unitId: selectedUnitId, toTileId: clickedTile.id },
+        });
+      }
+    }
+  };
+
   // Enable cylindrical camera wrapping
   useCameraWrapping({
     ...DEFAULT_WRAPPING_CONFIG,
@@ -325,7 +370,7 @@ export function ConnectedScene() {
       ) : undefined}
 
       {/* Terrain */}
-      <HexBucketsInstanced buckets={buckets} />
+      <HexBucketsInstanced buckets={buckets} onClick={handleHexClick} />
 
       {/* Units & labels */}
       <UnitMeshes />
