@@ -3,10 +3,9 @@ import { useGame } from '../hooks/use-game';
 import { exportToFile, importFromFile } from '../game/save';
 import { TECHS } from '../game/content/registry';
 import { loadUnits, loadBuildings } from '../data/loader';
-import CivicPanelContainer from './ui/civic-panel-container';
-import ExtTechPanelContainer from './ui/ext-tech-panel-container';
 import LoadModal from './ui/load-modal';
 import MinimapContainer from './ui/minimap-container';
+
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();
@@ -162,8 +161,7 @@ function GameHUDInner() {
       {extension && (
         <>
           <div style={{ display: 'flex', gap: 12 }}>
-            <ExtTechPanelContainer />
-            <CivicPanelContainer />
+            
           </div>
           <div>Cities: {cityCount}</div>
           <div>Science per turn {extension.playerState.science}</div>
@@ -253,23 +251,10 @@ function GameHUDInner() {
         Save
       </button>
       <input type="file" accept="application/json" aria-label="load file" onChange={onFileChange} />
-      <div role="log" aria-label="event log" aria-live="polite">
-        <LogList entries={state.log.slice(-10)} />
-      </div>
-      <MinimapContainer />
+      <div><MinimapContainer /></div >
     </div>
   );
 }
-
-const LogList = React.memo(function LogList({ entries }: { entries: { type: string }[] }) {
-  return (
-    <ul>
-      {entries.map((e, index) => (
-        <li key={index}>{String(e.type).replaceAll(':', '·')}</li>
-      ))}
-    </ul>
-  );
-});
 
 export default React.memo(GameHUDInner);
 

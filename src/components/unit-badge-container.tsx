@@ -10,7 +10,8 @@ interface UnitBadgeContainerProperties {
 }
 
 function UnitBadgeContainer({ category, activeStates }: UnitBadgeContainerProperties) {
-  const validStates = [...activeStates].filter((s): s is UnitState => s !== UnitState.Selected && unitStateIconMap(s) !== undefined); // Spread + import
+  const validStates = [...activeStates ? activeStates[Symbol.iterator]() : []].filter((s): s is UnitState => s !== UnitState.Selected && unitStateIconMap(s) !== undefined); // Spread + import
+
   const stateBadges = validStates.map((state) => <UnitStateBadge key={state} state={state} />);
 
   const stateSummary = validStates.length > 0 ? ` with ${validStates.join(', ')}` : '';

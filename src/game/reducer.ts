@@ -17,6 +17,8 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   CLOSE_CITY_PANEL: uiReducer,
   OPEN_RESEARCH_PANEL: uiReducer,
   CLOSE_RESEARCH_PANEL: uiReducer,
+  OPEN_DEV_PANEL: uiReducer,
+  CLOSE_DEV_PANEL: uiReducer,
   PREVIEW_PATH: uiReducer,
   ISSUE_MOVE: uiReducer,
 

@@ -2,6 +2,8 @@ import React from 'react';
 import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
 import GameHUD from '../game-hud';
+import LogList from '../ui/log-list';
+
 const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
 const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
 
@@ -42,6 +44,7 @@ export default function OverlayUI() {
         }} 
       />
       <StatsBar />
+      <LogListContainer />
       <GameHUD />
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
@@ -142,6 +145,15 @@ function StatsBar() {
           {r.key}: {r.qty}
         </div>
       ))}
+    </div>
+  );
+}
+
+function LogListContainer() {
+  const { state } = useGame();
+  return (
+    <div className="ui-log-list-container" role="log" aria-label="event log" aria-live="polite">
+        <LogList entries={state.log.slice(-10)}/>
     </div>
   );
 }
