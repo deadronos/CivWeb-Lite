@@ -188,6 +188,7 @@ canvas {
   left: 12px;
   top: 12px;
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   padding: 8px;
   border-radius: 6px;
@@ -462,3 +463,32 @@ canvas {
 
 /* Small utility classes */
 .hidden { display: none !important; }
+.combat-preview-overlay {
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  max-width: 200px;
+}
+
+/* Small DOM proxies used by E2E to interact with 3D tiles */
+.e2e-hex-proxy {
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: rgba(0,128,255,0.25);
+  border: 1px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+.e2e-hex-proxy.enemy {
+  background: rgba(255,0,0,0.35);
+}
+
+/* Hidden DOM helpers rendered inside the scene for testing */
+.movement-preview-dom-helper {
+  display: none;
+}
+
+/* Hidden helper used to expose test-only DOM nodes without affecting layout */
+.e2e-hidden-helper { display: none; }

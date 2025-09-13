@@ -58,8 +58,23 @@ export function exportToFile(state: GameState, filename = 'save.json') {
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.rel = 'noopener';
+  a.target = '_self';
+  // Append to DOM to improve cross-browser compatibility and Playwright detection
+  document.body.append(a);
   a.click();
-  URL.revokeObjectURL(url);
+  // Give the browser a tick to register the download before revoking the URL
+  setTimeout(() => {
+    // Prefer modern API, but fall back for environments (e.g., jsdom) that may not implement it
+    if (typeof (a as any).remove === 'function') {
+      a.remove();
+    } else if (a.parentNode) {
+  // Fallback for environments missing Element#remove; jsdom in tests may not implement modern DOM APIs
+  // eslint-disable-next-line unicorn/prefer-dom-node-remove -- ensure compatibility in non-browser test envs
+      a.parentNode.removeChild(a);
+    }
+    URL.revokeObjectURL(url);
+  }, 50);
 }
 
 export async function importFromFile(file: File): Promise<GameState> {

@@ -61,6 +61,12 @@ export interface UIState {
   selectedUnitId?: string;
   selectedCityId?: string;
   previewPath?: string[];
+  // Optional combat preview computed during path preview
+  previewCombat?: {
+    attackerStrength: number;
+    defenderStrength: number;
+    outcome: string;
+  };
   openPanels: {
     cityPanel?: string; // cityId if open
     researchPanel?: boolean;

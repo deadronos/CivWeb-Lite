@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-keyword-prefix -- Allow React's standard `className` prop; not a misuse of the `class` keyword. */
 import React from 'react';
 import { Html } from '@react-three/drei';
 
@@ -72,9 +73,25 @@ export default function HtmlLabel({
     ...domPropertiesFromRest,
   };
 
-  // In development, log incoming keys so we can discover any unexpected prop
-  // names that still reach this wrapper at runtime (e.g., testid variants).
-  if (globalThis.window !== undefined && process.env.NODE_ENV === 'development') {
+  // Optional debug logging (opt-in via global or localStorage)
+  // Enable by setting: window.__HTML_LABEL_DEBUG__ = true; or localStorage['debug:HtmlLabel'] = '1'
+  const enableDebug = (() => {
+    try {
+      if (typeof (globalThis as any).__HTML_LABEL_DEBUG__ === 'boolean') return (globalThis as any).__HTML_LABEL_DEBUG__;
+      if (globalThis.window && typeof localStorage !== 'undefined') {
+        return localStorage.getItem('debug:HtmlLabel') === '1';
+      }
+    } catch {
+      // ignore storage access errors
+    }
+    return false;
+  })();
+  if (
+    enableDebug &&
+    globalThis.window !== undefined &&
+    process.env.NODE_ENV === 'development' &&
+    (Object.keys(domPropertiesFromRest).length > 0 || Object.keys(rest).length > 0)
+  ) {
     // Use a microtask to avoid logging during render in React strict mode twice
     Promise.resolve().then(() => {
       console.log('HtmlLabel received props:', Object.keys(rest));

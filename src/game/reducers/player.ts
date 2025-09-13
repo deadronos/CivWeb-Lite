@@ -62,6 +62,17 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
       }
       break;
     }
+    case 'SWITCH_RESEARCH_POLICY': {
+      const { playerId, policy } = action.payload;
+      const player = findPlayer(draft.players, playerId);
+      if (player) {
+        player.researchPolicy = policy;
+        if (policy === 'discardProgress' && player.researching) {
+          player.researching.progress = 0;
+        }
+      }
+      break;
+    }
     case 'CHOOSE_PRODUCTION_ITEM': {
       if (draft.contentExt) {
         const extension = draft.contentExt;
@@ -79,7 +90,12 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
             resolvedTurnsRemaining = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
           }
 
-          const fullOrder: CityProductionOrder = { type: order.type, item: order.item, turnsRemaining: resolvedTurnsRemaining };
+          const fullOrder: CityProductionOrder = {
+            type: order.type,
+            item: order.item,
+            turnsRemaining: resolvedTurnsRemaining,
+            targetTileId: (order as ProductionOrder).targetTileId,
+          };
 
           // Replace existing top order if same type
           const top = city.productionQueue[0];
@@ -90,6 +106,40 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
             city.productionQueue.unshift(fullOrder);
           }
           globalGameBus.emit('productionQueued', { cityId, order: fullOrder });
+        }
+      }
+      break;
+    }
+    case 'REORDER_PRODUCTION_QUEUE': {
+      if (draft.contentExt) {
+        const { cityId, reorderedQueue } = action.payload;
+        const city = draft.contentExt.cities[cityId];
+        if (city) {
+          city.productionQueue = reorderedQueue.map((order) => ({
+            type: order.type,
+            item: order.item,
+            targetTileId: order.targetTileId,
+            turnsRemaining:
+              typeof order.turnsRemaining === 'number'
+                ? order.turnsRemaining
+                : (() => {
+                    const cost = getItemCost(order.type, order.item);
+                    const yieldPerTurn = getCityYield(draft.contentExt!, city) || 1;
+                    return Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
+                  })(),
+          }));
+          globalGameBus.emit('productionQueueReordered', { cityId });
+        }
+      }
+      break;
+    }
+    case 'CANCEL_PRODUCTION_ORDER': {
+      if (draft.contentExt) {
+        const { cityId, orderIndex } = action.payload;
+        const city = draft.contentExt.cities[cityId];
+        if (city && orderIndex >= 0 && orderIndex < city.productionQueue.length) {
+          const [removed] = city.productionQueue.splice(orderIndex, 1);
+          globalGameBus.emit('productionOrderCanceled', { cityId, order: removed, index: orderIndex });
         }
       }
       break;

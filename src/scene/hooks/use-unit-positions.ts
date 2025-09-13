@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGame } from '../../hooks/use-game';
-import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension } from '../utils/coords';
+import { axialToWorld, tileIdToWorldFromExt as tileIdToWorldFromExtension, DEFAULT_HEX_SIZE } from '../utils/coords';
 
 export type UnitPosition = {
   id: string;
@@ -35,13 +35,14 @@ export function useUnitPositions(options: UseUnitPositionsOptions = {}): UnitPos
       if (options.predicate && !options.predicate(u)) continue;
       let xz: [number, number] | undefined;
       if (typeof u.location === 'string') {
-        xz = tileIdToWorldFromExtension(extension as any, u.location);
+        // Use the same hex size as the scene so labels align with tiles
+        xz = tileIdToWorldFromExtension(extension as any, u.location, DEFAULT_HEX_SIZE);
       } else if (
         u.location &&
         typeof (u.location as any).q === 'number' &&
         typeof (u.location as any).r === 'number'
       ) {
-        xz = axialToWorld((u.location as any).q, (u.location as any).r);
+        xz = axialToWorld((u.location as any).q, (u.location as any).r, DEFAULT_HEX_SIZE);
       }
       const [x, z] = (xz ?? [0, 0]) as [number, number];
       out.push({ id: u.id, type: (u as any).type, position: [x, y, z] });

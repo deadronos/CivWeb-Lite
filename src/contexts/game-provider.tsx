@@ -14,8 +14,8 @@ import { evaluateAI } from '../game/ai/ai';
 
 export type Dispatch = (action: GameAction) => void;
 
-export const GameStateContext = createContext<GameState | null>(null);
-export const GameDispatchContext = createContext<Dispatch | null>(null);
+export const GameStateContext = createContext<GameState | undefined>(undefined);
+export const GameDispatchContext = createContext<Dispatch | undefined>(undefined);
 
 export const initialState = (): GameState => ({
   schemaVersion: 1,
@@ -147,6 +147,47 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [state.autoSim, advanceTurn]);
 
   const frozen = useMemo(() => Object.freeze(state), [state]);
+  // Expose a tiny test-only helper for E2E tests so they can reliably select units
+  // without relying on DOM interactions that are flaky in headless environments.
+  // Only attach in test or non-production environments.
+  if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+    // Attach a tiny test-only helper to globalThis. Tests can call
+    // `globalThis.__civweblite_test_helpers.selectUnit(id)` to programmatically
+    // select a unit without using fragile DOM interactions.
+    // This intentionally exists only in non-production builds.
+    // @ts-ignore - test-only global
+    globalThis.__civweblite_test_helpers = {
+      selectUnit: (id: string) => {
+        try {
+          dispatch({ type: 'SELECT_UNIT', payload: { unitId: id } } as any);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      // Programmatically request a preview for a given unit -> target tile
+      // This lets E2E tests short-circuit hover interactions and deterministically
+      // set previewPath in the app during tests.
+      requestPreview: (unitId: string, targetTileId: string) => {
+        try {
+          dispatch({ type: 'PREVIEW_PATH', payload: { unitId, targetTileId } } as any);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      // Directly set the UI preview path (test-only). Accepts an array of tile ids.
+      setPreviewPath: (path: string[]) => {
+        try {
+          dispatch({ type: 'EXT_SET_PREVIEW', payload: { path } } as any);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      getState: () => frozen,
+    } as any;
+  }
   return (
     <GameStateContext.Provider value={frozen}>
       <GameDispatchContext.Provider value={dispatch}>{children}</GameDispatchContext.Provider>

@@ -24,6 +24,10 @@ import { getVariantCount, getVariantAssets } from './assets/biome-variants-regis
 import { BIOME_ASSETS_EVENT, loadBiomeVariants } from './assets/biome-assets';
 import { DEFAULT_WRAPPING_CONFIG, generateWrappedBiomeGroups } from './utils/world-wrapping';
 import { useCameraWrapping } from './hooks/use-camera-wrapping';
+import MovementRangeOverlay from '../components/game/movement-range-overlay';
+import PathPreviewOverlay from '../components/game/path-preview-overlay';
+import CombatPreviewOverlay from '../components/game/combat-preview-overlay';
+import MovementPreview from './movement-preview';
 
 function findTileByCoord(tiles: Tile[], q: number, r: number): Tile | undefined {
   return tiles.find((t) => t.coord.q === q && t.coord.r === r);
@@ -35,7 +39,7 @@ export const SCENE_RUNTIME_MARKER = true;
 // Simple stable hash for variant selection from axial coords
 function variantIndexFor(q: number, r: number, count: number): number {
   if (count <= 1) return 0;
-  let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
+  let x = Math.trunc(q) * 374_761_393 + Math.trunc(r) * 668_265_263;
   x = (x ^ (x >>> 13)) * 1_274_126_177;
   x = x ^ (x >>> 16);
   const f = (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
@@ -114,7 +118,7 @@ function transformsForBucket(bucket: Bucket): InstanceTransform[] {
   return out;
 }
 
-function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?: (event: any) => void }) {
+function HexBucketsInstanced({ buckets, onClick, onPointerMove }: { buckets: Bucket[], onClick?: (event: any) => void, onPointerMove?: (event: any) => void }) {
   // Attempt to render GLTF assets when available per variant; fallback to hex cylinders otherwise
   return (
     <group name="hex-buckets">
@@ -134,6 +138,7 @@ function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?
               castShadow
               name={`bucket-${b.biome}-${b.variantIndex}`}
               onClick={onClick}
+              onPointerMove={onPointerMove}
             />
           );
         }
@@ -153,6 +158,7 @@ function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?
             castShadow
             name={`bucket-fallback-${b.biome}-${b.variantIndex}`}
             onClick={onClick}
+            onPointerMove={onPointerMove}
           />
         );
       })}
@@ -165,7 +171,41 @@ export function ConnectedScene() {
   const { state, dispatch } = useGame();
   const { selectedUnitId, setSelectedUnitId } = useSelection();
 
-  const handleHexClick = (event: any) => {
+  // Schedule state mutations to the next frame to avoid unmounting three/fiber
+  // objects while the event system is still traversing. This prevents
+  // removeChild() errors inside the R3F events manager when clicking tiles/units.
+  const schedule = React.useCallback((task: () => void) => {
+    try {
+      requestAnimationFrame(() => task());
+    } catch {
+      setTimeout(task, 0);
+    }
+  }, []);
+
+  const handleTileHover = (event: any) => {
+    if (!selectedUnitId) return;
+    // Find tile from event
+    let hoveredTileId;
+    // similar logic as click to find tileId from instanceId
+    let count = 0;
+    for (const bucket of buckets) {
+      if (event.instanceId < count + bucket.positions.length) {
+        const hexCoord = bucket.hexCoords[event.instanceId - count];
+        hoveredTileId = findTileByCoord(state.map.tiles, hexCoord.q, hexCoord.r)?.id;
+        break;
+      }
+      count += bucket.positions.length;
+    }
+
+    if (hoveredTileId) {
+      dispatch({ type: 'PREVIEW_PATH', payload: { unitId: selectedUnitId, targetTileId: hoveredTileId } });
+    }
+  };
+
+  const handleTileClick = (event: any) => {
+    if (typeof event?.stopPropagation === 'function') {
+      try { event.stopPropagation(); } catch { /* ignore */ }
+    }
     if (event.instanceId === undefined) return;
 
     // This is a bit of a hack to find the tile that was clicked.
@@ -188,17 +228,27 @@ export function ConnectedScene() {
     const unitOnTile = Object.values(state.contentExt?.units ?? {}).find(
       (u) => u.location === clickedTile?.id
     );
+    const cityId = state.contentExt?.tiles?.[clickedTile.id]?.occupantCityId;
 
     if (unitOnTile) {
-      setSelectedUnitId(unitOnTile.id);
-    } else {
-      if (selectedUnitId) {
-        // TODO: pathfinding
-        // For now, just move to the clicked tile
-        dispatch({
-          type: 'MOVE_UNIT',
-          payload: { unitId: selectedUnitId, toTileId: clickedTile.id },
-        });
+      schedule(() => setSelectedUnitId(unitOnTile.id));
+    } else if (cityId) {
+      schedule(() => dispatch({ type: 'OPEN_CITY_PANEL', payload: { cityId } }));
+    } else if (selectedUnitId) {
+      let targetTileId;
+      // find targetTileId
+      count = 0;
+      for (const bucket of buckets) {
+        if (event.instanceId < count + bucket.positions.length) {
+          const hexCoord = bucket.hexCoords[event.instanceId - count];
+          targetTileId = findTileByCoord(state.map.tiles, hexCoord.q, hexCoord.r)?.id;
+          break;
+        }
+        count += bucket.positions.length;
+      }
+      if (targetTileId) {
+        const confirmCombat = state.ui.previewCombat ? true : false; // assume confirm if combat preview
+        schedule(() => dispatch({ type: 'ISSUE_MOVE', payload: { unitId: selectedUnitId, path: state.ui.previewPath || [targetTileId], confirmCombat } }));
       }
     }
   };
@@ -370,7 +420,7 @@ export function ConnectedScene() {
       ) : undefined}
 
       {/* Terrain */}
-      <HexBucketsInstanced buckets={buckets} onClick={handleHexClick} />
+      <HexBucketsInstanced buckets={buckets} onClick={handleTileClick} onPointerMove={handleTileHover} />
 
       {/* Units & labels */}
       <UnitMeshes />
@@ -390,6 +440,16 @@ export function ConnectedScene() {
           {selectedUnitLabel.id}
         </HtmlLabel>
       ) : undefined}
+
+      {/* Overlays */}
+      {selectedUnitId && (
+        <>
+          <MovementRangeOverlay selectedUnitId={selectedUnitId} />
+          <PathPreviewOverlay selectedUnitId={selectedUnitId} />
+          <CombatPreviewOverlay selectedUnitId={selectedUnitId} />
+          <MovementPreview selectedUnitId={selectedUnitId} />
+        </>
+      )}
     </group>
   );
 }

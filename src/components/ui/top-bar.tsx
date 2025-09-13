@@ -7,9 +7,10 @@ export type TopBarProps = {
   resources: Record<string, number | { value: number; delta?: number }>;
   onOpenLoad?: () => void;
   onOpenLoadPaste?: () => void;
+  onOpenResearch?: () => void;
 };
 
-export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste }: TopBarProps) {
+export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste, onOpenResearch }: TopBarProps) {
   const getValue = (v: number | { value: number; delta?: number } | undefined) => {
     if (v === undefined) return 0;
     return typeof v === 'number' ? v : v.value;
@@ -31,6 +32,9 @@ export default function TopBar({ turn, resources, onOpenLoad, onOpenLoadPaste }:
         </div>
       </div>
       <div>
+        <button aria-label="topbar research" onClick={onOpenResearch}>
+          Research…
+        </button>
         <button aria-label="topbar load" onClick={onOpenLoad}>
           Load…
         </button>

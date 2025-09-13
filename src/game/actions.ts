@@ -48,6 +48,10 @@ export type GameAction =
   | { type: 'CANCEL_PRODUCTION_ORDER'; payload: { cityId: string; orderIndex: number } }
   | { type: 'START_RESEARCH'; payload: { playerId: string; techId: string } }
   | { type: 'QUEUE_RESEARCH'; payload: { playerId: string; techId: string } }
+  | {
+      type: 'SWITCH_RESEARCH_POLICY';
+      payload: { playerId: string; policy: 'preserveProgress' | 'discardProgress' };
+    }
   | { type: 'BEGIN_TURN'; payload: { playerId: string } }
   | { type: 'END_PLAYER_PHASE'; payload: { playerId: string } }
   // Extension actions (biomes/units/cities/tech)
@@ -79,6 +83,7 @@ export type GameAction =
       payload: UnitMovePayload;
     }
   | { type: 'MOVE_UNIT'; payload: { unitId: string; toTileId: string } }
+  | { type: 'FORTIFY_UNIT'; payload: { unitId: string } }
   // Additional actions from reducer
   | { type: 'AI_PERFORM_ACTIONS'; payload: { playerId: string } }
   | { type: 'SET_TILE_IMPROVEMENT'; payload: { tileId: string; improvementId: string } }
@@ -118,6 +123,7 @@ export const GAME_ACTION_TYPES = [
   'CLOSE_CITY_PANEL',
   'START_RESEARCH',
   'QUEUE_RESEARCH',
+  'SWITCH_RESEARCH_POLICY',
   'BEGIN_TURN',
   'END_PLAYER_PHASE',
   // Extension actions
@@ -131,6 +137,7 @@ export const GAME_ACTION_TYPES = [
   'EXT_FOUND_CITY',
   'EXT_ISSUE_MOVE_PATH',
   'MOVE_UNIT',
+  'FORTIFY_UNIT',
   // New actions
   'AI_PERFORM_ACTIONS',
   'SET_TILE_IMPROVEMENT',
