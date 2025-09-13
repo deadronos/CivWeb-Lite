@@ -10,7 +10,7 @@ export function LogList({ entries }: { entries: { type: string; }[]; }) {
       ))}
     </ul>
   );
-});
+}
 
 export default LogList;
 
