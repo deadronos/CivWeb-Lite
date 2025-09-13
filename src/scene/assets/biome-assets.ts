@@ -93,7 +93,10 @@ function splitGeometryByMaterial(
     const slice = indexArray.slice(g.start, g.start + g.count);
     const sub = cloneSubsetGeometry(geometry, slice);
     geos.push(sub);
-    mats.push(material[g.materialIndex] as Material);
+    // material may be an array; guard against out-of-range indexes
+    const matIndex = typeof g.materialIndex === 'number' ? g.materialIndex : 0;
+    const mat = Array.isArray(material) ? material[matIndex] ?? material[0] : material;
+    mats.push(mat.clone());
   }
   return { geos, mats };
 }

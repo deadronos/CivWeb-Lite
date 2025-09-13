@@ -70,19 +70,21 @@ export function turnReducer(draft: Draft<GameState>, action: GameAction): void {
                 const city = draft.contentExt.cities[cityId];
                 if (city && city.ownerId === player.id) {
                   // Compute turnsRemaining if not provided (using getItemCost)
-                  const cost = getItemCost(order.type, order.item);
+                  const cost = getItemCost(order.type, order.item) || 1;
                   const yieldPerTurn = getCityYield(draft.contentExt, city) || 1;
-                  const turnsRemaining = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
-                  const fullOrder: ProductionOrder = { ...order, turnsRemaining };
+                  const resolvedTurns = Math.max(1, Math.ceil(cost / Number(yieldPerTurn)));
 
-                  // Replace or add to queue
+                  // Create an engine-friendly order with numeric turnsRemaining
+                  const engineOrder = { ...order, turnsRemaining: resolvedTurns } as ProductionOrder & { turnsRemaining: number };
+
+                  // Replace or add to queue using the resolved numeric value
                   const top = city.productionQueue[0];
-                  if (top && top.type === fullOrder.type && top.item === fullOrder.item) {
-                    top.turnsRemaining = fullOrder.turnsRemaining;
+                  if (top && top.type === engineOrder.type && top.item === engineOrder.item) {
+                    top.turnsRemaining = engineOrder.turnsRemaining as any;
                   } else {
-                    city.productionQueue.unshift(fullOrder);
+                    city.productionQueue.unshift(engineOrder as any);
                   }
-                  globalGameBus.emit('productionQueued', { cityId, order: fullOrder });
+                  globalGameBus.emit('productionQueued', { cityId, order: engineOrder });
                 }
               }
               break;
@@ -94,11 +96,14 @@ export function turnReducer(draft: Draft<GameState>, action: GameAction): void {
                 if (unit && unit.ownerId === player.id && draft.contentExt.tiles[tileId]) {
                   const oldTileId = unit.location;
                   unit.location = tileId;
-                  // Update occupant on old and new tiles
-                  if (draft.contentExt.tiles[oldTileId]) {
-                    draft.contentExt.tiles[oldTileId].occupantUnitId = null; // Simplified, assume single occupant
+                  // Update occupant on old and new tiles. Normalize keys if coordinates are used.
+                  const oldIdKey = typeof oldTileId === 'string' ? oldTileId : `${(oldTileId as any).q},${(oldTileId as any).r}`;
+                  if (draft.contentExt.tiles && draft.contentExt.tiles[oldIdKey]) {
+                    draft.contentExt.tiles[oldIdKey].occupantUnitId = null; // Simplified, assume single occupant
                   }
-                  draft.contentExt.tiles[tileId].occupantUnitId = unitId;
+                  if (draft.contentExt.tiles && draft.contentExt.tiles[tileId]) {
+                    draft.contentExt.tiles[tileId].occupantUnitId = unitId;
+                  }
                 }
               }
               break;

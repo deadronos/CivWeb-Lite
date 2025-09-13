@@ -3,10 +3,9 @@ import { useGame } from '../hooks/use-game';
 import { exportToFile, importFromFile } from '../game/save';
 import { TECHS } from '../game/content/registry';
 import { loadUnits, loadBuildings } from '../data/loader';
-import CivicPanelContainer from './ui/civic-panel-container';
-import ExtTechPanelContainer from './ui/ext-tech-panel-container';
 import LoadModal from './ui/load-modal';
 import MinimapContainer from './ui/minimap-container';
+
 
 function GameHUDInner() {
   const { state, dispatch } = useGame();
@@ -76,9 +75,12 @@ function GameHUDInner() {
   }, [extension?.playerState.cultureResearch]);
 
   // Minimal data-backed catalog view (Units/Buildings)
-  const [unitList, setUnitList] = React.useState<{ id: string; name: string; category: string }[]>(
-    []
-  );
+  const [unitList, setUnitList] = React.useState<{
+    id: string;
+    name: string;
+    category: string;
+    requires?: string;
+  }[]>([]);
   const [buildingList, setBuildingList] = React.useState<
     { id: string; name: string; cost: number }[]
   >([]);
@@ -159,8 +161,7 @@ function GameHUDInner() {
       {extension && (
         <>
           <div style={{ display: 'flex', gap: 12 }}>
-            <ExtTechPanelContainer />
-            <CivicPanelContainer />
+            
           </div>
           <div>Cities: {cityCount}</div>
           <div>Science per turn {extension.playerState.science}</div>
@@ -169,7 +170,23 @@ function GameHUDInner() {
           )}
           {extensionResearch && <div>Ext Research: {extensionResearch}</div>}
           {extensionCultureResearch && <div>Ext Civic: {extensionCultureResearch}</div>}
-          <SpecControls />
+          {state.ui?.openPanels?.devPanel && (
+            <>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button
+                  aria-label="toggle spec controls"
+                  onClick={() =>
+                    dispatch(
+                      state.ui?.openPanels?.specPanel ? { type: 'CLOSE_SPEC_PANEL' } : { type: 'OPEN_SPEC_PANEL' }
+                    )
+                  }
+                >
+                  {state.ui?.openPanels?.specPanel ? 'Hide Spec' : 'Show Spec'}
+                </button>
+              </div>
+              {state.ui?.openPanels?.specPanel && <SpecControls />}
+            </>
+          )}
         </>
       )}
       {aiAvg && <div>AI Avg: {aiAvg}ms</div>}
@@ -234,23 +251,10 @@ function GameHUDInner() {
         Save
       </button>
       <input type="file" accept="application/json" aria-label="load file" onChange={onFileChange} />
-      <div role="log" aria-label="event log" aria-live="polite">
-        <LogList entries={state.log.slice(-10)} />
-      </div>
-      <MinimapContainer />
+      <div><MinimapContainer /></div >
     </div>
   );
 }
-
-const LogList = React.memo(function LogList({ entries }: { entries: { type: string }[] }) {
-  return (
-    <ul>
-      {entries.map((e, index) => (
-        <li key={index}>{String(e.type).replaceAll(':', '·')}</li>
-      ))}
-    </ul>
-  );
-});
 
 export default React.memo(GameHUDInner);
 
@@ -508,6 +512,18 @@ function SpecControls() {
     </div>
   );
 }
+
+/**
+ * Developer UI Controls
+ * 
+ * The SpecControls and Show/Hide Spec button are gated behind the Dev checkbox toggle in the top overlay UI.
+ * This toggle sets state.ui.openPanels.devPanel to true/false, and only when true will this dev section render.
+ * 
+ * To enable: Check the "Dev" checkbox in the top menu (left of End Turn button).
+ * Spec controls allow spawning units, queuing production, moving units, adding demo cities/tiles, and starting research/civics for testing.
+ * 
+ * Note: This is for development/debugging. Consider gating further with import.meta.env.DEV in production builds.
+ */
 
 function victoryBadge(v: string): string {
   switch (v) {

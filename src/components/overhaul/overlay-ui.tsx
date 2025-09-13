@@ -2,6 +2,8 @@ import React from 'react';
 import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
 import GameHUD from '../game-hud';
+import LogList from '../ui/log-list';
+
 const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
 const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
 
@@ -42,6 +44,7 @@ export default function OverlayUI() {
         }} 
       />
       <StatsBar />
+      <LogListContainer />
       <GameHUD />
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
@@ -66,7 +69,8 @@ function TopMenu({
   onOpenResearch: () => void;
   onOpenCities: () => void;
 }) {
-  const { dispatch } = useGame();
+  // call hook once to avoid subtle mismatches and keep values in sync
+  const { state, dispatch } = useGame();
   
   const Item = (p: React.PropsWithChildren<{ onClick?: () => void }>) => (
     <button className="ui-topmenu-item" onClick={p.onClick}>
@@ -93,6 +97,18 @@ function TopMenu({
         <Item>Manual</Item>
       </div>
       <div className="ui-topmenu-right">
+        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <input
+            type="checkbox"
+            // guard access in case ui or openPanels are undefined
+            checked={!!state.ui?.openPanels?.devPanel}
+            onChange={(event) => {
+              const action = event.target.checked ? { type: 'OPEN_DEV_PANEL' } : { type: 'CLOSE_DEV_PANEL' };
+              dispatch(action as any);
+            }}
+          />
+          Dev
+        </label>
         <button className="ui-turn" onClick={() => dispatch({ type: 'END_TURN' })}>
           Turn Done
         </button>
@@ -129,6 +145,15 @@ function StatsBar() {
           {r.key}: {r.qty}
         </div>
       ))}
+    </div>
+  );
+}
+
+function LogListContainer() {
+  const { state } = useGame();
+  return (
+    <div className="ui-log-list-container" role="log" aria-label="event log" aria-live="polite">
+        <LogList entries={state.log.slice(-10)}/>
     </div>
   );
 }

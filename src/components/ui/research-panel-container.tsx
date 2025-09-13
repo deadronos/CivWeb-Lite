@@ -24,8 +24,8 @@ export function ResearchPanelContainer({ playerId }: { playerId: string }) {
   return (
     <ResearchPanel
       playerId={playerId}
-      currentResearch={currentResearch ? { id: currentResearch.techId, progress: currentResearch.progress } : undefined}
-      queue={queue.map(id => ({ id, progress: 0 }))} // Progress not tracked for queue yet
+  currentResearch={currentResearch ? { techId: currentResearch.techId, progress: currentResearch.progress } : null}
+  queue={queue.map((id) => id)}
       availableTechs={availableTechs}
       onStartResearch={(techId: string) => {
         dispatch({ type: 'START_RESEARCH', payload: { playerId, techId } });

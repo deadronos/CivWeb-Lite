@@ -17,6 +17,8 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   CLOSE_CITY_PANEL: uiReducer,
   OPEN_RESEARCH_PANEL: uiReducer,
   CLOSE_RESEARCH_PANEL: uiReducer,
+  OPEN_DEV_PANEL: uiReducer,
+  CLOSE_DEV_PANEL: uiReducer,
   PREVIEW_PATH: uiReducer,
   ISSUE_MOVE: uiReducer,
 
@@ -36,13 +38,15 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   SET_TILE_IMPROVEMENT: worldReducer,
   REMOVE_TILE_IMPROVEMENT: worldReducer,
   SET_CITY_TILE: worldReducer,
-  SET_UNIT_STATE: worldReducer,
+  ADD_UNIT_STATE: worldReducer,
+  REMOVE_UNIT_STATE: worldReducer,
   SET_UNIT_LOCATION: worldReducer,
   EXT_ADD_TILE: worldReducer,
   EXT_ADD_UNIT: worldReducer,
   EXT_ADD_CITY: worldReducer,
   EXT_FOUND_CITY: worldReducer,
   EXT_ISSUE_MOVE_PATH: worldReducer,
+  FORTIFY_UNIT: worldReducer, // Route FORTIFY_UNIT to worldReducer for state addition
 
   // Lifecycle actions
   INIT: lifecycleReducer,
@@ -54,7 +58,7 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
 export function applyAction(state: GameState, action: GameAction): GameState {
   if (action.type === 'LOAD_STATE') {
     globalGameBus.emit('action:applied', { action });
-    return Object.freeze(action.payload);
+    return Object.freeze(action.payload as GameState);
   }
 
   return produceNextState(state, (draft) => {
