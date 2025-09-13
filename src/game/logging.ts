@@ -1,6 +1,6 @@
 import { GameState, GameLogEntry } from './types';
 
-export const DEFAULT_LOG_CAPACITY = 50;
+export const DEFAULT_LOG_CAPACITY = 100;
 
 export function appendLog(
   stateDraft: GameState,
