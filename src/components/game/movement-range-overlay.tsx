@@ -14,40 +14,47 @@ interface MovementRangeOverlayProperties {
 export function MovementRangeOverlay({ selectedUnitId }: MovementRangeOverlayProperties) {
   const { state, dispatch } = useGame();
 
-  if (!selectedUnitId || !state.contentExt) {
-    return undefined;
-  }
+  // Snapshot references used below; avoid non-null assertions before checks
+  const content = state.contentExt;
+  const unit = selectedUnitId && content ? content.units[selectedUnitId] : undefined;
 
-  const unit = state.contentExt.units[selectedUnitId];
   // Be tolerant to tests or extensions that use string literals for states
-  const movedFlag = unit?.activeStates?.has(UnitState.Moved) ||
-    ((unit?.activeStates as unknown as Set<string>)?.has?.('moved') ?? false);
-  if (!unit || movedFlag) {
-    return undefined; // Don't show range for moved units
-  }
+  const movedFlag = Boolean(
+    unit?.activeStates?.has?.(UnitState.Moved) ||
+      ((unit?.activeStates as unknown as Set<string>)?.has?.('moved') ?? false),
+  );
 
   // Only compute range if we have a valid starting tile for the unit.
   const hasValidStart = (() => {
+    if (!unit || !content) return false;
     const loc = (unit as any)?.location;
     const locId = typeof loc === 'string' ? loc : undefined;
-    return Boolean(locId && state.contentExt!.tiles[locId]);
+    return Boolean(locId && content.tiles[locId]);
   })();
 
+  // IMPORTANT: call hooks unconditionally in the same order each render
   const range = useMemo(() => {
-    if (!hasValidStart) {
+    if (!selectedUnitId || !content || !hasValidStart || !unit || movedFlag) {
       return { reachable: [] as string[], cost: {} as Record<string, number> };
     }
-    return computeMovementRange(state.contentExt!, selectedUnitId, state.map.width, state.map.height);
-  }, [hasValidStart, state.contentExt, selectedUnitId, state.map.width, state.map.height]);
+    return computeMovementRange(content, selectedUnitId, state.map.width, state.map.height);
+  }, [selectedUnitId, content, hasValidStart, unit, movedFlag, state.map.width, state.map.height]);
+
+  // After all hooks: decide whether to render
+  if (!selectedUnitId || !content || !unit || movedFlag) {
+    return; // no overlay, but hooks were still called in a stable order
+  }
 
   // Resolve selected unit owner for enemy detection
-  const unitOwner = state.contentExt!.units[selectedUnitId].ownerId;
+  const unitOwner = unit.ownerId;
 
   return (
     <group data-testid="movement-range-overlay">
       {range.reachable.map((tileId) => {
-        const tile = state.contentExt!.tiles[tileId];
-  if (!tile) return undefined;
+        const tile = content.tiles[tileId];
+        if (!tile) {
+          return; // skip invalid tiles
+        }
 
         // World position for overlay label
         const [x, z] = axialToWorld(tile.q, tile.r, DEFAULT_HEX_SIZE);
@@ -55,11 +62,11 @@ export function MovementRangeOverlay({ selectedUnitId }: MovementRangeOverlayPro
         // Enemy detection for labeling (unit or city owned by another player)
         let enemyPresent = false;
         if (tile.occupantUnitId) {
-          const occ = state.contentExt!.units[tile.occupantUnitId];
+          const occ = content.units[tile.occupantUnitId];
           if (occ && occ.ownerId !== unitOwner) enemyPresent = true;
         }
         if (tile.occupantCityId) {
-          const city = state.contentExt!.cities[tile.occupantCityId];
+          const city = content.cities[tile.occupantCityId];
           if (city && city.ownerId !== unitOwner) enemyPresent = true;
         }
 

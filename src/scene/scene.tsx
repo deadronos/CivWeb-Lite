@@ -38,7 +38,7 @@ export const SCENE_RUNTIME_MARKER = true;
 // Simple stable hash for variant selection from axial coords
 function variantIndexFor(q: number, r: number, count: number): number {
   if (count <= 1) return 0;
-  let x = (q | 0) * 374_761_393 + (r | 0) * 668_265_263;
+  let x = Math.trunc(q) * 374_761_393 + Math.trunc(r) * 668_265_263;
   x = (x ^ (x >>> 13)) * 1_274_126_177;
   x = x ^ (x >>> 16);
   const f = (x >>> 0) / 0xFF_FF_FF_FF; // 0..1
@@ -117,7 +117,7 @@ function transformsForBucket(bucket: Bucket): InstanceTransform[] {
   return out;
 }
 
-function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?: (event: any) => void }) {
+function HexBucketsInstanced({ buckets, onClick, onPointerMove }: { buckets: Bucket[], onClick?: (event: any) => void, onPointerMove?: (event: any) => void }) {
   // Attempt to render GLTF assets when available per variant; fallback to hex cylinders otherwise
   return (
     <group name="hex-buckets">
@@ -137,6 +137,7 @@ function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?
               castShadow
               name={`bucket-${b.biome}-${b.variantIndex}`}
               onClick={onClick}
+              onPointerMove={onPointerMove}
             />
           );
         }
@@ -156,6 +157,7 @@ function HexBucketsInstanced({ buckets, onClick }: { buckets: Bucket[], onClick?
             castShadow
             name={`bucket-fallback-${b.biome}-${b.variantIndex}`}
             onClick={onClick}
+            onPointerMove={onPointerMove}
           />
         );
       })}

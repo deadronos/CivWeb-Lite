@@ -1,6 +1,5 @@
 import React from 'react';
 import * as THREE from 'three';
-import { primitive } from '@react-three/drei';
 import { useGame } from '../../hooks/use-game';
 import { UnitState } from '../../types/unit';
 
@@ -12,27 +11,27 @@ export function PathPreviewOverlay({ selectedUnitId }: PathPreviewOverlayPropert
   const { state } = useGame();
 
   if (!selectedUnitId || !state.ui.previewPath || state.ui.previewPath.length < 2) {
-    return null;
+    return;
   }
 
   const path = state.ui.previewPath;
   const extension = state.contentExt;
 
-  if (!extension) return null;
+  if (!extension) return;
 
   // Get unit current position
   const unit = extension.units[selectedUnitId];
-  if (!unit) return null;
+  if (!unit) return;
 
   return (
     <group data-testid="path-preview-overlay">
       {path.map((tileId, index) => {
-        const tile = extension.tiles[tileId];
-        if (!tile || index === 0) return null; // Skip first if it's current position
+  const tile = extension.tiles[tileId];
+  if (!tile || index === 0) return; // Skip first if it's current position
 
         const previousTileId = path[index - 1];
-        const previousTile = extension.tiles[previousTileId];
-        if (!previousTile) return null;
+  const previousTile = extension.tiles[previousTileId];
+  if (!previousTile) return;
 
         // Convert hex to 3D positions
         const previousX = previousTile.q * Math.sqrt(3) * 0.5;
@@ -45,7 +44,8 @@ export function PathPreviewOverlay({ selectedUnitId }: PathPreviewOverlayPropert
 
         const origin = new THREE.Vector3(previousX, 0.05, previousZ);
 
-        const arrow = new THREE.ArrowHelper(direction, origin, length, 0x00ff00, 0.1, 0.05);
+  const arrowColor = '#00ff00'; // lime-green path arrow
+  const arrow = new THREE.ArrowHelper(direction, origin, length, arrowColor as unknown as number, 0.1, 0.05);
 
         return (
           <primitive
