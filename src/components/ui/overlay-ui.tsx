@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
 import GameHUD from '../game-hud';
-import LogList from '../ui/log-list';
+import LogList from './log-list';
 
 const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
 const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
 
 type PanelProperties = { open: boolean; onClose: () => void };
 
-export default function OverlayUI() {
+export default function OverlayUI():ReactNode {
   const { state, dispatch } = useGame();
   const [showRight, setShowRight] = React.useState(false);
   const [showLeft, setShowLeft] = React.useState(false);
@@ -17,7 +17,8 @@ export default function OverlayUI() {
   // Sync with game state
   const researchPanelOpen = state.ui.openPanels.researchPanel || showLeft;
   const cityPanelOpen = !!state.ui.openPanels.cityPanel || showRight;
-  
+  const LogEntries : { type: string; }[] = state.log.slice(-10);
+
   // Prefetch likely-next chunks shortly after mount (warm-up without blocking):
   React.useEffect(() => {
     const id = setTimeout(() => {
@@ -45,7 +46,7 @@ export default function OverlayUI() {
       />
       <StatsBar />
       <LogListContainer />
-      <GameHUD />
+       {/* <GameHUD /> */}
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
           setShowLeft(false);
@@ -62,7 +63,7 @@ export default function OverlayUI() {
   );
 }
 
-function TopMenu({
+export function TopMenu({
   onOpenResearch,
   onOpenCities,
 }: {
@@ -97,7 +98,7 @@ function TopMenu({
         <Item>Manual</Item>
       </div>
       <div className="ui-topmenu-right">
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <label className="ui-dev-toggle">
           <input
             type="checkbox"
             // guard access in case ui or openPanels are undefined
@@ -149,7 +150,7 @@ function StatsBar() {
   );
 }
 
-function LogListContainer() {
+export function LogListContainer() {
   const { state } = useGame();
   return (
     <div className="ui-log-list-container" role="log" aria-label="event log" aria-live="polite">

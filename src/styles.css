@@ -65,6 +65,20 @@ canvas {
   padding: 6px 12px;
   font-weight: 700;
 }
+.ui-log-list-container {
+  position: fixed;
+  right: 12px;
+  top: 88px;
+  width: 300px;
+  max-height: 200px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 8px;
+  overflow: auto;
+  font-size: 12px;
+  z-index: 15;
+}
 .ui-statsbar {
   position: fixed;
   left: 12px;
@@ -308,3 +322,143 @@ canvas {
   border: 1px solid transparent;
   color: inherit;
 }
+.ui-dev-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Utilities for GameHUD inline style migrations */
+.players-summary {
+  margin: 6px 0;
+  opacity: 0.85;
+}
+.hud-actions {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+.hidden-file-input {
+  display: none;
+}
+.catalog-list {
+  max-height: 120px;
+  overflow: auto;
+  margin: 0;
+  padding-left: 16px;
+}
+.muted {
+  opacity: 0.6;
+}
+.spec-controls {
+  margin-top: 8px;
+  padding: 8px;
+  border-top: 1px solid #444;
+}
+.spec-controls-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.strong {
+  font-weight: 600;
+}
+.spec-toggle-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.section-title {
+  font-weight: 600;
+}
+.hud-section {
+  margin-top: 8px;
+}
+
+/* app.tsx inline style replacements */
+.app-error-alert {
+  padding: 12px;
+  position: fixed;
+  left: 12px;
+  bottom: 180px;
+  z-index: 1000;
+  background: rgba(20,20,25,0.8);
+  color: #fff;
+  border-radius: 6px;
+}
+.app-error-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.app-error-body {
+  font-size: 12px;
+  opacity: 0.9;
+  max-width: 560px;
+}
+.app-error-footer {
+  margin-top: 8px;
+}
+.app-hidden-stats {
+  display: none;
+}
+.hud-cam-status {
+  position: fixed;
+  right: 12px;
+  bottom: 192px;
+  color: var(--color-fg);
+}
+
+/* Unit marker wrapper (was inline style position: relative) */
+.unit-marker-wrap {
+  position: relative;
+}
+
+/* LazySpinner styles (migrated from inline styles) */
+.lazy-spinner {
+  position: fixed;
+  z-index: 100;
+  opacity: 0.9;
+  color: var(--color-fg);
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 6px;
+}
+.lazy-spinner.top-left { top: 10px; left: 10px; }
+.lazy-spinner.top-right { top: 10px; right: 10px; }
+.lazy-spinner.bottom-left { bottom: 10px; left: 10px; }
+.lazy-spinner.bottom-right { bottom: 10px; right: 10px; }
+.lazy-spinner .icon { animation: cwl-spin 0.9s linear infinite; }
+
+@keyframes cwl-spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+
+/* Load modal styles */
+.load-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.load-modal-panel {
+  width: 520px;
+  background: var(--color-bg, #1e1e1e);
+  color: var(--color-fg, #f0f0f0);
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.load-modal-header { display:flex; justify-content:space-between; align-items:center; }
+.load-modal-error { color: salmon; margin-top: 8px; }
+
+.load-modal-title { margin: 0; }
+.load-modal-body { margin-top: 8px; }
+.load-modal-label { display: block; font-weight: 600; margin-bottom: 4px; }
+.load-modal-textarea { width: 100%; }
+.load-modal-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* Small utility classes */
+.hidden { display: none !important; }

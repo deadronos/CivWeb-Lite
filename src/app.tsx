@@ -8,7 +8,7 @@ import { GameProvider } from './contexts/game-provider';
 const Scene = React.lazy(() =>
   import('./scene/scene').then((m) => ({ default: m.ConnectedScene }))
 );
-const OverlayUI = React.lazy(() => import('./components/overhaul/overlay-ui'));
+const OverlayUI = React.lazy(() => import('./components/ui/overlay-ui'));
 import LazySpinner from './components/common/lazy-spinner';
 import { CameraProvider } from './hooks/use-camera';
 import { SelectionProvider } from './contexts/selection-context';
@@ -19,7 +19,7 @@ import ErrorBoundary from './components/common/error-boundary';
 // Camera controls and dev stats are managed within the Scene module.
 
 export default function App() {
-  const [cam, setCam] = React.useState<{ q: number; r: number } | null>(null);
+  const [cam, setCam] = React.useState<{ q: number; r: number } | undefined>();
   const [started, setStarted] = React.useState(false);
   const [canvasKey, setCanvasKey] = React.useState(0);
   return (
@@ -31,24 +31,10 @@ export default function App() {
             <LoadListener onLoaded={() => setStarted(true)} />
             <ErrorBoundary
               fallback={({ error, reset }) => (
-                <div
-                  role="alert"
-                  style={{
-                    padding: 12,
-                    position: 'fixed',
-                    left: 12,
-                    bottom: 180,
-                    zIndex: 1000,
-                    background: 'rgba(20,20,25,0.8)',
-                    color: '#fff',
-                    borderRadius: 6,
-                  }}
-                >
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>3D view crashed</div>
-                  <div style={{ fontSize: 12, opacity: 0.9, maxWidth: 560 }}>
-                    {String(error?.message || error)}
-                  </div>
-                  <div style={{ marginTop: 8 }}>
+                <div role="alert" className="app-error-alert">
+                  <div className="app-error-title">3D view crashed</div>
+                  <div className="app-error-body">{String(error?.message || error)}</div>
+                  <div className="app-error-footer">
                     <button
                       onClick={() => {
                         setCanvasKey((k) => k + 1);
@@ -75,21 +61,13 @@ export default function App() {
             </ErrorBoundary>
             {/* Render hidden Stats only in tests to satisfy unit tests that mock drei */}
             {process.env.NODE_ENV === 'test' ? (
-              <div style={{ display: 'none' }}>
+              <div className="app-hidden-stats">
                 <Stats data-testid="stats" />
               </div>
-            ) : null}
-            {/* New overlay UI replacing demo HUD */}
+            ) : undefined}
             <React.Suspense fallback={<LazySpinner corner="top-right" />}>
               <OverlayUI />
             </React.Suspense>
-            <div
-              className="hud-cam-status"
-              aria-label="camera position"
-              style={{ position: 'fixed', right: 12, bottom: 192, color: 'var(--color-fg)' }}
-            >
-              Camera: {cam ? `${cam.q},${cam.r}` : '-'}
-            </div>
           </CameraProvider>
         </HoverProvider>
       </SelectionProvider>
@@ -100,8 +78,8 @@ export default function App() {
 function LoadListener({ onLoaded }: { onLoaded: () => void }) {
   const game = useGame();
   React.useEffect(() => {
-    const handler = (e: any) => {
-      game.dispatch({ type: 'LOAD_STATE', payload: e.detail });
+    const handler = (event: any) => {
+      game.dispatch({ type: 'LOAD_STATE', payload: event.detail });
       onLoaded();
     };
     globalThis.addEventListener('civweblite:loadState', handler);

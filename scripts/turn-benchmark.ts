@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import { initialState as makeInitial } from '..\\src\\contexts\\game-provider';
+import { initialState as makeInitial } from '../src/contexts/game-provider';
 import { applyAction } from '../src/game/reducer';
 
 function benchTurns(width: number, height: number, turns: number): number[] {

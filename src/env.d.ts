@@ -2,13 +2,13 @@
 
 // Augment ImportMeta so import.meta.env is typed in TypeScript files
 declare global {
-  interface ImportMetaEnv {
+  interface ImportMetaEnvironment {
     readonly MODE: string;
     readonly DEV: boolean;
     readonly PROD: boolean;
   }
 
   interface ImportMeta {
-    readonly env: ImportMetaEnv;
+    readonly env: ImportMetaEnvironment;
   }
 }

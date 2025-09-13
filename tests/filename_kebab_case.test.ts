@@ -11,7 +11,7 @@ const SRC_DIR = path.join(process.cwd(), 'src');
 const LEGACY_ALLOWLIST = new Set([
   'App.tsx',
   'components/common/LazySpinner.tsx',
-  'components/overhaul/LeftCivicPanel.tsx',
+  // 'components/overhaul/LeftCivicPanel.tsx', // removed - migrated to kebab-case
   // removed in favor of kebab-case implementations
   'components/ui/ContextPanel.tsx',
   'components/ui/Icon.tsx',

@@ -32,8 +32,8 @@ export default function LoadModal({
     }
   };
 
-  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     try {
       const state = await importFromFile(file);
@@ -42,32 +42,31 @@ export default function LoadModal({
     } catch (error_: any) {
       setError(error_?.message || 'Failed to load file');
     } finally {
-      e.currentTarget.value = '';
+      event.currentTarget.value = '';
     }
   };
-
   if (!open) return;
   return (
-    <div role="dialog" aria-modal="true" aria-label="Load Game" style={styles.backdrop}>
-      <div style={styles.panel}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ margin: 0 }}>Load Game</h2>
+    <div role="dialog" aria-modal="true" aria-label="Load Game" className="load-modal-backdrop">
+      <div className="load-modal-panel">
+        <div className="load-modal-header">
+          <h2 className="load-modal-title">Load Game</h2>
           <button onClick={onClose} aria-label="close load">
             ✕
           </button>
         </div>
-        <div style={{ marginTop: 8 }}>
-          <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Paste JSON</label>
+        <div className="load-modal-body">
+          <label className="load-modal-label">Paste JSON</label>
           <textarea
             ref={textReference}
             aria-label="save json"
             value={text}
             onChange={(event) => setText(event.target.value)}
             rows={8}
-            style={{ width: '100%' }}
+            className="load-modal-textarea"
           />
 
-          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <div className="load-modal-actions">
             <button onClick={onPasteLoad}>Load from Text</button>
             <button
               onClick={() => {
@@ -83,12 +82,13 @@ export default function LoadModal({
               id="load-file-input"
               type="file"
               accept="application/json"
-              style={{ display: 'none' }}
+              className="hidden-file-input"
+              aria-hidden="true"
               onChange={onFileChange}
             />
           </div>
           {error && (
-            <div role="alert" style={{ color: 'salmon', marginTop: 8 }}>
+            <div role="alert" className="load-modal-error">
               {error}
             </div>
           )}

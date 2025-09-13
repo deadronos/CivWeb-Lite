@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2025-09-13T15:04:49.414Z",
+  "unitId": "u1",
+  "badges": [
+    {
+      "tag": "div",
+      "role": null,
+      "aria": "Unit badges: Melee with Moved, Fortified",
+      "text": ""
+    },
+    {
+      "tag": "div",
+      "role": null,
+      "aria": "Melee unit category",
+      "text": ""
+    },
+    {
+      "tag": "div",
+      "role": null,
+      "aria": "Moved unit state",
+      "text": ""
+    },
+    {
+      "tag": "div",
+      "role": null,
+      "aria": "Fortified unit state",
+      "text": ""
+    }
+  ]
+}

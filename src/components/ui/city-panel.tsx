@@ -32,7 +32,7 @@ export function CityPanel({
           </li>
         ))}
       </ol>
-      <button onClick={() => onReorderQueue([...productionQueue])} style={{ display: 'none' }}>
+      <button onClick={() => onReorderQueue([...productionQueue])} className="hidden">
         reorder
       </button>
     </div>

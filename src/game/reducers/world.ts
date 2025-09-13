@@ -218,5 +218,22 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
       }
       break;
     }
+
+    case 'MOVE_UNIT': {
+      const { unitId, toTileId } = action.payload;
+      const extension = (draft.contentExt ||= createContentExtension());
+      const unit = extension.units[unitId];
+      if (unit && toTileId && extension.tiles[toTileId]) {
+        const oldTileId = unit.location;
+        unit.location = toTileId;
+        // Update occupants; normalize oldTileId which might be a coord object
+        const oldIdKey = typeof oldTileId === 'string' ? oldTileId : `${(oldTileId as any).q},${(oldTileId as any).r}`;
+        if (extension.tiles[oldIdKey]) {
+          extension.tiles[oldIdKey].occupantUnitId = null;
+        }
+        extension.tiles[toTileId].occupantUnitId = unitId;
+      }
+      break;
+    }
   }
 }
