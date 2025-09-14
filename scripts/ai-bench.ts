@@ -2,8 +2,8 @@ import { evaluateAI } from '../src/game/ai/ai';
 import { generateWorld } from '../src/game/world/generate';
 import { LEADER_PERSONALITIES } from '../src/game/ai/leaders';
 import type { GameState, PlayerState, TechNode } from '../src/game/types';
-import { mkdir, writeFile } from 'fs/promises';
-import path from 'path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
 interface Stats { mean: number; median: number; p95: number; count: number }
 
@@ -31,7 +31,7 @@ function makePlayer(id: string, leaderIndex: number): PlayerState {
 function fakeGameState(seed: string, size: number, leaderCount: number): GameState {
   const world = generateWorld(seed, size, size);
   const players: PlayerState[] = [];
-  for (let i = 0; i < leaderCount; i++) players.push(makePlayer(`AI-${i + 1}`, i));
+  for (let index = 0; index < leaderCount; index++) players.push(makePlayer(`AI-${index + 1}`, index));
   const techCatalog: TechNode[] = [];
   return {
     schemaVersion: 1,
@@ -49,8 +49,8 @@ function fakeGameState(seed: string, size: number, leaderCount: number): GameSta
 
 async function runConfig(seed: string, size: number, leaderCount: number, iterations: number) {
   const timings: number[] = [];
-  for (let i = 0; i < iterations; i++) {
-    const state = fakeGameState(`${seed}-${i}`, size, leaderCount);
+  for (let index = 0; index < iterations; index++) {
+    const state = fakeGameState(`${seed}-${index}`, size, leaderCount);
     for (const p of state.players) {
       const t0 = process.hrtime.bigint();
       evaluateAI(p, state);
@@ -80,12 +80,12 @@ async function main() {
   const report = { generatedAt: new Date().toISOString(), iterations, configs };
   const dir = path.resolve('test-results');
   await mkdir(dir, { recursive: true });
-  const filePath = path.join(dir, `ai-bench-${report.generatedAt.replace(/[:.]/g, '-')}.json`);
+  const filePath = path.join(dir, `ai-bench-${report.generatedAt.replaceAll(/[.:]/g, '-')}.json`);
   await writeFile(filePath, JSON.stringify(report, null, 2));
   console.log(`AI bench results written to ${filePath}`);
 }
 
-main().catch((err) => {
-  console.error('Benchmark failed', err);
+main().catch((error) => {
+  console.error('Benchmark failed', error);
   process.exit(1);
 });

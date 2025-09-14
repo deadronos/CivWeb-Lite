@@ -12,7 +12,7 @@ export function CityPanel({
 }: CityPanelProperties) {
   const choose = (itemId: string, type: ProductionOrder['type']) => {
     if (type === 'improvement') {
-      const targetTileId = typeof window !== 'undefined' ? window.prompt('Target tile id?') || undefined : undefined;
+      const targetTileId = globalThis.window === undefined ? undefined : globalThis.prompt('Target tile id?') || undefined;
       onChooseItem({ type, item: itemId, targetTileId });
     } else {
       onChooseItem({ type, item: itemId });

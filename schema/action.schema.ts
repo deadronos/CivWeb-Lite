@@ -25,6 +25,25 @@ export const BuildActionSchema = z.object({
 export const ResearchActionSchema = z.object({ type: z.literal('research'), playerId: z.string(), techId: z.string() });
 export const EndTurnActionSchema = z.object({ type: z.literal('endTurn') });
 
+// Canonical uppercase action schemas
+export const NewGameActionSchema = z.object({
+  type: z.literal('NEW_GAME'),
+  payload: z.object({
+    seed: z.string().optional(),
+    width: z.number().optional(),
+    height: z.number().optional(),
+    totalPlayers: z.number(),
+    humanPlayers: z.number().optional(),
+    selectedLeaders: z.array(z.union([z.string(), z.literal('random')]).optional()).optional(),
+  }),
+});
+
+export const SetResearchActionSchema = z.object({
+  type: z.literal('SET_RESEARCH'),
+  playerId: z.string(),
+  payload: z.object({ techId: z.string() }),
+});
+
 // project canonical actions (uppercase) - permissive payloads where shape may vary
 export const InitActionSchema = z.object({ type: z.literal('INIT'), payload: z.any().optional() });
 export const EndTurnUpperSchema = z.object({ type: z.literal('END_TURN') });
@@ -89,6 +108,143 @@ export const SwitchResearchPolicyActionSchema = z.object({
   }),
 });
 
+// Additional strict canonical action schemas (prioritized)
+export const AdvanceResearchActionSchema = z.object({
+  type: z.literal('ADVANCE_RESEARCH'),
+  playerId: z.string(),
+  payload: z.object({ points: z.number().optional() }).optional(),
+});
+
+export const AutoSimToggleActionSchema = z.object({
+  type: z.literal('AUTO_SIM_TOGGLE'),
+  payload: z.object({ enabled: z.boolean().optional() }).optional(),
+});
+
+export const SelectUnitActionSchema = z.object({
+  type: z.literal('SELECT_UNIT'),
+  payload: z.object({ unitId: z.string() }),
+});
+
+export const PreviewPathActionSchema = z.object({
+  type: z.literal('PREVIEW_PATH'),
+  payload: z.object({ targetTileId: z.string(), unitId: z.string().optional() }),
+});
+
+export const CancelSelectionActionSchema = z.object({
+  type: z.literal('CANCEL_SELECTION'),
+  payload: z.object({ unitId: z.string().optional() }).optional(),
+});
+
+export const OpenCityPanelActionSchema = z.object({
+  type: z.literal('OPEN_CITY_PANEL'),
+  payload: z.object({ cityId: z.string() }),
+});
+
+export const CloseCityPanelActionSchema = z.object({
+  type: z.literal('CLOSE_CITY_PANEL'),
+  payload: z.object({ cityId: z.string().optional() }).optional(),
+});
+
+export const ChooseProductionItemActionSchema = z.object({
+  type: z.literal('CHOOSE_PRODUCTION_ITEM'),
+  payload: z.object({ cityId: z.string(), order: ProductionOrderSchema }),
+});
+
+export const StartResearchActionSchema = z.object({
+  type: z.literal('START_RESEARCH'),
+  payload: z.object({ playerId: z.string(), techId: z.string() }),
+});
+
+export const QueueResearchActionSchema = z.object({
+  type: z.literal('QUEUE_RESEARCH'),
+  payload: z.object({ playerId: z.string(), techId: z.string() }),
+});
+
+export const BeginTurnActionSchema = z.object({
+  type: z.literal('BEGIN_TURN'),
+  payload: z.object({ playerId: z.string() }),
+});
+
+export const EndPlayerPhaseActionSchema = z.object({
+  type: z.literal('END_PLAYER_PHASE'),
+  payload: z.object({ playerId: z.string() }),
+});
+
+export const FortifyUnitActionSchema = z.object({
+  type: z.literal('FORTIFY_UNIT'),
+  payload: z.object({ unitId: z.string() }),
+});
+
+// Remaining uppercase canonical schemas reported missing by the strict sync test
+export const AiPerformActionsSchema = z.object({
+  type: z.literal('AI_PERFORM_ACTIONS'),
+  payload: z.object({ playerId: z.string() }),
+});
+
+export const OpenDevPanelActionSchema = z.object({ type: z.literal('OPEN_DEV_PANEL') });
+export const CloseDevPanelActionSchema = z.object({ type: z.literal('CLOSE_DEV_PANEL') });
+
+export const OpenSpecPanelActionSchema = z.object({ type: z.literal('OPEN_SPEC_PANEL') });
+export const CloseSpecPanelActionSchema = z.object({ type: z.literal('CLOSE_SPEC_PANEL') });
+
+export const OpenResearchPanelActionSchema = z.object({ type: z.literal('OPEN_RESEARCH_PANEL'), payload: z.object({}).optional() });
+export const CloseResearchPanelActionSchema = z.object({ type: z.literal('CLOSE_RESEARCH_PANEL'), payload: z.object({}).optional() });
+
+export const LoadStateActionSchema = z.object({ type: z.literal('LOAD_STATE'), payload: z.any() });
+
+export const ExtAddTileActionSchema = z.object({
+  type: z.literal('EXT_ADD_TILE'),
+  payload: z.object({ tile: z.object({ id: z.string(), q: z.number(), r: z.number(), biome: z.string() }) }),
+});
+
+export const ExtAddCityActionSchema = z.object({
+  type: z.literal('EXT_ADD_CITY'),
+  payload: z.object({ cityId: z.string(), name: z.string(), ownerId: z.string(), tileId: z.string() }),
+});
+
+export const ExtAddUnitActionSchema = z.object({
+  type: z.literal('EXT_ADD_UNIT'),
+  payload: z.object({ unitId: z.string(), type: z.string(), ownerId: z.string(), tileId: z.string() }),
+});
+
+export const ExtBeginResearchActionSchema = z.object({ type: z.literal('EXT_BEGIN_RESEARCH'), payload: z.object({ techId: z.string() }) });
+export const ExtBeginCultureResearchActionSchema = z.object({ type: z.literal('EXT_BEGIN_CULTURE_RESEARCH'), payload: z.object({ civicId: z.string() }) });
+
+export const ExtFoundCityActionSchema = z.object({
+  type: z.literal('EXT_FOUND_CITY'),
+  payload: z.object({ unitId: z.string(), tileId: z.string().optional(), cityId: z.string().optional(), name: z.string().optional(), requestId: z.string().optional() }),
+});
+
+export const ExtQueueProductionActionSchema = z.object({
+  type: z.literal('EXT_QUEUE_PRODUCTION'),
+  payload: z.object({ cityId: z.string(), order: ProductionOrderSchema }),
+});
+
+export const RemoveTileImprovementActionSchema = z.object({
+  type: z.literal('REMOVE_TILE_IMPROVEMENT'),
+  payload: z.object({ tileId: z.string(), improvementId: z.string() }),
+});
+
+export const SetTileImprovementActionSchema = z.object({
+  type: z.literal('SET_TILE_IMPROVEMENT'),
+  payload: z.object({ tileId: z.string(), improvementId: z.string() }),
+});
+
+export const SetCityTileActionSchema = z.object({
+  type: z.literal('SET_CITY_TILE'),
+  payload: z.object({ cityId: z.string(), tileId: z.string() }),
+});
+
+export const SetUnitLocationActionSchema = z.object({
+  type: z.literal('SET_UNIT_LOCATION'),
+  payload: z.object({ unitId: z.string(), tileId: z.string() }),
+});
+
+export const SetPlayerScoresActionSchema = z.object({
+  type: z.literal('SET_PLAYER_SCORES'),
+  payload: z.object({ players: z.array(z.object({ id: z.string(), sciencePoints: z.number(), culturePoints: z.number() })) }),
+});
+
 export const GameActionSchema = z.discriminatedUnion('type', [
   MoveActionSchema,
   AttackActionSchema,
@@ -100,6 +256,8 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   EndTurnUpperSchema,
   LogEventSchema,
   RecordAIPerfSchema,
+  NewGameActionSchema,
+  SetResearchActionSchema,
   AddUnitStateActionSchema,
   RemoveUnitStateActionSchema,
   IssueMoveActionSchema,
@@ -109,6 +267,40 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   ReorderProductionQueueActionSchema,
   CancelProductionOrderActionSchema,
   SwitchResearchPolicyActionSchema,
+  // newly added strict canonical schemas
+  AdvanceResearchActionSchema,
+  AutoSimToggleActionSchema,
+  SelectUnitActionSchema,
+  PreviewPathActionSchema,
+  CancelSelectionActionSchema,
+  OpenCityPanelActionSchema,
+  CloseCityPanelActionSchema,
+  ChooseProductionItemActionSchema,
+  StartResearchActionSchema,
+  QueueResearchActionSchema,
+  BeginTurnActionSchema,
+  EndPlayerPhaseActionSchema,
+  FortifyUnitActionSchema,
+  AiPerformActionsSchema,
+  OpenDevPanelActionSchema,
+  CloseDevPanelActionSchema,
+  OpenSpecPanelActionSchema,
+  CloseSpecPanelActionSchema,
+  OpenResearchPanelActionSchema,
+  CloseResearchPanelActionSchema,
+  LoadStateActionSchema,
+  ExtAddTileActionSchema,
+  ExtAddCityActionSchema,
+  ExtAddUnitActionSchema,
+  ExtBeginResearchActionSchema,
+  ExtBeginCultureResearchActionSchema,
+  ExtFoundCityActionSchema,
+  ExtQueueProductionActionSchema,
+  RemoveTileImprovementActionSchema,
+  SetTileImprovementActionSchema,
+  SetCityTileActionSchema,
+  SetUnitLocationActionSchema,
+  SetPlayerScoresActionSchema,
 ]);
 
 // permissive catch-all for runtime events that are not strict game actions
