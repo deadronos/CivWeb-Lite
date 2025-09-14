@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
 
-const src = fileURLToPath(new URL('./src', import.meta.url));
+const source = fileURLToPath(new URL('src', import.meta.url));
 const reactIconsMd = fileURLToPath(new URL('tests/__mocks__/react-icons-md.ts', import.meta.url));
 
 export default defineConfig({
@@ -32,7 +32,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src,
+      src: source,
       'react-icons/md': reactIconsMd,
     },
   },

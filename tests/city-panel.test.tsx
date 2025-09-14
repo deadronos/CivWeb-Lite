@@ -5,7 +5,7 @@ import { CityPanel } from '../src/components/ui/city-panel';
 
 describe('CityPanel', () => {
   it('prompts for target tile when selecting improvement', () => {
-    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('tile-42');
+    const promptSpy = vi.spyOn(globalThis, 'prompt').mockReturnValue('tile-42');
     const onChoose = vi.fn();
     render(
       <CityPanel

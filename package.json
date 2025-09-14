@@ -17,6 +17,7 @@
     "bench:ai": "tsx scripts/ai-bench.ts",
     "bench:turn": "tsx scripts/turn-benchmark.ts",
     "test:e2e": "playwright test"
+    ,"ci-check": "npm run lint && npm run test -- --reporter=dot"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.5",

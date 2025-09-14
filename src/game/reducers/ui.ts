@@ -143,7 +143,7 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
         }
         break;
       }
-      const tid = path[path.length - 1];
+      const tid = path.at(-1);
       // Check for enemy at target
       let enemyPresent = false;
       const tile = extension.tiles[tid];
