@@ -29,6 +29,34 @@ export function uiReducer(draft: Draft<GameState>, action: GameAction): void {
       break;
     }
 
+    case 'SELECT_TILE': {
+      const tileId = (action as any).payload?.tileId as string | undefined;
+      if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      // selecting a tile clears any selected unit
+      if (draft.contentExt && draft.ui.selectedUnitId && draft.contentExt.units && draft.contentExt.units[draft.ui.selectedUnitId]) {
+        draft.contentExt.units[draft.ui.selectedUnitId].activeStates?.delete(UnitState.Selected);
+      }
+      draft.ui.selectedUnitId = undefined;
+      draft.ui.selectedTileId = tileId;
+      draft.ui.selectedCityId = undefined;
+      draft.ui.previewPath = undefined;
+      break;
+    }
+
+    case 'SELECT_CITY': {
+      const cityId = (action as any).payload?.cityId as string | undefined;
+      if (!draft.ui) draft.ui = { openPanels: {} } as any;
+      // selecting a city clears any selected unit
+      if (draft.contentExt && draft.ui.selectedUnitId && draft.contentExt.units && draft.contentExt.units[draft.ui.selectedUnitId]) {
+        draft.contentExt.units[draft.ui.selectedUnitId].activeStates?.delete(UnitState.Selected);
+      }
+      draft.ui.selectedUnitId = undefined;
+      draft.ui.selectedTileId = undefined;
+      draft.ui.selectedCityId = cityId;
+      draft.ui.previewPath = undefined;
+      break;
+    }
+
     case 'CANCEL_SELECTION': {
       if (!draft.ui) draft.ui = { openPanels: {} } as any;
       const previous = draft.ui.selectedUnitId;

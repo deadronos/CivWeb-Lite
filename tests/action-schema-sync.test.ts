@@ -45,7 +45,9 @@ describe('action schema vs GAME_ACTION_TYPES sync', () => {
     const extras = exportedUpper.filter((t) => !canonicalUpper.includes(t));
     const missing = canonicalUpper.filter((t) => !exportedUpper.includes(t));
 
-    expect(extras, `Zod schemas contain uppercase action types not present in GAME_ACTION_TYPES: ${extras.join(', ')}`).toEqual([]);
-    expect(missing, `GAME_ACTION_TYPES missing strict uppercase Zod schemas for: ${missing.join(', ')}`).toEqual([]);
+  const debugMessage = `exportedUpper=${JSON.stringify(exportedUpper)} canonicalUpper=${JSON.stringify(canonicalUpper)}`;
+
+  expect(extras, `Zod schemas contain uppercase action types not present in GAME_ACTION_TYPES: ${extras.join(', ')} | ${debugMessage}`).toEqual([]);
+  expect(missing, `GAME_ACTION_TYPES missing strict uppercase Zod schemas for: ${missing.join(', ')} | ${debugMessage}`).toEqual([]);
   });
 });

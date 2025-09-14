@@ -1,0 +1,124 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - generic:
+        - group "Unit u_P1_warrior":
+          - button "Select unit u_P1_warrior"
+    - generic:
+      - generic:
+        - group "Unit u_P1_settler":
+          - button "Select unit u_P1_settler"
+    - generic:
+      - generic:
+        - group "Unit u_P2_warrior":
+          - button "Select unit u_P2_warrior"
+    - generic:
+      - generic:
+        - group "Unit u_P2_settler":
+          - button "Select unit u_P2_settler"
+  - navigation "top menu" [ref=e6]:
+    - generic [ref=e7]:
+      - button "Map" [ref=e8]
+      - button "Government" [ref=e9]
+      - button "Research" [ref=e10]
+      - button "Nations" [ref=e11]
+      - button "Cities" [ref=e12]
+      - button "Options" [ref=e13]
+      - button "Manual" [ref=e14]
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - checkbox "Dev" [ref=e17]
+        - text: Dev
+      - button "End Turn" [ref=e18]
+  - generic "empire stats" [ref=e19]:
+    - generic "turn" [ref=e20]: "Turn: 0"
+    - generic [ref=e21]:
+      - generic [ref=e22]: Science
+      - text: +5/t
+    - generic [ref=e23]:
+      - generic [ref=e24]: Culture
+      - text: +3/t
+    - generic [ref=e25]:
+      - generic [ref=e26]: Gold
+      - text: +7/t
+    - generic [ref=e28]: "iron: 2"
+    - generic [ref=e29]: "horses: 1"
+  - log "event log" [ref=e30]:
+    - list [ref=e31]:
+      - listitem [ref=e32]: turn·start
+      - listitem [ref=e33]: turn·start
+      - listitem [ref=e34]: turn·start
+      - listitem [ref=e35]: turn·start
+      - listitem [ref=e36]: NEW_GAME
+      - listitem [ref=e37]: NEW_GAME
+  - region "game heads up display" [ref=e38]:
+    - generic [ref=e39]: "Seed: default"
+    - generic [ref=e40]: "Mode: standard"
+    - generic "camera position" [ref=e41]: q:0, r:0
+    - generic "game summary" [ref=e42]: "Players: P1: Pericles [CUL] · P2: Genghis Khan [DOM]"
+    - generic [ref=e43]:
+      - button "save game" [ref=e44]: Save…
+      - button "open load" [ref=e45]: Load…
+    - generic [ref=e46]: "Cities: 0"
+    - generic [ref=e47]: Science per turn 0
+    - generic [ref=e48]: Culture per turn 0
+    - generic [ref=e49]:
+      - generic [ref=e50]:
+        - generic [ref=e51]: Units
+        - list "catalog units" [ref=e52]:
+          - listitem [ref=e53]:
+            - text: Warrior
+            - generic [ref=e54]: (melee)
+          - listitem [ref=e55]:
+            - text: Swordsman
+            - generic [ref=e56]: (melee)
+          - listitem [ref=e57]:
+            - text: Spearman
+            - generic [ref=e58]: (melee)
+          - listitem [ref=e59]:
+            - text: Scout
+            - generic [ref=e60]: (recon)
+          - listitem [ref=e61]:
+            - text: Archer
+            - generic [ref=e62]: (ranged)
+          - listitem [ref=e63]:
+            - text: Slinger
+            - generic [ref=e64]: (ranged)
+          - listitem [ref=e65]:
+            - text: Worker
+            - generic [ref=e66]: (support)
+          - listitem [ref=e67]:
+            - text: Settler
+            - generic [ref=e68]: (support)
+          - listitem [ref=e69]:
+            - text: Galley
+            - generic [ref=e70]: (naval)
+      - generic [ref=e71]:
+        - generic [ref=e72]: Buildings
+        - list "catalog buildings" [ref=e73]:
+          - listitem [ref=e74]:
+            - text: Granary
+            - generic [ref=e75]: (60)
+          - listitem [ref=e76]:
+            - text: Monument
+            - generic [ref=e77]: (60)
+          - listitem [ref=e78]:
+            - text: Barracks
+            - generic [ref=e79]: (80)
+          - listitem [ref=e80]:
+            - text: Library
+            - generic [ref=e81]: (80)
+          - listitem [ref=e82]:
+            - text: Water Mill
+            - generic [ref=e83]: (80)
+    - button "toggle simulation" [ref=e84]: Start
+    - button "regenerate seed" [ref=e85]: Regenerate Seed
+    - img "minimap" [ref=e86]
+  - complementary "context panel" [ref=e87]:
+    - generic [ref=e88]:
+      - heading "Context" [level=2] [ref=e89]
+      - generic [ref=e91]: No selection
+```

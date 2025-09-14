@@ -125,6 +125,16 @@ export const SelectUnitActionSchema = z.object({
   payload: z.object({ unitId: z.string() }),
 });
 
+export const SelectCityActionSchema = z.object({
+  type: z.literal('SELECT_CITY'),
+  payload: z.object({ cityId: z.string() }),
+});
+
+export const SelectTileActionSchema = z.object({
+  type: z.literal('SELECT_TILE'),
+  payload: z.object({ tileId: z.string() }),
+});
+
 export const PreviewPathActionSchema = z.object({
   type: z.literal('PREVIEW_PATH'),
   payload: z.object({ targetTileId: z.string(), unitId: z.string().optional() }),
@@ -278,6 +288,8 @@ export const GameActionSchema = z.discriminatedUnion('type', [
   ChooseProductionItemActionSchema,
   StartResearchActionSchema,
   QueueResearchActionSchema,
+  SelectCityActionSchema,
+  SelectTileActionSchema,
   BeginTurnActionSchema,
   EndPlayerPhaseActionSchema,
   FortifyUnitActionSchema,

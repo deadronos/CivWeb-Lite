@@ -3,6 +3,8 @@ import LazySpinner from '../common/lazy-spinner';
 import { useGame } from '../../hooks/use-game';
 import GameHUD from '../game-hud';
 import LogList from './log-list';
+import ContextPanelContainer from './context-panel-container';
+import DraggableManager from './draggable-manager';
 
 const LeftCivicPanel = React.lazy(() => import('./left-civic-panel'));
 const RightProductionPanel = React.lazy(() => import('./right-production-panel'));
@@ -47,6 +49,8 @@ export default function OverlayUI():ReactNode {
       <StatsBar />
       <LogListContainer />
       <GameHUD />
+  <ContextPanelContainer />
+  <DraggableManager />
       <React.Suspense fallback={<LazySpinner />}>
         <LeftCivicPanel open={researchPanelOpen} onClose={() => {
           setShowLeft(false);

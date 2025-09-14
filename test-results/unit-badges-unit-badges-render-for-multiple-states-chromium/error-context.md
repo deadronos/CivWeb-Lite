@@ -1,0 +1,125 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - generic:
+        - group "Unit u1":
+          - button "Select unit u1":
+            - 'generic "Unit badges: Melee with Moved, Fortified" [ref=e6]':
+              - img [ref=e8]
+              - img [ref=e11]
+              - img [ref=e14]
+    - generic [ref=e17]: u1
+  - navigation "top menu" [ref=e18]:
+    - generic [ref=e19]:
+      - button "Map" [ref=e20]
+      - button "Government" [ref=e21]
+      - button "Research" [ref=e22]
+      - button "Nations" [ref=e23]
+      - button "Cities" [ref=e24]
+      - button "Options" [ref=e25]
+      - button "Manual" [ref=e26]
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - checkbox "Dev" [ref=e29]
+        - text: Dev
+      - button "End Turn" [ref=e30]
+  - generic "empire stats" [ref=e31]:
+    - generic "turn" [ref=e32]: "Turn: 0"
+    - generic [ref=e33]:
+      - generic [ref=e34]: Science
+      - text: +5/t
+    - generic [ref=e35]:
+      - generic [ref=e36]: Culture
+      - text: +3/t
+    - generic [ref=e37]:
+      - generic [ref=e38]: Gold
+      - text: +7/t
+    - generic [ref=e40]: "iron: 2"
+    - generic [ref=e41]: "horses: 1"
+  - log "event log" [ref=e42]:
+    - list [ref=e43]:
+      - listitem [ref=e44]: LOAD_STATE
+      - listitem [ref=e45]: LOAD_STATE
+  - region "game heads up display" [ref=e46]:
+    - generic [ref=e47]: "Seed: s"
+    - generic [ref=e48]: "Mode: standard"
+    - generic "camera position" [ref=e49]: q:0, r:0
+    - generic [ref=e50]:
+      - button "save game" [ref=e51]: Save…
+      - button "open load" [ref=e52]: Load…
+    - generic [ref=e53]: "Cities: 0"
+    - generic [ref=e54]: Science per turn 0
+    - generic [ref=e55]: Culture per turn 0
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]: Units
+        - list "catalog units" [ref=e59]:
+          - listitem [ref=e60]:
+            - text: Warrior
+            - generic [ref=e61]: (melee)
+          - listitem [ref=e62]:
+            - text: Swordsman
+            - generic [ref=e63]: (melee)
+          - listitem [ref=e64]:
+            - text: Spearman
+            - generic [ref=e65]: (melee)
+          - listitem [ref=e66]:
+            - text: Scout
+            - generic [ref=e67]: (recon)
+          - listitem [ref=e68]:
+            - text: Archer
+            - generic [ref=e69]: (ranged)
+          - listitem [ref=e70]:
+            - text: Slinger
+            - generic [ref=e71]: (ranged)
+          - listitem [ref=e72]:
+            - text: Worker
+            - generic [ref=e73]: (support)
+          - listitem [ref=e74]:
+            - text: Settler
+            - generic [ref=e75]: (support)
+          - listitem [ref=e76]:
+            - text: Galley
+            - generic [ref=e77]: (naval)
+      - generic [ref=e78]:
+        - generic [ref=e79]: Buildings
+        - list "catalog buildings" [ref=e80]:
+          - listitem [ref=e81]:
+            - text: Granary
+            - generic [ref=e82]: (60)
+          - listitem [ref=e83]:
+            - text: Monument
+            - generic [ref=e84]: (60)
+          - listitem [ref=e85]:
+            - text: Barracks
+            - generic [ref=e86]: (80)
+          - listitem [ref=e87]:
+            - text: Library
+            - generic [ref=e88]: (80)
+          - listitem [ref=e89]:
+            - text: Water Mill
+            - generic [ref=e90]: (80)
+    - button "toggle simulation" [ref=e91]: Start
+    - button "regenerate seed" [ref=e92]: Regenerate Seed
+    - img "minimap" [ref=e93]
+  - complementary "context panel" [ref=e94]:
+    - generic [ref=e95]:
+      - heading "Unit" [level=2] [ref=e96]
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]: "Unit:"
+          - text: u1
+        - generic [ref=e101]:
+          - generic [ref=e102]: "Type:"
+          - text: warrior
+        - generic [ref=e103]:
+          - generic [ref=e104]: "Owner:"
+          - text: p1
+        - generic [ref=e105]:
+          - generic [ref=e106]: "Location:"
+          - text: t1
+    - button "Deselect" [ref=e109]
+```
