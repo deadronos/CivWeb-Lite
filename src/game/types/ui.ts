@@ -59,6 +59,8 @@ export interface UIState {
     devPanel?: boolean;
   };
   selectedUnitId?: string;
+  selectedTileId?: string;
+  selectedCityId?: string;
   previewPath?: string[];
   previewCombat?: {
     attackerStrength: number;

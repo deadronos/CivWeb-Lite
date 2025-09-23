@@ -59,6 +59,7 @@ export interface GameLogEntry {
 
 export interface UIState {
   selectedUnitId?: string;
+  selectedTileId?: string;
   selectedCityId?: string;
   previewPath?: string[];
   // Optional combat preview computed during path preview

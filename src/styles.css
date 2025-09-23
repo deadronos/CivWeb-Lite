@@ -11,6 +11,9 @@ body,
   --accent: #6ea8fe;
   --panel-bg: rgba(20, 24, 31, 0.9);
   --panel-border: rgba(110, 168, 254, 0.35);
+  /* Reserve space for bottom HUD layout: left side (minimap) and right side (next-turn) */
+  --hud-context-left-reserve: 220px; /* adjust to match minimap/left widgets */
+  --hud-context-right-reserve: 180px; /* adjust to leave space for next-turn or controls */
   --good: #3fb950;
   --bad: #f85149;
   --color-minimap: #1f242d;
@@ -257,6 +260,32 @@ canvas {
   font-size: 14px;
   color: var(--color-muted);
 }
+/* Context bottom-bar specific layout */
+.hud-context-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0; /* allow text truncation */
+}
+.hud-context-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.context-details {
+  font-size: 13px;
+  color: var(--color-fg);
+  opacity: 0.95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.context-actions { /* keep actions compact in the right area */
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 .tech-list {
   list-style: none;
   margin: 0;
@@ -301,14 +330,35 @@ canvas {
   pointer-events: auto;
 }
 .hud-context {
+  /* Bottom bar style: span between reserved left/right spaces.
+     This places the panel at the bottom of the viewport with
+     adjustable left/right reserves so it doesn't overlap the
+     minimap on the left or the next-turn area on the right. */
   position: fixed;
-  right: 12px;
-  top: 56px;
-  width: 280px;
+  bottom: 12px;
+  left: var(--hud-context-left-reserve);
+  right: var(--hud-context-right-reserve);
+  min-width: 240px;
+  max-width: calc(100% - (var(--hud-context-left-reserve) + var(--hud-context-right-reserve)));
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
-  padding: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1002;
+}
+
+/* Responsive fallback: on narrow viewports collapse to full-width with margins */
+@media (max-width: 900px) {
+  .hud-context {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    border-radius: 8px;
+  }
 }
 .context-actions {
   display: flex;

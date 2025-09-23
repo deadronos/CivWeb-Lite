@@ -32,6 +32,8 @@ export type GameAction =
   | { type: 'RECORD_AI_PERF'; payload: { duration: number } }
   // UI Interaction Actions (from spec)
   | { type: 'SELECT_UNIT'; payload: { unitId: string } }
+  | { type: 'SELECT_TILE'; payload: { tileId?: string } }
+  | { type: 'SELECT_CITY'; payload: { cityId?: string } }
   | { type: 'PREVIEW_PATH'; payload: { targetTileId: string; unitId?: string } } // unitId from ui.selectedUnitId
   | { type: 'ISSUE_MOVE'; payload: UnitMovePayload }
   | { type: 'CANCEL_SELECTION'; payload?: { unitId?: string } }
@@ -107,6 +109,8 @@ export const GAME_ACTION_TYPES = [
   'RECORD_AI_PERF',
   // UI Actions
   'SELECT_UNIT',
+  'SELECT_TILE',
+  'SELECT_CITY',
   'PREVIEW_PATH',
   'ISSUE_MOVE',
   'CANCEL_SELECTION',
