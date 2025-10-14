@@ -185,6 +185,7 @@ export function coverGameProviderForcePaths(
         researching: null,
         sciencePoints: 0,
         culturePoints: 0,
+        researchPolicy: 'preserveProgress',
       } as PlayerState,
     ];
 
@@ -206,6 +207,7 @@ export function coverGameProviderForcePaths(
         researching: null,
         sciencePoints: 0,
         culturePoints: 0,
+        researchPolicy: 'preserveProgress',
       },
       {
         id: 'p2',
@@ -222,6 +224,7 @@ export function coverGameProviderForcePaths(
         researching: null,
         sciencePoints: 0,
         culturePoints: 0,
+        researchPolicy: 'preserveProgress',
       },
     ] as PlayerState[];
     // multiple AI -> call simulateAdvanceTurn

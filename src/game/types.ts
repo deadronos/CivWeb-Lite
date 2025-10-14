@@ -48,6 +48,7 @@ export interface PlayerState {
   researchedTechIds: string[];
   researching?: { techId: string; progress: number } | null;
   researchQueue?: string[]; // Queue of tech IDs to research after current completes
+  researchPolicy?: 'preserveProgress' | 'discardProgress';
 }
 
 export interface GameLogEntry {
