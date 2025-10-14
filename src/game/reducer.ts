@@ -24,6 +24,7 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
 
   // Player actions
   SET_RESEARCH: playerReducer,
+  START_RESEARCH: playerReducer,
   ADVANCE_RESEARCH: playerReducer,
   QUEUE_RESEARCH: playerReducer,
   SWITCH_RESEARCH_POLICY: playerReducer,
@@ -47,7 +48,11 @@ const actionReducerMap: { [key: string]: (draft: Draft<GameState>, action: GameA
   EXT_ADD_TILE: worldReducer,
   EXT_ADD_UNIT: worldReducer,
   EXT_ADD_CITY: worldReducer,
+  EXT_MOVE_UNIT: worldReducer,
   EXT_FOUND_CITY: worldReducer,
+  EXT_QUEUE_PRODUCTION: worldReducer,
+  EXT_BEGIN_RESEARCH: worldReducer,
+  EXT_BEGIN_CULTURE_RESEARCH: worldReducer,
   EXT_ISSUE_MOVE_PATH: worldReducer,
   // Test-only: allow external tests to set previewPath directly
   EXT_SET_PREVIEW: (draft: Draft<GameState>, action: GameAction) => {

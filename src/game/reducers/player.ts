@@ -23,6 +23,31 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
       player.researching = { techId, progress: 0 } as any;
       break;
     }
+    case 'START_RESEARCH': {
+      const { playerId, techId } = action.payload;
+      if (!playerId || !techId) break;
+      const player = findPlayer(draft.players, playerId);
+      if (!player) break;
+      const tech = draft.techCatalog.find((t) => t.id === techId);
+      if (!tech) break;
+      if (!player.researchedTechIds) player.researchedTechIds = [] as any;
+      const prerequisitesMet = (tech.prerequisites || []).every((p) =>
+        player.researchedTechIds!.includes(p)
+      );
+      if (!prerequisitesMet) break;
+
+      const previous = player.researching;
+      const preserve = player.researchPolicy !== 'discardProgress';
+      const carryProgress =
+        preserve && previous && previous.techId === techId ? (previous.progress ?? 0) : 0;
+
+      player.researching = { techId, progress: carryProgress } as any;
+      if (player.researchQueue && player.researchQueue.length > 0) {
+        player.researchQueue = player.researchQueue.filter((queued) => queued !== techId);
+      }
+      globalGameBus.emit('researchStarted', { playerId, techId });
+      break;
+    }
     case 'ADVANCE_RESEARCH': {
       const playerId = (action as any).playerId as string;
       const pts = (action as any).payload?.points as number | undefined;
@@ -33,16 +58,19 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
       if (!tech) break;
       const add = typeof pts === 'number' ? pts : (player.sciencePoints ?? 0);
       player.researching.progress = (player.researching.progress ?? 0) + add;
-  if (player.researching.progress >= tech.cost) {
-  if (!player.researchedTechIds) player.researchedTechIds = [] as any;
-  player.researchedTechIds.push(tech.id);
-  player.researching = null;
+      if (player.researching.progress >= tech.cost) {
+        if (!player.researchedTechIds) player.researchedTechIds = [] as any;
+        player.researchedTechIds.push(tech.id);
+        player.researching = null;
         globalGameBus.emit('tech:unlocked', { playerId: player.id, techId: tech.id });
         // Auto-advance from queue
         if (player.researchQueue && player.researchQueue.length > 0) {
           const nextId = player.researchQueue.shift()!;
           const nextTech = draft.techCatalog.find((t) => t.id === nextId);
-          if (nextTech && nextTech.prerequisites.every((p) => player.researchedTechIds.includes(p))) {
+          if (
+            nextTech &&
+            nextTech.prerequisites.every((p) => player.researchedTechIds.includes(p))
+          ) {
             player.researching = { techId: nextId, progress: 0 };
             globalGameBus.emit('researchStarted', { playerId, techId: nextId });
           }
@@ -139,7 +167,11 @@ export function playerReducer(draft: Draft<GameState>, action: GameAction): void
         const city = draft.contentExt.cities[cityId];
         if (city && orderIndex >= 0 && orderIndex < city.productionQueue.length) {
           const [removed] = city.productionQueue.splice(orderIndex, 1);
-          globalGameBus.emit('productionOrderCanceled', { cityId, order: removed, index: orderIndex });
+          globalGameBus.emit('productionOrderCanceled', {
+            cityId,
+            order: removed,
+            index: orderIndex,
+          });
         }
       }
       break;
