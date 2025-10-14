@@ -1,4 +1,5 @@
 import { GameAction } from './actions';
+import type { CityProductionOrder } from './content/types';
 
 type Listener<T> = (payload: T) => void;
 
@@ -10,15 +11,17 @@ export interface GameEvents {
   'action:applied': { action: GameAction };
   'tech:unlocked': { playerId: string; techId: string };
   'unit:selected': { unitId: string };
-  'actionAccepted': { requestId: string; appliedAtTick: number };
-  'actionRejected': { requestId: string; reason: string };
-  'actionsResolved': { tick: number; results: any[] };
-  'combatResolved': { tick: number; combats: any[] };
-  'productionCompleted': { cityId: string; itemId: string; spawnedEntityId?: string };
-  'productionQueued': { cityId: string; order: any };
-  'researchProgress': { playerId: string; techId: string; progress: number; completed?: boolean };
-  'researchStarted': { playerId: string; techId: string };
-  'researchQueued': { playerId: string; techId: string };
+  actionAccepted: { requestId: string; appliedAtTick: number };
+  actionRejected: { requestId: string; reason: string };
+  actionsResolved: { tick: number; results: any[] };
+  combatResolved: { tick: number; combats: any[] };
+  productionCompleted: { cityId: string; itemId: string; spawnedEntityId?: string };
+  productionQueued: { cityId: string; order: any };
+  productionQueueReordered: { cityId: string };
+  productionOrderCanceled: { cityId: string; order: CityProductionOrder; index: number };
+  researchProgress: { playerId: string; techId: string; progress: number; completed?: boolean };
+  researchStarted: { playerId: string; techId: string };
+  researchQueued: { playerId: string; techId: string };
   'city:found': { cityId: string; ownerId: string; tileId: string };
   // AI events
   'ai:turnStart': { playerId: string; turn: number };

@@ -5,7 +5,11 @@ import { GameState, PlayerState, Tile, BiomeType } from '../types';
 import { globalGameBus } from '../events';
 import { generateWorld } from '../world/generate';
 import { createEmptyState as createContentExtension } from '../content/engine';
-import { populateExtensionTiles, isSuitableSpawnTerrain, findSuitableSpawnPosition } from '../utils/map';
+import {
+  populateExtensionTiles,
+  isSuitableSpawnTerrain,
+  findSuitableSpawnPosition,
+} from '../utils/map';
 import leadersCatalog from '../../data/leaders.json';
 
 function spawnInitialUnits(draft: Draft<GameState>) {
@@ -32,7 +36,10 @@ function spawnInitialUnits(draft: Draft<GameState>) {
     for (const used of usedTiles) {
       const ut = getTile(used);
       if (!ut) continue;
-      if (hexDistance({ q: tile.coord.q, r: tile.coord.r }, { q: ut.coord.q, r: ut.coord.r }) < minSpawnDistance) {
+      if (
+        hexDistance({ q: tile.coord.q, r: tile.coord.r }, { q: ut.coord.q, r: ut.coord.r }) <
+        minSpawnDistance
+      ) {
         return false;
       }
     }
@@ -64,7 +71,10 @@ function spawnInitialUnits(draft: Draft<GameState>) {
 
       if (candidates.length > 0) {
         const score = (t: Tile) => {
-          const distribution = hexDistance({ q: t.coord.q, r: t.coord.r }, { q: preferredQ, r: preferredR });
+          const distribution = hexDistance(
+            { q: t.coord.q, r: t.coord.r },
+            { q: preferredQ, r: preferredR }
+          );
           const terrainPenalty =
             t.biome === BiomeType.Grassland || t.biome === BiomeType.Forest ? 0 : 2;
           return distribution + terrainPenalty;
@@ -72,9 +82,7 @@ function spawnInitialUnits(draft: Draft<GameState>) {
         candidates.sort((a, b) => score(a) - score(b));
         tileId = candidates[0].id;
       } else {
-        const alt = tiles.find(
-          (t) => isSuitableSpawnTerrain(t.biome) && !usedTiles.has(t.id)
-        );
+        const alt = tiles.find((t) => isSuitableSpawnTerrain(t.biome) && !usedTiles.has(t.id));
         if (alt) {
           tileId = alt.id;
         } else {
@@ -101,12 +109,12 @@ function spawnInitialUnits(draft: Draft<GameState>) {
           mapTile.biome === BiomeType.Grassland
             ? 'grassland'
             : mapTile.biome === BiomeType.Forest
-            ? 'forest'
-            : mapTile.biome === BiomeType.Desert
-            ? 'desert'
-            : mapTile.biome === BiomeType.Tundra
-            ? 'tundra'
-            : 'grassland',
+              ? 'forest'
+              : mapTile.biome === BiomeType.Desert
+                ? 'desert'
+                : mapTile.biome === BiomeType.Tundra
+                  ? 'tundra'
+                  : 'grassland',
         elevation: mapTile.elevation,
         features: [],
         improvements: [],
@@ -247,6 +255,7 @@ export function lifecycleReducer(draft: Draft<GameState>, action: GameAction): v
           sciencePoints: 0,
           culturePoints: 0,
           researchQueue: [],
+          researchPolicy: 'preserveProgress',
         } as PlayerState);
       }
       // Content extension reset
