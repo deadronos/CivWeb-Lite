@@ -16,6 +16,16 @@ Key goals:
 - Modular systems: world generation, turn engine, tech trees, AI heuristics, and save/load.
 - Small, testable core so features can be iteratively added and verified.
 
+## Version 2.0 highlights
+
+The 2.0 milestone focuses on making the core 4X loop playable inside the existing HUD and developer tools:
+
+- **Research flow** – `START_RESEARCH` now assigns technologies immediately, respects the player's research policy, prunes queued duplicates, and emits `researchStarted` events for downstream UI/telemetry consumers.
+- **City management** – `EXT_QUEUE_PRODUCTION` normalizes production orders by calculating turns remaining from city yields and registry costs, so queued units/buildings progress correctly each turn.
+- **World interactions** – Settlers can found cities, units can move using `EXT_MOVE_UNIT`, and the extension layer now supports `EXT_BEGIN_RESEARCH` and `EXT_BEGIN_CULTURE_RESEARCH` to kick off science/civic projects from SpecControls or future UI panels.
+
+See `docs/version-2.0.md` for a deeper breakdown of mechanics and testing notes.
+
 Status: Active development (work in progress). See `spec/spec-architecture-civweb-lite-core.md` and `plan/feature-core-game-foundation-1.md` for requirements and implementation planning.
 
 ## Quick start
@@ -37,7 +47,6 @@ We add testing and accessibility verification as part of Phase 5 (unit-states). 
 - Accessibility: a Playwright accessibility smoke test is available at `playwright/tests/accessibility-badges.spec.ts`. It writes `a11y-badges-<timestamp>.json` and `a11y-axe-<timestamp>.json` into `test-results/`.
 
 If you add or change accessibility-sensitive UI, run the accessibility test and inspect the axe JSON output in `test-results/`.
-```
 
 Build for production:
 

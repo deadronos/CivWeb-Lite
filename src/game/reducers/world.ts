@@ -2,9 +2,16 @@ import type { Draft } from 'immer';
 import { GameAction } from '../actions';
 import { GameState } from '../types';
 import { createEmptyState as createContentExtension } from '../content/engine';
-import { foundCity, moveUnit as extensionMoveUnit } from '../content/rules';
+import {
+  beginCultureResearch,
+  beginResearch,
+  foundCity,
+  getCityYield,
+  moveUnit as extensionMoveUnit,
+} from '../content/rules';
 import { UNIT_TYPES } from '../content/registry';
 import { UnitState, UnitCategory } from '../../types/unit';
+import { getItemCost } from '../utils/cost';
 
 export function worldReducer(draft: Draft<GameState>, action: GameAction): void {
   switch (action.type) {
@@ -85,7 +92,10 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
         const oldTileId = unit.location;
         unit.location = tileId;
         // Update occupants; normalize oldTileId which might be a coord object
-        const oldIdKey = typeof oldTileId === 'string' ? oldTileId : `${(oldTileId as any).q},${(oldTileId as any).r}`;
+        const oldIdKey =
+          typeof oldTileId === 'string'
+            ? oldTileId
+            : `${(oldTileId as any).q},${(oldTileId as any).r}`;
         if (extension.tiles[oldIdKey]) {
           extension.tiles[oldIdKey].occupantUnitId = null;
         }
@@ -171,6 +181,18 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
       break;
     }
 
+    case 'EXT_MOVE_UNIT': {
+      const { unitId, toTileId } = (action as any).payload || {};
+      if (!unitId || !toTileId) break;
+      const extension = (draft.contentExt ||= createContentExtension());
+      try {
+        extensionMoveUnit(extension, unitId, toTileId);
+      } catch {
+        // ignore failure - moveUnit returns false when invalid; reducer stays idempotent
+      }
+      break;
+    }
+
     case 'EXT_ADD_CITY': {
       const { cityId, name, ownerId, tileId } = (action as any).payload || {};
       if (!cityId || !ownerId) break;
@@ -195,12 +217,56 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
       if (!unit) break;
       const targetTile = tileId ?? unit.location;
       const res = foundCity(extension, unitId, targetTile, cityId, name);
-      if (res.success && // ensure tile exists in extension (foundCity creates minimal tile if missing)
-        extension.tiles[res.tileId]) {
-          extension.tiles[res.tileId].occupantCityId = res.cityId;
-          // remove unit if still present
-          if (extension.units[unitId]) delete extension.units[unitId];
-        }
+      if (
+        res.success && // ensure tile exists in extension (foundCity creates minimal tile if missing)
+        extension.tiles[res.tileId]
+      ) {
+        extension.tiles[res.tileId].occupantCityId = res.cityId;
+        // remove unit if still present
+        if (extension.units[unitId]) delete extension.units[unitId];
+      }
+      break;
+    }
+
+    case 'EXT_QUEUE_PRODUCTION': {
+      const extension = (draft.contentExt ||= createContentExtension());
+      const { cityId, order } = (action as any).payload || {};
+      if (!cityId || !order) break;
+      const city = extension.cities[cityId];
+      if (!city) break;
+      const maybeTurns =
+        typeof order.turnsRemaining === 'number' && order.turnsRemaining > 0
+          ? order.turnsRemaining
+          : typeof order.turns === 'number' && order.turns > 0
+            ? order.turns
+            : undefined;
+      const cityYield = getCityYield(extension, city);
+      const productionPerTurn = Math.max(1, Math.floor(cityYield.production ?? 1));
+      const cost = getItemCost(order.type, order.item);
+      const resolvedTurns = maybeTurns ?? Math.max(1, Math.ceil(cost / productionPerTurn));
+      city.productionQueue.push({
+        type: order.type,
+        item: order.item,
+        targetTileId: order.targetTileId,
+        turnsRemaining: resolvedTurns,
+      });
+      break;
+    }
+
+    case 'EXT_BEGIN_RESEARCH': {
+      const extension = (draft.contentExt ||= createContentExtension());
+      const techId = (action as any).payload?.techId as string | undefined;
+      if (!techId) break;
+      beginResearch(extension, techId);
+      break;
+    }
+
+    case 'EXT_BEGIN_CULTURE_RESEARCH': {
+      const extension = (draft.contentExt ||= createContentExtension());
+      const civicId = (action as any).payload?.civicId as string | undefined;
+      if (!civicId) break;
+      if (!extension.civics) extension.civics = {};
+      beginCultureResearch(extension, civicId);
       break;
     }
 
@@ -227,7 +293,10 @@ export function worldReducer(draft: Draft<GameState>, action: GameAction): void 
         const oldTileId = unit.location;
         unit.location = toTileId;
         // Update occupants; normalize oldTileId which might be a coord object
-        const oldIdKey = typeof oldTileId === 'string' ? oldTileId : `${(oldTileId as any).q},${(oldTileId as any).r}`;
+        const oldIdKey =
+          typeof oldTileId === 'string'
+            ? oldTileId
+            : `${(oldTileId as any).q},${(oldTileId as any).r}`;
         if (extension.tiles[oldIdKey]) {
           extension.tiles[oldIdKey].occupantUnitId = null;
         }
